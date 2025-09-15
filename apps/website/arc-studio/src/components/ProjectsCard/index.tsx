@@ -57,7 +57,7 @@ export default function ProjectsCard() {
               {/* Tag fixa do estúdio */}
               <span className="flex items-center gap-1 px-3 py-1 text-sm rounded-full bg-blue-900/50 text-blue-200/80 font-bold">
                 <FaThumbtack className="text-blue-300/80" />
-                ARC Studios
+                ARC Studio
               </span>
 
               {/* Criadores */}

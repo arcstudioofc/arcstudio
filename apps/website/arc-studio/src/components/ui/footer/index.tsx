@@ -18,7 +18,6 @@ export default function Footer() {
           <Link href="/" className="flex justify-center ">
             <ARCStudioTitle />
           </Link>
-
           {/* {!session ? (
             <div className="flex justify-center mt-4">
               <a
@@ -32,43 +31,40 @@ export default function Footer() {
           ) : (
             ""
           )} */}
-
           <div className="mt-10 mb-10 border-b border-grid-line"></div>
-
           <div className="flex space-x-10 justify-center items-center mb-14">
-            <a
+            <Link
               href={siteConfig.links.github}
               className="block transition-all duration-500 hover:text-blue-800"
               aria-label="GitHub"
             >
               <FaGithub className="w-[1.688rem] h-[1.688rem]" />
-            </a>
+            </Link>
 
-            <a
+            <Link
               href={siteConfig.links.discord}
               className="block transition-all duration-500 hover:text-blue-800"
               aria-label="Discord"
             >
               <FaDiscord className="w-[1.688rem] h-[1.688rem]" />
-            </a>
+            </Link>
 
-            <a
+            <Link
               href={siteConfig.links.instagram}
               className="block transition-all duration-500 hover:text-blue-800"
               aria-label="Instagram"
             >
               <FaInstagram className="w-[1.688rem] h-[1.688rem]" />
-            </a>
+            </Link>
 
-            <a
+            <Link
               href={siteConfig.links.twitter}
               className="block transition-all duration-500 hover:text-blue-800"
               aria-label="Twitter (X)"
             >
-              <FaXTwitter  className="w-[1.688rem] h-[1.688rem]" />
-            </a>
+              <FaXTwitter className="w-[1.688rem] h-[1.688rem]" />
+            </Link>
           </div>
-
           <span className="text-lg text-gray-500 text-center block">
             ©{" "}
             <Link href="/">
@@ -76,6 +72,23 @@ export default function Footer() {
             </Link>{" "}
             2025, Todos os direitos reservados.
           </span>
+          <span className="text-sm text-gray-500 text-center block mt-2">
+            Desenvolvido com ❤️ por{" "}
+            <Link
+              className="hover:underline"
+              href="https://github.com/yeytaken/"
+            >
+              {siteConfig.author}
+            </Link>
+            .
+          </span>
+          {/* Versão no canto inferior direito */}
+          <Link
+            href={"https://github.com/yeytaken/arc-studio/"}
+            className="hover:underline absolute bottom-2 right-4 text-sm text-gray-500"
+          >
+            v{siteConfig.version}
+          </Link>{" "}
         </div>
       </div>
     </footer>
