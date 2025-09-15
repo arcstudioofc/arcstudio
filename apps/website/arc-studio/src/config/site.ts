@@ -1,4 +1,4 @@
-// @ts-ignore
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import PKG from "../../package.json";
 
 export type SiteConfig = typeof siteConfig;
