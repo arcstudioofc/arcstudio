@@ -84,7 +84,7 @@ export default function Footer() {
           </span>
           {/* Versão no canto inferior direito */}
           <Link
-            href={"https://github.com/yeytaken/arc-studio/"}
+            href={"https://github.com/yeyTaken/arc-studio/tree/main/apps/website/arc-studio"}
             className="hover:underline absolute bottom-2 right-4 text-sm text-gray-500"
           >
             v{siteConfig.version}

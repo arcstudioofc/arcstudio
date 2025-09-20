@@ -12,51 +12,23 @@ import Background from "@/components/ui/style/background";
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
-    template: `${siteConfig.name} | %s`,
+    template: `${siteConfig.name} — %s`,
   },
   description: siteConfig.description,
   metadataBase: new URL(siteConfig.links.site),
   icons: {
     icon: "./favicon.ico",
   },
-  openGraph: {
-    title: {
-      default: siteConfig.name,
-      template: `${siteConfig.name} | %s`,
-    },
-    description: siteConfig.description,
-    url: siteConfig.links.site,
-    siteName: "Advanced Resource Center Studio (ARC Studio)",
-    type: "website",
-    images: [
-      {
-        url: siteConfig.links.site + "opengraph-image.png",
-        width: 3780,
-        height: 1890,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: {
-      default: siteConfig.name,
-      template: `${siteConfig.name} | %s`,
-    },
-    description: siteConfig.description,
-    images: [siteConfig.links.site + "opengraph-image.png"],
-  },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
+interface RootLayoutProps {
   children: React.ReactNode;
-}>) {
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="pt-br">
-      <body
-        className={`${fontSans.variable} ${fontMono.variable} antialiased`}
-      >
+      <body className={`${fontSans.variable} ${fontMono.variable} antialiased`}>
         <Providers>
           <Navbar />
           <Background />
@@ -66,6 +38,7 @@ export default function RootLayout({
             {children}
           </main>
 
+          {/* Footer normal */}
           <Footer />
         </Providers>
       </body>

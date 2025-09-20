@@ -88,7 +88,6 @@ export default function Navbar() {
         (!navigator.platform.includes("Mac") && e.ctrlKey && e.key === "p")
       ) {
         e.preventDefault();
-        console.log("Ctrl+P pressionado!"); // 👈 debug
         setUserMenuOpen((prev) => !prev);
       }
     };
@@ -163,12 +162,12 @@ export default function Navbar() {
              bg-[rgba(10,18,29,0.6)] backdrop-blur-md 
              rounded-lg shadow-lg border border-grid-line z-50"
                 >
-                  <ul className="p-2 text-sm">
+                  <ul className="p-2 text-sm min-w-[160px]">
                     {Object.entries(item.children).map(([subKey, subItem]) => (
                       <li key={subKey}>
                         <Link
                           href={subItem.href || "#"}
-                          className="flex items-center gap-2 px-3 py-2 rounded hover:bg-[#141e2e75] transition"
+                          className="flex items-center gap-2 w-full px-3 py-2 rounded hover:bg-[#141e2e75] transition"
                         >
                           {subItem.icon} <span>{subItem.label}</span>
                         </Link>
@@ -245,7 +244,7 @@ export default function Navbar() {
         userMenuRef={userMenuRef}
       />
 
-      {/* Compact dropdown */}
+      {/* Compact dropdown (corrigido) */}
 
       <div
         ref={menuRef}
@@ -263,15 +262,16 @@ export default function Navbar() {
         }}
         className="select-none bg-[#0a121db5] backdrop-blur-sm rounded-lg shadow-lg border border-grid-line z-50"
       >
-        <ul className="flex flex-col p-3 gap-2">
+        {/* Top-level list: ensure itens ocupem 100% da largura */}
+        <ul className="flex flex-col w-full p-3 gap-2">
           {Object.entries(items.isCompact).map(([key, item]) =>
             item.label ? (
-              <li key={key}>
+              <li key={key} className="w-full">
                 {item.children ? (
-                  <>
+                  <div className="w-full">
                     <button
                       onClick={() => toggleDropdown(key)}
-                      className="cursor-pointer flex justify-between items-center w-full px-3 py-2 rounded hover:bg-[#141e2e75] transition"
+                      className="cursor-pointer flex justify-between items-center w-full px-3 py-2 rounded hover:bg-[#141e2e75] transition text-left"
                     >
                       <div className="flex items-center gap-2">
                         {item.icon}
@@ -283,54 +283,56 @@ export default function Navbar() {
                         }`}
                       />
                     </button>
+
                     {showDropdowns[key] && (
-                      <div className="flex mt-2 text-foreground/70">
-                        <div className="flex flex-col justify-start">
-                          <div className="h-full w-[2px] bg-grid-line ml-[18px] rounded"></div>
-                        </div>
-                        <ul className="ml-3 flex flex-col gap-1 max-w-[180px]">
-                          {Object.entries(item.children).map(
-                            ([subKey, subItem]) => (
-                              <li key={subKey}>
-                                <Link
-                                  href={subItem.href || "#"}
-                                  className="flex items-center gap-2 px-2 py-1 rounded hover:bg-[#141e2e75] transition max-w-full"
-                                  onClick={() => setMenuOpen(false)}
-                                >
+                      <ul className="mt-2 w-full pl-6 pr-2 flex flex-col gap-1">
+                        {Object.entries(item.children).map(
+                          ([subKey, subItem]) => (
+                            <li key={subKey} className="w-full">
+                              <Link
+                                href={subItem.href || "#"}
+                                className="block w-full px-3 py-2 text-left rounded hover:bg-[#141e2e75] transition"
+                                onClick={() => setMenuOpen(false)}
+                              >
+                                <div className="flex items-center gap-2">
                                   {subItem.icon}
                                   <span className="truncate">
                                     {subItem.label}
                                   </span>
-                                </Link>
-                              </li>
-                            )
-                          )}
-                        </ul>
-                      </div>
+                                </div>
+                              </Link>
+                            </li>
+                          )
+                        )}
+                      </ul>
                     )}
-                  </>
+                  </div>
                 ) : (
                   <Link
                     href={item.href || "#"}
-                    className="flex items-center gap-2 px-3 py-2 rounded hover:bg-[#141e2e75] transition"
+                    className="block w-full px-3 py-2 rounded hover:bg-[#141e2e75] transition"
                     onClick={() => setMenuOpen(false)}
                   >
-                    {item.icon}
-                    <span>{item.label}</span>
+                    <div className="flex items-center gap-2">
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </div>
                   </Link>
                 )}
               </li>
             ) : null
           )}
         </ul>
+
         <div className="border-t border-grid-line mx-3 my-2"></div>
+
         <ul className="flex p-3 gap-4 justify-center">
           {Object.entries(items.isCompact).map(([key, item]) =>
             !item.label ? (
               <li key={key}>
                 <Link
                   href={item.href || "#"}
-                  className="p-2 rounded hover:bg-[#141e2e75] transition"
+                  className="p-2 rounded hover:bg-[#141e2e75] transition block"
                   onClick={() => setMenuOpen(false)}
                 >
                   {item.icon}
