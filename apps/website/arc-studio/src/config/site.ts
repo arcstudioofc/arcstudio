@@ -10,7 +10,7 @@ export const siteConfig = {
   author: "Israel R. Jatobá",
 
   links: {
-    github: "https://github.com/yeyTaken/arc-studio",
+    github: "https://github.com/arcstudioofc/arcstudio",
     site: "https://arcstudio.online/",
     discord: "/discord",
     instagram: "/instagram",
