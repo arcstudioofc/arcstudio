@@ -1,0 +1,55 @@
+:root {
+  --color-bg: #0a121d;
+  --color-bg-variant: #0c1625;
+  --color-fg: #d9dbf8;
+
+  --grid-line-color: rgba(255, 255, 255, 0.03);
+  --grid-size: 120px;
+  --grid-line-thickness: 1px;
+}
+
+@theme {
+    --color-background: var(--color-bg);
+    --color-background-variant: var(--color-bg-variant);
+    --color-foreground: var(--color-fg);
+
+    --color-grid-line: var(--grid-line-color);
+    --grid-size: var(--grid-size);
+    --grid-line-thickness: var(--grid-line-thickness);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+@keyframes wave {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+  30% {
+    transform: translateY(-12px);
+    opacity: 1;
+  }
+}
+
+.animate-wave {
+  display: inline-block;
+  animation: wave 1s infinite;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
+}

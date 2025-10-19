@@ -1,0 +1,44 @@
+import mongoose, { Schema, Document, Model } from "mongoose";
+
+export interface IUser extends Document {
+  _id: string; // email
+  name?: string | null;
+  image?: string | null;
+  provider?: string | null;
+  discordId?: string | null;
+  posts: IPost[]; // posts como subdocumentos
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+const PostSchema = new Schema<IPost>(
+  {
+    content: { type: String, required: true },
+    githubUrl: { type: String, default: null },
+    bannerUrl: { type: String, default: null },
+  },
+  {
+    timestamps: true,
+    _id: true, // cada post terá seu próprio _id
+  }
+);
+
+const UserSchema = new Schema<IUser>(
+  {
+    _id: { type: String, required: true }, // email
+    name: { type: String, default: null, unique: true },
+    image: { type: String, default: null },
+    provider: { type: String, default: null },
+    discordId: { type: String, default: null, unique: true },
+    posts: [PostSchema], // posts como subdocumentos
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  }
+);
+
+// Reuse model if already compiled
+export const User: Model<IUser> =
+  (mongoose.models.User as Model<IUser>) ||
+  mongoose.model<IUser>("User", UserSchema);
