@@ -1,4 +1,5 @@
 interface IPost {
+  hash?: string;
   content: string;
   bannerUrl?: string | null;
   githubUrl?: string | null;
@@ -6,7 +7,7 @@ interface IPost {
 }
 
 type ILeanPost = {
-  _id?: string;
+  hash?: string;
   content: string;
   bannerUrl?: string | null;
   githubUrl?: string | null;
@@ -19,6 +20,7 @@ type ILeanUser = {
   image?: string | null;
   provider?: string | null;
   discordId?: string | null;
+  isAdmin: boolean;
   createdAt?: Date;
   updatedAt?: Date;
   posts?: ILeanPost[];
@@ -30,6 +32,7 @@ type UpsertUserInput = {
   image?: string | null;
   provider?: string | null;
   discordId?: string | null;
+  isAdmin?: boolean;
   providerAccountId?: string | null;
   posts?: Partial<ILeanPost>[];
   [key: string]: any;

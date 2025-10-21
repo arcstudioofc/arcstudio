@@ -1,4 +1,3 @@
-// src/lib/auth/index.ts
 import { NextAuthOptions } from "next-auth";
 import Discord from "next-auth/providers/discord";
 

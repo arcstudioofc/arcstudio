@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 export default function Loading() {
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-background">
+    <div className="fixed select-none inset-0 z-[9999] flex items-center justify-center bg-background">
       <div className="flex space-x-6 text-6xl font-bold text-gray-700">
         {[0, 0.2, 0.4].map((delay, i) => (
           <motion.span

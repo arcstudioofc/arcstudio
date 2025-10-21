@@ -29,6 +29,32 @@ import { GoProjectRoadmap } from "react-icons/go";
 export default function Navbar() {
   const { data: session } = useSession();
 
+  const PlusIcon = (props) => {
+    return (
+      <svg
+        aria-hidden="true"
+        fill="none"
+        focusable="false"
+        height="1em"
+        role="presentation"
+        viewBox="0 0 24 24"
+        width="1em"
+        {...props}
+      >
+        <g
+          fill="none"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+        >
+          <path d="M6 12h12" />
+          <path d="M12 18V6" />
+        </g>
+      </svg>
+    );
+  };
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -316,7 +342,7 @@ export default function Navbar() {
               classNames={{
                 base: "before:bg-[#141e2e75]",
                 content:
-                  "p-0 border border-grid-line bg-[#141e2e75]/90 backdrop-blur-md rounded-lg text-gray-100",
+                  "p-0 border border-grid-line bg-background rounded-lg text-gray-100",
               }}
               radius="sm"
               placement="bottom-end"
@@ -350,7 +376,7 @@ export default function Navbar() {
                     "transition-all",
                     "text-gray-200",
                     // "data-[hover=true]:bg-[#141e2e75]",
-                    "data-[hover=true]:text-white",
+                    // "data-[hover=true]:text-white",
                   ],
                 }}
               >
@@ -359,6 +385,7 @@ export default function Navbar() {
                     key="profile"
                     startContent={<LuUser size={16} />}
                     as={Link}
+                    className="hover:bg-[#141e2e75]"
                     href={`/app/profile/${session.user.name}`}
                   >
                     Perfil
@@ -368,22 +395,21 @@ export default function Navbar() {
                     key="dashboard"
                     startContent={<LuLayoutDashboard size={16} />}
                     as={Link}
+                    className="hover:bg-[#141e2e75]"
                     href="/app"
                   >
                     Dashboard
                   </DropdownItem>
-
                 </DropdownSection>
 
                 <DropdownSection showDivider aria-label="Post">
                   <DropdownItem
-                    key="new_project"
-                    href="/app/profile/create-project"
-                    endContent={
-                      <GoProjectRoadmap size={16} className="text-gray-200" />
-                    }
+                    key="publish_project"
+                    href="/app/profile/publish-project"
+                    className="hover:bg-[#141e2e75]"
+                    endContent={<PlusIcon className="text-large" />}
                   >
-                    Enviar Projeto
+                    Publicar Projeto
                   </DropdownItem>
                 </DropdownSection>
 

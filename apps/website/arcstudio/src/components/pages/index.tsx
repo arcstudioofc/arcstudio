@@ -1,8 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { TfiNewWindow } from "react-icons/tfi";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
+  const { data: session } = useSession();
+
   return (
     <>
       <div className="flex min-h-screen items-center justify-center px-4 sm:px-6">
@@ -36,13 +41,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Link
-                href="/app"
-                className="select-none px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 transition cursor-pointer text-center"
-              >
-                Entrar
-              </Link>
-              <Link
-                href="/app/@id"
+                href={session?.user?.name ? `/app/profile/${session.user.name}` : '/app'}
                 className="select-none px-6 py-2 rounded-xl border border-blue-600 text-blue-600 hover:bg-grid-line transition cursor-pointer inline-flex items-center gap-2 justify-center"
               >
                 Seu perfil <TfiNewWindow />

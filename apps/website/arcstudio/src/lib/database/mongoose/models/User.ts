@@ -7,19 +7,21 @@ export interface IUser extends Document {
   provider?: string | null;
   discordId?: string | null;
   posts: IPost[]; // posts como subdocumentos
+  isAdmin: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 const PostSchema = new Schema<IPost>(
   {
+    hash: { type: String, default: null },
     content: { type: String, required: true },
     githubUrl: { type: String, default: null },
     bannerUrl: { type: String, default: null },
   },
   {
     timestamps: true,
-    _id: true, // cada post terá seu próprio _id
+    _id: false, // cada post terá seu próprio _id
   }
 );
 
@@ -30,6 +32,7 @@ const UserSchema = new Schema<IUser>(
     image: { type: String, default: null },
     provider: { type: String, default: null },
     discordId: { type: String, default: null, unique: true },
+    isAdmin: { type: Boolean, default: false },
     posts: [PostSchema], // posts como subdocumentos
   },
   {
