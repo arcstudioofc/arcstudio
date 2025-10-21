@@ -1,5 +1,5 @@
 {
-  "name": "@arc-studio/monorepo",
+  "name": "@arcstudio/monorepo",
   "version": "1.2.0",
   "description": "Advanced Resource Center Studio (ARC Studio), a monorepo.",
   "scripts": {

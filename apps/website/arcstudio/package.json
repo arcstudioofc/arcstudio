@@ -1,5 +1,5 @@
 {
-  "name": "arcstudio",
+  "name": "@arcstudio/website",
   "version": "2.0.0",
   "type": "module",
   "private": true,
