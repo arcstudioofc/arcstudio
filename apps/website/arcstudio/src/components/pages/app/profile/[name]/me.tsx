@@ -157,22 +157,21 @@ export default function ProfileNameMe({ user }: { user: ILeanUser }) {
         <section className="flex flex-col justify-start rounded-xl bg-background/40 backdrop-blur-sm p-4 overflow-y-auto max-h-[75vh] border border-grid-line mt-4 md:mt-0 mb-12 md:mb-0 md:gap-6 order-2 relative">
           {posts.length > 0 ? (
             <div className="space-y-4">
-{[...posts]
-  .sort((a, b) => (a.hash! < b.hash! ? 1 : -1)) // ordem decrescente pelo hash
-  .map((post) => (
-    <PostCard
-      key={post.hash!}
-      hash={post.hash!}
-      user={user}
-      bannerUrl={post.bannerUrl ?? undefined}
-      githubUrl={post.githubUrl ?? undefined}
-      content={post.content}
-      createdAt={post.createdAt}
-      sessionEmail={session?.user?.email || undefined}
-      onDelete={handleDelete}
-    />
-  ))}
-
+              {[...posts]
+                .sort((a, b) => (a.hash! < b.hash! ? 1 : -1)) // ordem decrescente pelo hash
+                .map((post) => (
+                  <PostCard
+                    key={post.hash!}
+                    hash={post.hash!}
+                    user={user}
+                    bannerUrl={post.bannerUrl ?? undefined}
+                    githubUrl={post.githubUrl ?? undefined}
+                    content={post.content}
+                    createdAt={post.createdAt}
+                    sessionEmail={session?.user?.email || undefined}
+                    onDelete={handleDelete}
+                  />
+                ))}
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center gap-4">
