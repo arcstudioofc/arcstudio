@@ -12,79 +12,80 @@ import PostCard from "@/components/config/PostCard";
 export default function ProfileNameMe({ user }: { user: ILeanUser }) {
   const { data: session } = useSession();
   const [posts, setPosts] = useState<IPost[]>(user.posts || []);
+  const [followers, setFollowers] = useState<string[]>(user.account?.followers || []);
+  const [following, setFollowing] = useState<string[]>(user.account?.following || []);
   const [recentlyDeleted, setRecentlyDeleted] = useState<IPost | null>(null);
-  const [restoreTimer, setRestoreTimer] = useState<NodeJS.Timeout | null>(null);
   const [progress, setProgress] = useState(100);
+  const [restoreTimer, setRestoreTimer] = useState<NodeJS.Timeout | null>(null);
 
-  // Atualiza os posts caso o usuário seja recarregado
+  // Atualiza os posts e contadores
   useEffect(() => {
     setPosts(user.posts || []);
-  }, [user.posts]);
+    setFollowers(user.account?.followers || []);
+    setFollowing(user.account?.following || []);
+  }, [user]);
 
-  // Função para deletar o post pelo hash
+  // Atualiza contadores de seguidores/following em tempo real (a cada 3s)
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (!session?.user?.email) return;
+      const res = await fetch(`/api/user/info?email=${session.user.email}`);
+      const data = await res.json();
+      if (data?.user) {
+        setFollowers(data.user.account.followers);
+        setFollowing(data.user.account.following);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [session]);
+
+  // Funções de deletar e restaurar posts
   const handleDelete = async (hash: string) => {
     if (!session?.user?.name) return;
-
     try {
       const res = await fetch("/api/projects/delete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: session.user.name, hash }),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Erro ao deletar");
 
       const deletedPost = posts.find((p) => p.hash === hash);
       if (!deletedPost) return;
-
-      // Remove do estado e guarda para possível restauração
       setPosts((prev) => prev.filter((p) => p.hash !== hash));
       setRecentlyDeleted(deletedPost);
       setProgress(100);
 
-      // Timer de 5s para esconder popup
       if (restoreTimer) clearTimeout(restoreTimer);
       const timer = setTimeout(() => setRecentlyDeleted(null), 5000);
       setRestoreTimer(timer);
 
-      // Animação da barra de progresso
       let timeLeft = 5000;
       const interval = setInterval(() => {
         timeLeft -= 100;
         setProgress((timeLeft / 5000) * 100);
         if (timeLeft <= 0) clearInterval(interval);
       }, 100);
-
-      console.log("✅ Post deletado:", hash);
     } catch (err) {
       console.error("❌ Erro ao deletar post:", err);
     }
   };
 
-  // Função para restaurar o post deletado
   const handleRestore = async () => {
     if (!session?.user?.name || !recentlyDeleted) return;
-
     try {
       const res = await fetch("/api/projects/restore", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: session.user.name,
-          post: recentlyDeleted,
-        }),
+        body: JSON.stringify({ name: session.user.name, post: recentlyDeleted }),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Erro ao restaurar");
-
-      // Reinsere o post no topo
       setPosts((prev) => [recentlyDeleted, ...prev]);
       setRecentlyDeleted(null);
       if (restoreTimer) clearTimeout(restoreTimer);
-
-      console.log("♻️ Post restaurado:", recentlyDeleted.hash);
     } catch (err) {
       console.error("❌ Erro ao restaurar post:", err);
     }
@@ -116,25 +117,16 @@ export default function ProfileNameMe({ user }: { user: ILeanUser }) {
             </div>
 
             <CardBody className="pt-24 px-6 pb-6 text-center">
-              <h1 className="text-2xl sm:text-3xl font-extrabold">
-                {user.name}
-              </h1>
+              <h1 className="text-2xl sm:text-3xl font-extrabold">{user.name}</h1>
               <p className="text-gray-300 text-sm mb-4">
                 🪶 Nenhuma bio adicionada ainda.
               </p>
 
               <div className="flex justify-center gap-3 mb-4">
-                <Button
-                  isDisabled
-                  color="primary"
-                  startContent={<FaEdit size={14} />}
-                >
+                <Button isDisabled color="primary" startContent={<FaEdit size={14} />}>
                   Editar perfil
                 </Button>
-                <Button
-                  variant="bordered"
-                  startContent={<FaShareAlt size={14} />}
-                >
+                <Button variant="bordered" startContent={<FaShareAlt size={14} />}>
                   Compartilhar
                 </Button>
               </div>
@@ -143,10 +135,16 @@ export default function ProfileNameMe({ user }: { user: ILeanUser }) {
 
               <div className="flex justify-around w-full text-sm text-gray-400 mt-2">
                 <div className="flex flex-col items-center">
-                  <span className="text-lg font-semibold text-white">
-                    {posts.length}
-                  </span>
+                  <span className="text-lg font-semibold text-white">{posts.length}</span>
                   <span>Posts</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-lg font-semibold text-white">{followers.length}</span>
+                  <span>Seguidores</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-lg font-semibold text-white">{following.length}</span>
+                  <span>Seguindo</span>
                 </div>
               </div>
             </CardBody>
@@ -158,7 +156,7 @@ export default function ProfileNameMe({ user }: { user: ILeanUser }) {
           {posts.length > 0 ? (
             <div className="space-y-4">
               {[...posts]
-                .sort((a, b) => (a.hash! < b.hash! ? 1 : -1)) // ordem decrescente pelo hash
+                .sort((a, b) => (a.hash! < b.hash! ? 1 : -1))
                 .map((post) => (
                   <PostCard
                     key={post.hash!}
@@ -175,19 +173,14 @@ export default function ProfileNameMe({ user }: { user: ILeanUser }) {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center gap-4">
-              <p className="text-gray-300 text-lg font-medium">
-                Publique seu primeiro projeto aqui!
-              </p>
-              <Link
-                className="cursor-pointer"
-                href="/app/profile/publish-project"
-              >
+              <p className="text-gray-300 text-lg font-medium">Publique seu primeiro projeto aqui!</p>
+              <Link className="cursor-pointer" href="/app/profile/publish-project">
                 <Button color="primary">Publicar projeto</Button>
               </Link>
             </div>
           )}
 
-          {/* Popup de restauração com animação */}
+          {/* Popup de restauração */}
           <AnimatePresence>
             {recentlyDeleted && (
               <motion.div
@@ -199,10 +192,7 @@ export default function ProfileNameMe({ user }: { user: ILeanUser }) {
               >
                 <div className="flex items-center justify-between">
                   <span>🗑️ Projeto removido</span>
-                  <button
-                    onClick={handleRestore}
-                    className="text-primary font-semibold hover:underline"
-                  >
+                  <button onClick={handleRestore} className="text-primary font-semibold hover:underline">
                     Desfazer
                   </button>
                 </div>

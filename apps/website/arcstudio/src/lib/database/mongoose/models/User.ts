@@ -3,6 +3,10 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IUser extends Document {
   _id: string; // email
   name?: string | null;
+  account?: {
+    followers: string[];
+    following: string[];
+  };
   image?: string | null;
   provider?: string | null;
   discordId?: string | null;
@@ -33,6 +37,10 @@ const UserSchema = new Schema<IUser>(
   {
     _id: { type: String, required: true }, // email
     name: { type: String, default: null, unique: true },
+    account: {
+      followers: { type: [String], default: [] },
+      following: { type: [String], default: [] },
+    },
     image: { type: String, default: null },
     provider: { type: String, default: null },
     discordId: { type: String, default: null, unique: true },

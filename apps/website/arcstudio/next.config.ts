@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
   },
 
   images: {
-    domains: ["cdn.discordapp.com", "picsum.photos", "wallpapers-clan.com", "i.imgur.com", "www.arcstudio.online", "arcstudio.online", "github.com"],
+    domains: ["cdn.discordapp.com", "picsum.photos", "wallpapers-clan.com", "i.imgur.com", "www.arcstudio.online", "arcstudio.online", "github.com", "atos.js.org"],
   },
 };
 

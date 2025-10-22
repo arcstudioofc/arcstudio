@@ -25,6 +25,10 @@ type ILeanPost = {
 type ILeanUser = {
   _id: string;
   name?: string | null;
+  account?: {
+    followers: string[];
+    following: string[];
+  };
   image?: string | null;
   provider?: string | null;
   discordId?: string | null;
@@ -37,6 +41,10 @@ type ILeanUser = {
 type UpsertUserInput = {
   email: string;
   name?: string | null;
+  account?: {
+    followers?: string[] | [];
+    following?: string[] | [];
+  };
   image?: string | null;
   provider?: string | null;
   discordId?: string | null;

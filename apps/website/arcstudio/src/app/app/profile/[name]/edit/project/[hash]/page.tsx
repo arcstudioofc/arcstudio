@@ -202,7 +202,6 @@ export default function EditProjectPage() {
           </CardBody>
         </Card>
       </div>
-
       {/* Modal Markdown */}
       <Modal
         isOpen={isHelpOpen}
@@ -225,13 +224,127 @@ export default function EditProjectPage() {
           </ModalHeader>
 
           <ModalBody>
-            <p>
-              Utilize **Markdown** para formatar o texto (negrito, links, listas,
-              títulos e blocos de código).
-            </p>
+            {/* SEÇÃO: Títulos */}
+            <section>
+              <h3 className="text-base font-bold text-primary mb-2">Títulos</h3>
+              <div className="space-y-1">
+                <code># Título Nível 1</code> →{" "}
+                <span className="font-bold text-lg">Título 1</span>
+                <br />
+                <code>## Título Nível 2</code> →{" "}
+                <span className="font-semibold text-md">Título 2</span>
+                <br />
+                <code>### Título Nível 3</code> →{" "}
+                <span className="font-medium text-sm">Título 3</span>
+              </div>
+            </section>
+
+            <Divider className="bg-grid-line" />
+
+            {/* SEÇÃO: Texto */}
+            <section>
+              <h3 className="text-base font-bold text-primary mb-2">
+                Texto e Estilo
+              </h3>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>
+                  <code>**negrito**</code> → <b>negrito</b>
+                </li>
+                <li>
+                  <code>*itálico*</code> → <i>itálico</i>
+                </li>
+                <li>
+                  <code>__sublinhado__</code> → <u>sublinhado</u>
+                </li>
+                <li>
+                  <code>~~riscado~~</code> → <s>riscado</s>
+                </li>
+              </ul>
+              <br />
+              <p>Como quebrar linha:</p>
+              <br />
+              Texto
+              <br />
+              <br />
+              {"<br />"}
+              <br />
+              <br />
+              Texto
+            </section>
+
+            <Divider className="bg-grid-line" />
+
+            {/* SEÇÃO: Links */}
+            <section>
+              <h3 className="text-base font-bold text-primary mb-2">Links</h3>
+              <p>
+                Você pode adicionar links usando:{" "}
+                <code>[texto](https://exemplo.com)</code>
+              </p>
+              <p className="mt-2">
+                Exemplo: <code>[Visite o GitHub](https://github.com)</code> →{" "}
+                <a
+                  href="https://github.com"
+                  target="_blank"
+                  className="text-blue-400 underline hover:text-blue-300"
+                >
+                  Visite o GitHub
+                </a>
+              </p>
+            </section>
+
+            <Divider className="bg-grid-line" />
+
+            {/* SEÇÃO: Listas */}
+            <section>
+              <h3 className="text-base font-bold text-primary mb-2">Listas</h3>
+              <ul className="list-disc pl-6 space-y-1">
+                <li>Item comum</li>
+                <li>
+                  Outro item
+                  <ul className="list-disc pl-6">
+                    <li>Subitem</li>
+                  </ul>
+                </li>
+              </ul>
+
+              <p className="mt-3 font-semibold">Listas numeradas:</p>
+              <ol className="list-decimal pl-6">
+                <li>Primeiro item</li>
+                <li>Segundo item</li>
+              </ol>
+
+              <p className="mt-3 font-semibold">Listas de tarefas:</p>
+              <ul className="list-none pl-2 space-y-1">
+                <li>
+                  <code>- [x] Tarefa completa</code>
+                </li>
+                <li>
+                  <code>- [ ] Tarefa pendente</code>
+                </li>
+              </ul>
+            </section>
+
+            <Divider className="bg-grid-line" />
+
+            {/* SEÇÃO: Código */}
+            <section>
+              <h2 className="text-base font-bold text-primary mb-2">Códigos</h2>
+              <p className="mt-2 font-semibold">Bloco de código:</p>
+              <pre className="bg-black/40 p-3 rounded-lg overflow-x-auto mt-2">
+                <code className="language-js">
+                  {`\`\`\`js
+function hello(name) {
+  console.log(\`Olá, \${name}!\`);
+}
+hello("Mundo");
+\`\`\``}
+                </code>
+              </pre>
+            </section>
           </ModalBody>
         </ModalContent>
-      </Modal>
+      </Modal>{" "}
     </section>
   );
 }
