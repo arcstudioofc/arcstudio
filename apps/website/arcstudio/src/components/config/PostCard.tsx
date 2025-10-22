@@ -101,6 +101,18 @@ const formatRelativeTime = (date: Date, now: Date) => {
   return `${Math.floor(diff / 86400)}d`;
 };
 
+const formatFullDate = (date?: Date | string | null) => {
+  if (!date) return "";
+  const d = new Date(date);
+  return d.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
 export default function PostCard({
   user,
   hash,
@@ -150,6 +162,7 @@ export default function PostCard({
     if (!isPreview && hash && onDelete) onDelete(hash);
   };
 
+  const edited = user?.posts?.find((p) => p.hash === hash)?.edited;
   // === Footer GitHub ===
   let owner: string | null = null;
   let repo: string | null = null;
@@ -224,6 +237,7 @@ export default function PostCard({
                     key="edit"
                     description="Altere informações em seu projeto."
                     startContent={<EditDocumentIcon className="text-xl" />}
+                    href={`/app/profile/${user.name}/edit/project/${hash}`}
                   >
                     Editar projeto
                   </DropdownItem>
@@ -395,8 +409,21 @@ export default function PostCard({
                 </Link>
               </div>
             )}
-            <span className="sm:ml-auto text-gray-500">
-              {createdDate ? formatRelativeTime(createdDate, now) : "agora"}
+            <span className="sm:ml-auto text-gray-500 relative group cursor-default">
+              {edited?.isEdited ? (
+                <>
+                  Editado —{" "}
+                  {createdDate ? formatRelativeTime(createdDate, now) : "agora"}
+                  {/* Tooltip */}
+                  <div className="absolute bottom-5 right-0 -translate-x-4 opacity-0 group-hover:opacity-100 bg-background/95 text-gray-300 text-[11px] px-2.5 py-0.5 rounded-md border border-grid-line shadow-sm whitespace-nowrap transition-all duration-200">
+                    ✏️ Editado dia {formatFullDate(edited?.editedAt)}
+                  </div>
+                </>
+              ) : createdDate ? (
+                formatRelativeTime(createdDate, now)
+              ) : (
+                "agora"
+              )}
             </span>
           </div>
         </CardBody>

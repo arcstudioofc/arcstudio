@@ -3,6 +3,10 @@ interface IPost {
   content: string;
   bannerUrl?: string | null;
   githubUrl?: string | null;
+  edited?: {
+    isEdited: boolean;
+    editedAt?: Date;
+  };
   createdAt?: Date;
 }
 
@@ -11,6 +15,10 @@ type ILeanPost = {
   content: string;
   bannerUrl?: string | null;
   githubUrl?: string | null;
+  edited: {
+    isEdited: boolean;
+    editedAt: Date;
+  };
   createdAt?: Date;
 };
 

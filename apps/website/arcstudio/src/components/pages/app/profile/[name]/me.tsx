@@ -6,12 +6,15 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Avatar, Button, Card, CardBody, Divider } from "@heroui/react";
 import { FaEdit, FaShareAlt } from "react-icons/fa";
-
+import { motion, AnimatePresence } from "framer-motion";
 import PostCard from "@/components/config/PostCard";
 
 export default function ProfileNameMe({ user }: { user: ILeanUser }) {
   const { data: session } = useSession();
   const [posts, setPosts] = useState<IPost[]>(user.posts || []);
+  const [recentlyDeleted, setRecentlyDeleted] = useState<IPost | null>(null);
+  const [restoreTimer, setRestoreTimer] = useState<NodeJS.Timeout | null>(null);
+  const [progress, setProgress] = useState(100);
 
   // Atualiza os posts caso o usuário seja recarregado
   useEffect(() => {
@@ -19,26 +22,73 @@ export default function ProfileNameMe({ user }: { user: ILeanUser }) {
   }, [user.posts]);
 
   // Função para deletar o post pelo hash
-const handleDelete = async (hash: string) => {
-  if (!session?.user?.name) return;
+  const handleDelete = async (hash: string) => {
+    if (!session?.user?.name) return;
 
-  try {
-    const res = await fetch("/api/projects/delete", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: session.user.name, hash }),
-    });
+    try {
+      const res = await fetch("/api/projects/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: session.user.name, hash }),
+      });
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Erro ao deletar");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erro ao deletar");
 
-    setPosts((prev) => prev.filter((p) => p.hash !== hash));
-    console.log("✅ Post deletado:", hash);
-  } catch (err) {
-    console.error("❌ Erro ao deletar post:", err);
-  }
-};
+      const deletedPost = posts.find((p) => p.hash === hash);
+      if (!deletedPost) return;
 
+      // Remove do estado e guarda para possível restauração
+      setPosts((prev) => prev.filter((p) => p.hash !== hash));
+      setRecentlyDeleted(deletedPost);
+      setProgress(100);
+
+      // Timer de 5s para esconder popup
+      if (restoreTimer) clearTimeout(restoreTimer);
+      const timer = setTimeout(() => setRecentlyDeleted(null), 5000);
+      setRestoreTimer(timer);
+
+      // Animação da barra de progresso
+      let timeLeft = 5000;
+      const interval = setInterval(() => {
+        timeLeft -= 100;
+        setProgress((timeLeft / 5000) * 100);
+        if (timeLeft <= 0) clearInterval(interval);
+      }, 100);
+
+      console.log("✅ Post deletado:", hash);
+    } catch (err) {
+      console.error("❌ Erro ao deletar post:", err);
+    }
+  };
+
+  // Função para restaurar o post deletado
+  const handleRestore = async () => {
+    if (!session?.user?.name || !recentlyDeleted) return;
+
+    try {
+      const res = await fetch("/api/projects/restore", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: session.user.name,
+          post: recentlyDeleted,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erro ao restaurar");
+
+      // Reinsere o post no topo
+      setPosts((prev) => [recentlyDeleted, ...prev]);
+      setRecentlyDeleted(null);
+      if (restoreTimer) clearTimeout(restoreTimer);
+
+      console.log("♻️ Post restaurado:", recentlyDeleted.hash);
+    } catch (err) {
+      console.error("❌ Erro ao restaurar post:", err);
+    }
+  };
 
   return (
     <section className="flex select-none justify-center px-4 sm:px-6 pt-32 md:pt-24 min-h-screen">
@@ -104,22 +154,25 @@ const handleDelete = async (hash: string) => {
         </section>
 
         {/* Coluna direita — feed de posts */}
-        <section className="flex flex-col justify-start rounded-xl bg-background/40 backdrop-blur-sm p-4 overflow-y-auto max-h-[75vh] border border-grid-line mt-4 md:mt-0 mb-12 md:mb-0 md:gap-6 order-2">
+        <section className="flex flex-col justify-start rounded-xl bg-background/40 backdrop-blur-sm p-4 overflow-y-auto max-h-[75vh] border border-grid-line mt-4 md:mt-0 mb-12 md:mb-0 md:gap-6 order-2 relative">
           {posts.length > 0 ? (
             <div className="space-y-4">
-              {posts.map((post) => (
-                <PostCard
-                  key={post.hash!}
-                  hash={post.hash!}
-                  user={user}
-                  bannerUrl={post.bannerUrl ?? undefined}
-                  githubUrl={post.githubUrl ?? undefined}
-                  content={post.content}
-                  createdAt={post.createdAt}
-                  sessionEmail={session?.user?.email || undefined}
-                  onDelete={handleDelete}
-                />
-              ))}
+{[...posts]
+  .sort((a, b) => (a.hash! < b.hash! ? 1 : -1)) // ordem decrescente pelo hash
+  .map((post) => (
+    <PostCard
+      key={post.hash!}
+      hash={post.hash!}
+      user={user}
+      bannerUrl={post.bannerUrl ?? undefined}
+      githubUrl={post.githubUrl ?? undefined}
+      content={post.content}
+      createdAt={post.createdAt}
+      sessionEmail={session?.user?.email || undefined}
+      onDelete={handleDelete}
+    />
+  ))}
+
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center gap-4">
@@ -134,6 +187,37 @@ const handleDelete = async (hash: string) => {
               </Link>
             </div>
           )}
+
+          {/* Popup de restauração com animação */}
+          <AnimatePresence>
+            {recentlyDeleted && (
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 50 }}
+                transition={{ duration: 0.3 }}
+                className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#0b1520]/90 border border-grid-line rounded-lg px-5 py-3 text-sm text-gray-200 shadow-lg flex flex-col gap-2 w-[250px] sm:w-[280px]"
+              >
+                <div className="flex items-center justify-between">
+                  <span>🗑️ Projeto removido</span>
+                  <button
+                    onClick={handleRestore}
+                    className="text-primary font-semibold hover:underline"
+                  >
+                    Desfazer
+                  </button>
+                </div>
+                <div className="w-full bg-gray-700/40 h-[3px] rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: "100%" }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.1 }}
+                    className="h-full bg-primary"
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </section>
       </div>
     </section>

@@ -18,10 +18,14 @@ const PostSchema = new Schema<IPost>(
     content: { type: String, required: true },
     githubUrl: { type: String, default: null },
     bannerUrl: { type: String, default: null },
+    edited: {
+      isEdited: { type: Boolean, default: false },
+      editedAt: { type: Date, default: null },
+    },
   },
   {
     timestamps: true,
-    _id: false, // cada post terá seu próprio _id
+    _id: false,
   }
 );
 

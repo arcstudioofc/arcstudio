@@ -26,13 +26,17 @@ export async function POST(req: NextRequest) {
     }
 
     const postNumber = (user.posts?.length || 0) + 1;
-    const hash = `${user.name}_#${postNumber}`;
+    const hash = `${user.name}_${postNumber}`;
 
     const newPost = {
       hash,
       content: description,
       bannerUrl: bannerUrl || null,
       githubUrl: githubUrl || null,
+      edited: {
+        isEdited: false,
+        editedAt: undefined,
+      },
       createdAt: new Date(),
       updatedAt: new Date(),
     };
