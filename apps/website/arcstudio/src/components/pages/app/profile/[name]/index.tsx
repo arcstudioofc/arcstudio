@@ -7,6 +7,8 @@ import { FaShareAlt, FaUserPlus, FaUserCheck } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import PostCard from "@/components/config/PostCard";
+import { VscVerifiedFilled } from "react-icons/vsc";
+import { PiDevToLogoFill } from "react-icons/pi";
 
 export default function ProfileNameView({ user }: { user: ILeanUser }) {
   const { data: session } = useSession();
@@ -72,7 +74,10 @@ export default function ProfileNameView({ user }: { user: ILeanUser }) {
           <Card className="w-full bg-background border border-grid-line rounded-xl overflow-visible shadow-lg relative">
             <div className="relative w-full h-40 md:h-48 rounded-t-xl overflow-hidden">
               <Image
-                src="https://wallpapers-clan.com/wp-content/uploads/2025/02/luffy-red-glow-eyes-dark-pc-wallpaper-preview.jpg"
+                src={
+                  user.account?.bannerUrl ||
+                  "http://www.arcstudio.online/opengraph-image.png"
+                }
                 alt="Banner do usuário"
                 fill
                 className="object-cover rounded-t-xl"
@@ -80,21 +85,31 @@ export default function ProfileNameView({ user }: { user: ILeanUser }) {
               />
             </div>
 
-            <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 top-40 md:top-48">
-              <Avatar
-                src={user.image!}
-                size="lg"
-                color="primary"
-                className="border-4 border-background shadow-lg"
-              />
+            <div className="absolute left-6 -translate-y-1/2 top-40 md:top-48 flex items-center">
+              {/* Avatar com lateral esquerda full */}
+              <div className="border-7 border-background rounded-full">
+                <Avatar
+                  src={user.image!}
+                  size="lg"
+                  color="primary"
+                  className=""
+                />
+              </div>
+
+              {/* Container do nome mais fino, arredondado à direita */}
+              <h1 className="ml-[-0.7rem] bg-background rounded-r-xl px-3 py-1.5 text-2xl sm:text-3xl font-extrabold inline-flex items-center gap-2">
+                {user.name}
+                {user.account?.isVerified && (
+                    <VscVerifiedFilled className="text-primary" />
+                  ) &&
+                  user.isAdmin && <PiDevToLogoFill />}
+              </h1>
             </div>
 
-            <CardBody className="pt-24 px-6 pb-6 text-center">
-              <h1 className="text-2xl sm:text-3xl font-extrabold">
-                {user.name}
-              </h1>
-              <p className="text-gray-300 text-sm mb-4">
-                🪶 Nenhuma bio adicionada ainda.
+            <CardBody className="pt-24 px-6 pb-6">
+              <p className="text-gray-300 text-1xl mb-10">
+                {user.account?.description ||
+                  "Este usuário não adicionou uma descrição."}
               </p>
 
               <div className="flex justify-center gap-3 mb-4">

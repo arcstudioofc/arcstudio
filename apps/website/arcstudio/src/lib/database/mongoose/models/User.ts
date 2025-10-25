@@ -4,6 +4,8 @@ export interface IUser extends Document {
   _id: string; // email
   name?: string | null;
   account?: {
+    bannerUrl?: string | null;
+    isVerified?: boolean;
     followers: string[];
     following: string[];
   };
@@ -38,6 +40,9 @@ const UserSchema = new Schema<IUser>(
     _id: { type: String, required: true }, // email
     name: { type: String, default: null, unique: true },
     account: {
+      bannerUrl: { type: String, default: null },
+      description: { type: String, default: null },
+      isVerified: { type: Boolean, default: false },
       followers: { type: [String], default: [] },
       following: { type: [String], default: [] },
     },

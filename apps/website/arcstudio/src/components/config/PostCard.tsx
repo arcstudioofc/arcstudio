@@ -136,6 +136,14 @@ export default function PostCard({
   }
 
   useEffect(() => {
+    if (isImageOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isImageOpen]);
+
+  useEffect(() => {
     const interval = setInterval(() => setNow(new Date()), 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
@@ -433,20 +441,16 @@ export default function PostCard({
       <AnimatePresence>
         {isImageOpen && bannerUrl && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6"
-            role="dialog"
-            aria-modal="true"
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-background/90 backdrop-blur-sm"
             onClick={() => setIsImageOpen(false)}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
           >
-            <div className="absolute inset-0 bg-background/60 backdrop-blur-sm transition-opacity" />
-
-            {/* Mini perfil no topo esquerdo */}
+            {/* Mini perfil */}
             <motion.div
-              className="absolute top-4 left-4 flex items-center gap-3 z-20 p-2 cursor-pointer"
+              className="absolute top-4 left-4 flex items-center gap-3 z-20 p-2"
               initial={{ x: -50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -50, opacity: 0 }}
@@ -465,7 +469,7 @@ export default function PostCard({
             </motion.div>
 
             <motion.div
-              className="relative z-10 max-w-[95%] max-h-[90vh] flex items-center justify-center"
+              className="relative max-w-[95%] max-h-[95%] flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -474,17 +478,10 @@ export default function PostCard({
             >
               <img
                 src={bannerUrl}
-                alt={`Banner do post ${hash}`}
-                className="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl"
+                alt={`Banner ${hash}`}
+                className="max-w-full max-h-[95vh] object-contain rounded-xl shadow-2xl"
                 draggable={false}
               />
-              <button
-                onClick={() => setIsImageOpen(false)}
-                aria-label="Fechar visualização"
-                className="absolute -top-3 -right-3 z-20 inline-flex items-center justify-center h-8 w-8 rounded-full bg-background/50 border border-grid-line text-gray-200 hover:bg-background/70 transition"
-              >
-                ✕
-              </button>
             </motion.div>
           </motion.div>
         )}

@@ -26,6 +26,9 @@ type ILeanUser = {
   _id: string;
   name?: string | null;
   account?: {
+    bannerUrl?: string | null;
+    description?: string | null;
+    isVerified?: boolean;
     followers: string[];
     following: string[];
   };
@@ -42,6 +45,9 @@ type UpsertUserInput = {
   email: string;
   name?: string | null;
   account?: {
+    bannerUrl?: string | null;
+    description?: string | null;
+    isVerified?: boolean;
     followers?: string[] | [];
     following?: string[] | [];
   };
