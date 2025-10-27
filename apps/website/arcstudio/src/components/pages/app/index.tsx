@@ -7,7 +7,7 @@ export default function App() {
     <SessionGuard>
       {({ data: session }) => (
         <div className="flex min-h-screen items-center justify-center px-4 sm:px-6">
-          <h1>Logado</h1>
+          <h1>Logado com {session?.user.name}</h1>
         </div>
       )}
     </SessionGuard>

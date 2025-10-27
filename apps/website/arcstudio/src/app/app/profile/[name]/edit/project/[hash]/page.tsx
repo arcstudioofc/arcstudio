@@ -21,9 +21,27 @@ import {
 
 import PostCard from "@/components/config/PostCard";
 import Loading from "@/components/config/auth/Loading";
+import { IUser } from "@/lib/database/mongoose/models/User";
 
 export default function EditProjectPage() {
   const { data: session, status } = useSession();
+      const [dbUser, setDbUser] = useState<IUser | null>(null);
+  
+    // Buscar usuário no banco
+    useEffect(() => {
+      if (!session?.user?.email) return;
+  
+      (async () => {
+        try {
+          const res = await fetch(`/api/user?email=${session.user.email}`);
+          const data = await res.json();
+          setDbUser(data.user);
+        } catch (err) {
+          console.error("Erro ao buscar usuário:", err);
+        }
+      })();
+    }, [session]);
+
   const router = useRouter();
   const params = useParams();
 
@@ -73,16 +91,19 @@ export default function EditProjectPage() {
 
   if (status === "loading" || isLoading) return <Loading />;
 
+  // Se dbUser! não existir por algum motivo, não renderiza
+  if (!session?.user) return null;
+
   // 🔹 Salvar alterações
   const handleUpdateProject = async () => {
-    if (!session?.user?.name || !hash) return;
+    if (!dbUser!.name || !hash) return;
 
     try {
       const res = await fetch("/api/projects/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: session.user.name,
+          name: dbUser!.name,
           hash,
           bannerUrl,
           description,
@@ -98,7 +119,7 @@ export default function EditProjectPage() {
       }
 
       console.log("Projeto atualizado:", hash);
-      router.push(`/app/profile/${session.user.name}`);
+      router.push(`/app/profile/${dbUser!.name}`);
     } catch (err) {
       console.error("Erro ao atualizar:", err);
     }
@@ -188,10 +209,10 @@ export default function EditProjectPage() {
 
             <PostCard
               user={{
-                _id: session?.user?.email!,
+                _id: session.user.email ?? "",
                 isAdmin: false,
-                name: session?.user?.name!,
-                image: session?.user?.image!,
+                name: dbUser!.name ?? "Usuário",
+                image: dbUser!.image ?? "/images/avatar-placeholder.png",
               }}
               hash={hash}
               isPreview={true}
@@ -202,6 +223,7 @@ export default function EditProjectPage() {
           </CardBody>
         </Card>
       </div>
+
       {/* Modal Markdown */}
       <Modal
         isOpen={isHelpOpen}
@@ -224,6 +246,7 @@ export default function EditProjectPage() {
           </ModalHeader>
 
           <ModalBody>
+            {/* Conteúdo do modal mantido igual */}
             {/* SEÇÃO: Títulos */}
             <section>
               <h3 className="text-base font-bold text-primary mb-2">Títulos</h3>
@@ -344,7 +367,7 @@ hello("Mundo");
             </section>
           </ModalBody>
         </ModalContent>
-      </Modal>{" "}
+      </Modal>
     </section>
   );
 }

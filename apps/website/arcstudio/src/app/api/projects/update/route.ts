@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     }
 
     const possibleHashes = [hash, `${name}_${hash}`];
-    const post = user.posts.find((p: any) => possibleHashes.includes(p.hash));
+    const post = user.posts.find((p: IPost) => possibleHashes.includes(p.hash));
 
     if (!post) {
       return NextResponse.json(

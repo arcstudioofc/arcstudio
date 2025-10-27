@@ -5,8 +5,8 @@ import { settings } from "@/lib/settings";
 import { Providers } from "./providers";
 
 // UI/**/*.tsx components
-import Footer from "@/components/UI/Footer";
-import Navbar from "@/components/UI/navbar";
+// import Footer from "@/components/UI/Footer";
+// import Navbar from "@/components/UI/navbar";
 // import Background from "@/components/UI/style/background";
 
 export const metadata: Metadata = {
@@ -32,16 +32,13 @@ export default function RootLayout({
     <html lang="pt-BR" className='dark'>
       <body>
         <Providers>
-          <Navbar />
+          {/* <Navbar /> */}
           {/* <Background /> */}
 
           {/* Main content area */}
           <main className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
             {children}
           </main>
-
-          {/* Footer normal */}
-          <Footer />
         </Providers>
       </body>
     </html>

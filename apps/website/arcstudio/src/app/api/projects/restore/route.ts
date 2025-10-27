@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Verifica se o post já existe (evita duplicatas)
-    const exists = user.posts.some((p: any) => p.hash === post.hash);
+    const exists = user.posts.some((p: IPost) => p.hash === post.hash);
     if (exists) {
       return NextResponse.json(
         { error: "Post já existe, restauração cancelada" },

@@ -16,12 +16,23 @@ export async function GET(req: Request) {
     const users = await User.find({
       name: { $regex: name, $options: "i" },
     })
-      .select("name email image")
+      .select("name email image account")
       .limit(10)
       .lean()
       .exec();
 
-    return NextResponse.json({ users });
+    // Ajuste: transformar os dados no formato esperado
+    const formattedUsers = users.map((user) => ({
+      ...user,
+      // account: {
+      //   follow: user.account?.followers?.length || 0,
+      //   posts: Array.isArray(user.posts)
+      //     ? user.posts
+      //     : [],
+      // },
+    }));
+
+    return NextResponse.json({ users: formattedUsers });
   } catch (err) {
     console.error("Erro na busca de usuários:", err);
     return NextResponse.json({ error: "Erro interno" }, { status: 500 });

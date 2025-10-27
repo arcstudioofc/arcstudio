@@ -1,35 +1,50 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, JSX, SVGProps } from "react";
 import { FaBars } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import { signOut, useSession } from "next-auth/react";
 import {
-  Avatar,
-  Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
+  Tooltip,
   User,
 } from "@heroui/react";
+import { LuLayoutDashboard, LuLogOut, LuUser } from "react-icons/lu";
 
 import ARCStudioTitle from "@/components/config/title";
 import { items } from "@/lib/settings/navItems";
-import {
-  LuLayoutDashboard,
-  LuLogOut,
-  LuSettings,
-  LuUser,
-} from "react-icons/lu";
-import { GoProjectRoadmap } from "react-icons/go";
+import { IUser } from "@/lib/database/mongoose/models/User";
+import { TbCodeCircle2Filled } from "react-icons/tb";
+import { VscVerifiedFilled } from "react-icons/vsc";
 
 export default function Navbar() {
   const { data: session } = useSession();
 
-  const PlusIcon = (props) => {
+  const [dbUser, setDbUser] = useState<IUser | null>(null);
+
+  // Buscar usuário no banco
+  useEffect(() => {
+    if (!session?.user?.email) return;
+
+    (async () => {
+      try {
+        const res = await fetch(`/api/user?email=${session.user.email}`);
+        const data = await res.json();
+        setDbUser(data.user);
+      } catch (err) {
+        console.error("Erro ao buscar usuário:", err);
+      }
+    })();
+  }, [session]);
+
+  const PlusIcon = (
+    props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+  ) => {
     return (
       <svg
         aria-hidden="true"
@@ -351,10 +366,38 @@ export default function Navbar() {
                 <button className="w-full flex items-center justify-between rounded-lg hover:bg-[#141e2e75] transition p-2">
                   <div className="flex items-center gap-3">
                     <User
-                      name={session.user.name ?? "Usuário"}
-                      description={`@${session.user.name}`}
+                      name={
+                        <div className="flex items-center gap-1">
+                          <span>{dbUser?.name}</span>
+
+                          {dbUser?.account?.isVerified && (
+                            <Tooltip
+                              content="Conta verificada"
+                              className="bg-background border border-grid-line text-sm text-gray-200"
+                            >
+                              <VscVerifiedFilled className="text-primary cursor-help" />
+                            </Tooltip>
+                          )}
+
+                          {dbUser?.isAdmin && (
+                            <Tooltip
+                              content="Administrador"
+                              className="bg-background border border-grid-line text-sm text-gray-200"
+                            >
+                              <TbCodeCircle2Filled className="text-white cursor-help" />
+                            </Tooltip>
+                          )}
+                        </div>
+                      }
+                      description={`${
+                        dbUser?.account?.followers?.length || 0
+                      } ${
+                        (dbUser?.account?.followers?.length || 0) <= 1
+                          ? "seguidor"
+                          : "seguidores"
+                      }`}
                       avatarProps={{
-                        src: session.user.image ?? "/default-avatar.png",
+                        src: dbUser?.image ?? "/images/avatar-placeholder.png",
                         size: "sm",
                         className: "border border-grid-line",
                       }}
@@ -371,13 +414,7 @@ export default function Navbar() {
                 aria-label="Menu do usuário"
                 className="p-3"
                 itemClasses={{
-                  base: [
-                    "rounded-md",
-                    "transition-all",
-                    "text-gray-200",
-                    // "data-[hover=true]:bg-[#141e2e75]",
-                    // "data-[hover=true]:text-white",
-                  ],
+                  base: ["rounded-md", "transition-all", "text-gray-200"],
                 }}
               >
                 <DropdownSection showDivider aria-label="Perfil e ações">
@@ -386,7 +423,7 @@ export default function Navbar() {
                     startContent={<LuUser size={16} />}
                     as={Link}
                     className="hover:bg-[#141e2e75]"
-                    href={`/app/profile/${session.user.name}`}
+                    href={`/app/profile/${dbUser?.name}`}
                   >
                     Perfil
                   </DropdownItem>

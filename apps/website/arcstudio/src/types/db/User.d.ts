@@ -57,5 +57,5 @@ type UpsertUserInput = {
   isAdmin?: boolean;
   providerAccountId?: string | null;
   posts?: Partial<ILeanPost>[];
-  [key: string]: any;
+  [key: string]: unknown;
 };

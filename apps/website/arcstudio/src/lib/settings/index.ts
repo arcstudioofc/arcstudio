@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import PKG from "../../../package.json";
 
 export const settings = {
@@ -13,5 +12,5 @@ export const settings = {
     discord: "/discord",
     instagram: "/instagram",
     twitter: "/twitter",
-},
+  },
 };

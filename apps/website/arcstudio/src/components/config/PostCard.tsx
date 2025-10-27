@@ -12,18 +12,31 @@ import {
   DropdownSection,
   DropdownItem,
   Button,
+  Tooltip,
 } from "@heroui/react";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { ExtraProps } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import rehypeRaw from "rehype-raw";
 import rehypeHighlight from "rehype-highlight";
-import { useState, useEffect, useMemo } from "react";
+import {
+  useState,
+  useEffect,
+  useMemo,
+  ReactNode,
+  AnchorHTMLAttributes,
+  ClassAttributes,
+  JSX,
+  SVGProps,
+} from "react";
 import { FiMoreVertical, FiCopy, FiCheck, FiCode } from "react-icons/fi";
 import { FaGithub, FaExternalLinkAlt } from "react-icons/fa";
 
 import "highlight.js/styles/night-owl.css";
 import { AnimatePresence, motion } from "framer-motion";
+import { TbCodeCircle2Filled } from "react-icons/tb";
+import { VscVerifiedFilled } from "react-icons/vsc";
+import React from "react";
 
 export interface PostCardProps {
   hash: string;
@@ -37,7 +50,9 @@ export interface PostCardProps {
   isPreview?: boolean;
 }
 
-export const EditDocumentIcon = (props: any) => {
+export const EditDocumentIcon = (
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+) => {
   return (
     <svg
       aria-hidden="true"
@@ -62,7 +77,9 @@ export const EditDocumentIcon = (props: any) => {
   );
 };
 
-export const DeleteDocumentIcon = (props: any) => (
+export const DeleteDocumentIcon = (
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -113,6 +130,98 @@ const formatFullDate = (date?: Date | string | null) => {
   });
 };
 
+function BodyScrollLock({ isLocked }: { isLocked: boolean }) {
+  useEffect(() => {
+    if (isLocked) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isLocked]);
+  return null;
+}
+
+interface CodeBlockProps {
+  inline?: boolean;
+  className?: string;
+  children?: ReactNode;
+}
+
+const CodeBlock: React.FC<CodeBlockProps> = ({
+  inline,
+  className,
+  children,
+}) => {
+  const [copied, setCopied] = useState(false);
+
+  const codeText = React.Children.toArray(children)
+    .map((child) => {
+      if (typeof child === "string") return child;
+      if (React.isValidElement(child)) {
+        const inner =
+          (child.props as { children?: React.ReactNode }).children ?? "";
+        return typeof inner === "string" ? inner : String(inner);
+      }
+      return String(child);
+    })
+    .join("");
+
+  if (inline) {
+    return (
+      <code className="bg-blue-900/40 px-1.5 py-0.5 rounded-md text-blue-300 font-mono text-sm">
+        {children}
+      </code>
+    );
+  }
+
+  const match = (className || "").match(/language-([a-zA-Z0-9]+)/);
+  const lang = match ? match[1].toLowerCase() : "code";
+
+  const handleCopyClick = async () => {
+    try {
+      await navigator.clipboard.writeText(codeText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      console.error("Falha ao copiar código:", err);
+    }
+  };
+
+  return (
+    <div className="my-4 rounded-xl overflow-hidden border border-grid-line bg-[#011627]">
+      <div className="flex justify-between items-center bg-[#0b1520] px-3 py-1.5 border-b border-grid-line">
+        <div className="inline-flex items-center gap-1 px-2 py-1">
+          <FiCode className="text-gray-300 text-sm" />
+          <span className="text-[10px] text-gray-300 uppercase font-medium">
+            {lang}
+          </span>
+        </div>
+        <Button
+          onClick={handleCopyClick}
+          className="flex items-center gap-1 px-2 py-1 rounded text-gray-200 transition-all"
+          title="Copiar código"
+          size="sm"
+          variant="light"
+          color="primary"
+          isIconOnly
+        >
+          {copied ? (
+            <FiCheck className="text-green-600" />
+          ) : (
+            <FiCopy className="text-white" />
+          )}
+        </Button>
+      </div>
+      <pre className="p-4 overflow-x-auto text-sm text-gray-100 whitespace-pre-wrap break-words">
+        <code className={className}>{children}</code>
+      </pre>
+    </div>
+  );
+};
+
 export default function PostCard({
   user,
   hash,
@@ -131,7 +240,7 @@ export default function PostCard({
   if (createdAt) {
     if (typeof createdAt === "string") createdDate = new Date(createdAt);
     else if ("$date" in createdAt)
-      createdDate = new Date((createdAt as any).$date);
+      createdDate = new Date((createdAt as Date));
     else createdDate = new Date(createdAt as Date);
   }
 
@@ -275,7 +384,33 @@ export default function PostCard({
           <div className="flex items-center gap-3 mb-4">
             <Avatar src={user.image!} size="md" isBordered color="primary" />
             <div>
-              <p className="text-white font-semibold">{user.name}</p>
+              <div className="flex items-center font-semibold">
+                <span>{user.name}</span>
+                <div className="flex items-center">
+                  {user.account?.isVerified && (
+                    <Tooltip
+                      showArrow={true}
+                      content="Conta verificada"
+                      className="bg-background border border-grid-line text-sm text-gray-200 rounded p-1"
+                    >
+                      <span className="flex items-center justify-center p-1 cursor-help">
+                        <VscVerifiedFilled className="text-primary hover:opacity-80 transition-opacity" />
+                      </span>
+                    </Tooltip>
+                  )}
+                  {user.isAdmin && (
+                    <Tooltip
+                      showArrow={true}
+                      content="Administrador"
+                      className="bg-background border border-grid-line text-sm text-gray-200 rounded p-1"
+                    >
+                      <span className="flex items-center justify-center p-1 cursor-help">
+                        <TbCodeCircle2Filled className="text-white hover:opacity-80 transition-opacity" />
+                      </span>
+                    </Tooltip>
+                  )}
+                </div>
+              </div>
               <Link
                 href={`/app/profile/${user.name}`}
                 className="text-gray-400 text-sm hover:text-white transition"
@@ -290,97 +425,45 @@ export default function PostCard({
               remarkPlugins={[remarkGfm, remarkBreaks]}
               rehypePlugins={[rehypeRaw, rehypeHighlight]}
               components={{
-                ul: ({ children }: any) => (
+                ul: ({ children }: { children?: ReactNode }) => (
                   <ul className="list-disc pl-6 ml-0">{children}</ul>
                 ),
-                ol: ({ children }: any) => (
+                ol: ({ children }: { children?: ReactNode }) => (
                   <ol className="list-decimal pl-6 ml-0">{children}</ol>
                 ),
-                h1: ({ children }: any) => (
+                h1: ({ children }: { children?: ReactNode }) => (
                   <h1 className="text-2xl font-bold text-white">{children}</h1>
                 ),
-                h2: ({ children }: any) => (
+                h2: ({ children }: { children?: ReactNode }) => (
                   <h2 className="text-xl font-semibold text-white">
                     {children}
                   </h2>
                 ),
-                h3: ({ children }: any) => (
+                h3: ({ children }: { children?: ReactNode }) => (
                   <h3 className="text-lg font-medium text-white">{children}</h3>
                 ),
-                code: ({ inline, className, children, ...props }: any) => {
-                  const codeText = Array.isArray(children)
-                    ? children
-                        .map((c: any) =>
-                          typeof c === "string" ? c : c.props?.children || ""
-                        )
-                        .join("")
-                    : String(children);
-                  const [copied, setCopied] = useState(false);
-                  if (inline) {
-                    return (
-                      <code className="bg-blue-900/40 px-1.5 py-0.5 rounded-md text-blue-300 font-mono text-sm">
-                        {children}
-                      </code>
-                    );
-                  }
-                  const match = (className || "").match(
-                    /language-([a-zA-Z0-9]+)/
-                  );
-                  const lang = match ? match[1].toLowerCase() : null;
-                  const handleCopyClick = async () => {
-                    try {
-                      await navigator.clipboard.writeText(codeText);
-                      setCopied(true);
-                      setTimeout(() => setCopied(false), 1500);
-                    } catch (err) {
-                      console.error("Falha ao copiar código:", err);
-                    }
-                  };
+                code: CodeBlock,
+                a: (
+                  props: ClassAttributes<HTMLAnchorElement> &
+                    AnchorHTMLAttributes<HTMLAnchorElement> &
+                    ExtraProps
+                ) => {
+                  const { href, children, ...rest } = props;
+                  if (!href) return <>{children}</>; // evita href undefined
+
                   return (
-                    <div className="my-4 rounded-xl overflow-hidden border border-grid-line bg-[#011627]">
-                      <div className="flex justify-between items-center bg-[#0b1520] px-3 py-1.5 border-b border-grid-line">
-                        <div className="inline-flex items-center gap-1 px-2 py-1">
-                          <FiCode className="text-gray-300 text-sm" />
-                          <span className="text-[10px] text-gray-300 uppercase font-medium">
-                            {lang ?? "code"}
-                          </span>
-                        </div>
-                        <Button
-                          onClick={handleCopyClick}
-                          className="flex items-center gap-1 px-2 py-1 rounded text-gray-200 transition-all"
-                          title="Copiar código"
-                          size="sm"
-                          variant="light"
-                          color="primary"
-                          isIconOnly
-                        >
-                          {copied ? (
-                            <FiCheck className="text-green-600" />
-                          ) : (
-                            <FiCopy className="text-white" />
-                          )}
-                        </Button>
-                      </div>
-                      <pre className="p-4 overflow-x-auto text-sm text-gray-100 whitespace-pre-wrap break-words">
-                        <code className={className} {...props}>
-                          {children}
-                        </code>
-                      </pre>
-                    </div>
+                    <Link
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 hover:text-[#6d94d3de] text-[#a7bccbf0] underline"
+                      {...rest}
+                    >
+                      {children}
+                      <FaExternalLinkAlt className="text-xs" />
+                    </Link>
                   );
                 },
-                a: ({ href, children, ...props }: any) => (
-                  <Link
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 hover:text-[#6d94d3de] text-[#a7bccbf0] underline"
-                    {...props}
-                  >
-                    {children}
-                    <FaExternalLinkAlt className="text-xs" />
-                  </Link>
-                ),
               }}
             >
               {normalizedContent}
@@ -388,7 +471,7 @@ export default function PostCard({
           </article>
 
           {/* footer */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-gray-400 text-sm border-t border-grid-line pt-3 gap-2">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-gray-400 text-sm border-t border-grid-line pt-3 gap-2 mt-auto">
             {githubUrl && owner && repo && (
               <div className="flex items-center gap-2">
                 <Link
@@ -422,7 +505,6 @@ export default function PostCard({
                 <>
                   Editado —{" "}
                   {createdDate ? formatRelativeTime(createdDate, now) : "agora"}
-                  {/* Tooltip */}
                   <div className="absolute bottom-5 right-0 -translate-x-4 opacity-0 group-hover:opacity-100 bg-background/95 text-gray-300 text-[11px] px-2.5 py-0.5 rounded-md border border-grid-line shadow-sm whitespace-nowrap transition-all duration-200">
                     ✏️ Editado dia {formatFullDate(edited?.editedAt)}
                   </div>
@@ -437,7 +519,6 @@ export default function PostCard({
         </CardBody>
       </Card>
 
-      {/* modal imagem */}
       <AnimatePresence>
         {isImageOpen && bannerUrl && (
           <motion.div
@@ -448,6 +529,9 @@ export default function PostCard({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
           >
+            {/* Desativa scroll quando modal aberto */}
+            <BodyScrollLock isLocked={isImageOpen} />
+
             {/* Mini perfil */}
             <motion.div
               className="absolute top-4 left-4 flex items-center gap-3 z-20 p-2"
@@ -458,7 +542,34 @@ export default function PostCard({
             >
               <Avatar src={user.image!} size="sm" isBordered color="primary" />
               <div className="text-white text-sm flex flex-col">
-                <p className="font-semibold">{user.name}</p>
+                <div className="flex items-center font-semibold">
+                  <span>{user.name}</span>
+                  <div className="flex items-center">
+                    {user.account?.isVerified && (
+                      <Tooltip
+                        showArrow={true}
+                        content="Conta verificada"
+                        className="bg-background border border-grid-line text-sm text-gray-200 rounded p-1"
+                      >
+                        <span className="flex items-center justify-center p-1 cursor-help">
+                          <VscVerifiedFilled className="text-primary hover:opacity-80 transition-opacity" />
+                        </span>
+                      </Tooltip>
+                    )}
+                    {user.isAdmin && (
+                      <Tooltip
+                        showArrow={true}
+                        content="Administrador"
+                        className="bg-background border border-grid-line text-sm text-gray-200 rounded p-1"
+                      >
+                        <span className="flex items-center justify-center p-1 cursor-help">
+                          <TbCodeCircle2Filled className="text-white hover:opacity-80 transition-opacity" />
+                        </span>
+                      </Tooltip>
+                    )}
+                  </div>
+                </div>
+
                 <Link
                   href={`/app/profile/${user.name}`}
                   className="text-gray-300 text-xs hover:text-white transition-colors"
@@ -468,15 +579,16 @@ export default function PostCard({
               </div>
             </motion.div>
 
+            {/* Imagem centralizada */}
             <motion.div
-              className="relative max-w-[95%] max-h-[95%] flex items-center justify-center"
+              className="relative flex items-center justify-center max-w-[95%] max-h-[95%]"
               onClick={(e) => e.stopPropagation()}
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <img
+              <Image
                 src={bannerUrl}
                 alt={`Banner ${hash}`}
                 className="max-w-full max-h-[95vh] object-contain rounded-xl shadow-2xl"

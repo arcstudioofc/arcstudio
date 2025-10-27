@@ -12,14 +12,13 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Parâmetros ausentes" }, { status: 400 });
 
     await connectToDatabase();
-    const user = await User.findOne({ name }).lean();
+    const user = await User.findOne({ name }).lean<{ posts: IPost[] }>();
 
     if (!user)
       return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 });
 
-    // 🔹 Permite tanto "name_hash" quanto apenas "hash"
     const possibleHashes = [hash, `${name}_${hash}`];
-    const post = user.posts.find((p: any) => possibleHashes.includes(p.hash));
+    const post = user.posts.find((p: IPost) => typeof p.hash === "string" && possibleHashes.includes(p.hash));
 
     if (!post)
       return NextResponse.json({ error: "Projeto não encontrado" }, { status: 404 });

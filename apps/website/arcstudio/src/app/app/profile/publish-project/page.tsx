@@ -21,9 +21,27 @@ import {
 
 import PostCard from "@/components/config/PostCard";
 import Loading from "@/components/config/auth/Loading";
+import { IUser } from "@/lib/database/mongoose/models/User";
 
 export default function CreateProjectPage() {
   const { data: session, status } = useSession();
+  const [dbUser, setDbUser] = useState<IUser | null>(null);
+
+  // Buscar usuário no banco
+  useEffect(() => {
+    if (!session?.user?.email) return;
+
+    (async () => {
+      try {
+          const res = await fetch(`/api/user?email=${session.user.email}`);
+        const data = await res.json();
+        setDbUser(data.user);
+      } catch (err) {
+        console.error("Erro ao buscar usuário:", err);
+      }
+    })();
+  }, [session]);
+
   const router = useRouter();
 
   const [bannerUrl, setBannerUrl] = useState("");
@@ -39,37 +57,36 @@ export default function CreateProjectPage() {
 
   if (status === "loading") return <Loading />;
 
-const handleCreateProject = async () => {
-  if (!session?.user?.name) return;
+  const handleCreateProject = async () => {
+    if (!session?.user?.name) return;
 
-  try {
-    const res = await fetch("/api/projects", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: session.user.name, // agora enviamos o name
-        bannerUrl,
-        description,
-        githubUrl,
-      }),
-    });
+    try {
+      const res = await fetch("/api/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: dbUser?.name, // agora enviamos o name
+          bannerUrl,
+          description,
+          githubUrl,
+        }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      console.error("Erro ao criar projeto:", data.error);
-      return;
+      if (!res.ok) {
+        console.error("Erro ao criar projeto:", data.error);
+        return;
+      }
+
+      console.log("Projeto criado:", data.createdPost.hash);
+
+      // Redireciona para perfil do usuário
+      router.push(`/app/profile/${dbUser?.name}`);
+    } catch (err) {
+      console.error("Erro ao enviar projeto:", err);
     }
-
-    console.log("Projeto criado:", data.createdPost.hash);
-
-    // Redireciona para perfil do usuário
-    router.push(`/app/profile/${session.user.name}`);
-  } catch (err) {
-    console.error("Erro ao enviar projeto:", err);
-  }
-};
-
+  };
 
   return (
     <section className="flex select-none justify-center items-start min-h-screen pt-32 px-4 sm:px-6 bg-background/20">
@@ -79,16 +96,15 @@ const handleCreateProject = async () => {
           <CardBody className="flex flex-col gap-5 flex-grow">
             {/* Cabeçalho aprimorado */}
             <div className="text-center mb-4">
-            <h2 className="text-xl font-semibold text-white flex items-center gap-2 justify-center">
-              <GoProjectSymlink /> Publicar Projeto
-            </h2>
+              <h2 className="text-xl font-semibold text-white flex items-center gap-2 justify-center">
+                <GoProjectSymlink /> Publicar Projeto
+              </h2>
               <p className="text-gray-400 text-sm mt-1">
-                Preencha os campos abaixo para publicar seu projeto no
-                ARC Studio.
+                Preencha os campos abaixo para publicar seu projeto no ARC
+                Studio.
               </p>
             </div>
             <Divider className="bg-grid-line my-1" />
-
 
             {/* Campos do formulário */}
             <Input
@@ -160,10 +176,10 @@ const handleCreateProject = async () => {
             {session?.user ? (
               <PostCard
                 user={{
-                  _id: session.user.email!,
+                  _id: session.user.email ?? "",
                   isAdmin: false,
-                  name: session.user.name!,
-                  image: session.user.image!,
+                  name: dbUser?.name || "Usuário",
+                  image: dbUser?.image || "/images/avatar-placeholder.png",
                 }}
                 hash="preview"
                 isPreview={true}
@@ -204,9 +220,7 @@ const handleCreateProject = async () => {
           <ModalBody>
             {/* SEÇÃO: Títulos */}
             <section>
-              <h3 className="text-base font-bold text-primary mb-2">
-                Títulos
-              </h3>
+              <h3 className="text-base font-bold text-primary mb-2">Títulos</h3>
               <div className="space-y-1">
                 <code># Título Nível 1</code> →{" "}
                 <span className="font-bold text-lg">Título 1</span>
@@ -240,9 +254,7 @@ const handleCreateProject = async () => {
                   <code>~~riscado~~</code> → <s>riscado</s>
                 </li>
               </ul>
-
               <br />
-
               <p>Como quebrar linha:</p>
               <br />
               Texto
@@ -279,9 +291,7 @@ const handleCreateProject = async () => {
 
             {/* SEÇÃO: Listas */}
             <section>
-              <h3 className="text-base font-bold text-primary mb-2">
-                Listas
-              </h3>
+              <h3 className="text-base font-bold text-primary mb-2">Listas</h3>
               <ul className="list-disc pl-6 space-y-1">
                 <li>Item comum</li>
                 <li>
@@ -313,9 +323,7 @@ const handleCreateProject = async () => {
 
             {/* SEÇÃO: Código */}
             <section>
-              <h2 className="text-base font-bold text-primary mb-2">
-                Códigos
-              </h2>
+              <h2 className="text-base font-bold text-primary mb-2">Códigos</h2>
               <p className="mt-2 font-semibold">Bloco de código:</p>
               <pre className="bg-black/40 p-3 rounded-lg overflow-x-auto mt-2">
                 <code className="language-js">
@@ -334,8 +342,6 @@ hello("Mundo");
     </section>
   );
 }
-
-
 
 /**
 # [ARC Studio](https://arcstudio.online), Inc.

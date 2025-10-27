@@ -1,37 +1,30 @@
-// Rota POST para atualizar avatar/banner/descrição do usuário
-// Ajuste imports conforme sua estrutura (path para connectToDatabase e User)
-
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/database/mongoose/connection";
 import { User } from "@/lib/database/mongoose/models/User";
 
-// Opcional: validação com next-auth (descomente e ajuste se tiver authOptions exportado)
-// import { getServerSession } from "next-auth";
-// import { authOptions } from "@/lib/auth";
+interface UserUpdateBody {
+  email: string;
+  imageBase64?: string;
+  bannerBase64?: string;
+  description?: string;
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { email, name, imageBase64, bannerBase64, description } = body;
+    const body: UserUpdateBody = await req.json();
+    const { email, imageBase64, bannerBase64, description } = body;
 
     if (!email) {
       return NextResponse.json({ error: "Email do usuário é obrigatório" }, { status: 400 });
     }
 
-    // Se desejar validar sessão com next-auth, descomente e ajuste:
-    // const session = await getServerSession(authOptions);
-    // if (!session || session.user.email !== email) {
-    //   return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-    // }
-
     await connectToDatabase();
 
-    const update: any = {};
+    const update: Record<string, string> = {};
     if (description !== undefined) update["account.description"] = description;
     if (imageBase64) update["image"] = imageBase64;
     if (bannerBase64) update["account.bannerUrl"] = bannerBase64;
 
-    // Se você quiser garantir que apenas o dono atualize, valide a sessão acima.
     const user = await User.findByIdAndUpdate(
       email,
       { $set: update },
@@ -43,8 +36,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ ok: true, user });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
-    return NextResponse.json({ error: err.message || "Erro interno" }, { status: 500 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Erro interno" }, { status: 500 });
   }
 }

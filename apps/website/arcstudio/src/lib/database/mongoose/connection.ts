@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
   throw new Error(
@@ -8,63 +8,41 @@ if (!MONGODB_URI) {
   );
 }
 
-type Cache = {
+type MongooseCache = {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
 };
 
+// Extensão global para cache do Mongoose
 declare global {
-  // eslint-disable-next-line no-var
-  var _mongoose: Cache | undefined;
+  var _mongoose: MongooseCache | undefined;
 }
 
-const globalAny = global as any;
+// Garantindo que global._mongoose exista
+const globalCache: MongooseCache = global._mongoose ?? { conn: null, promise: null };
+if (!global._mongoose) global._mongoose = globalCache;
 
-if (!globalAny._mongoose) {
-  globalAny._mongoose = { conn: null, promise: null } as Cache;
-}
-
-export async function connectToDatabase() {
-  if (globalAny._mongoose.conn) {
-    // conexão já existe
-    // eslint-disable-next-line no-console
+export async function connectToDatabase(): Promise<typeof mongoose> {
+  if (global._mongoose!.conn) {
     console.log("[mongo] usando conexão cacheada");
-    return globalAny._mongoose.conn;
+    return global._mongoose!.conn;
   }
 
-  if (!globalAny._mongoose.promise) {
-    // eslint-disable-next-line no-console
-    console.log("[mongo] criando nova conexão ->", maskUri(MONGODB_URI));
-    globalAny._mongoose.promise = mongoose
-      .connect(MONGODB_URI, {
-        dbName: "arcstudio", // nome do banco de dados
-      })
+  if (!global._mongoose!.promise) {
+    console.log("[mongo] criando nova conexão ->");
+    global._mongoose!.promise = mongoose
+      .connect(MONGODB_URI!, { dbName: "arcstudio" })
       .then((m) => {
-        // eslint-disable-next-line no-console
         console.log("[mongo] conectado:", m.connection.name);
         return m;
       })
       .catch((err) => {
-        // eslint-disable-next-line no-console
         console.error("[mongo] erro ao conectar:", err);
-        globalAny._mongoose.promise = null;
+        global._mongoose!.promise = null;
         throw err;
       });
   }
 
-  globalAny._mongoose.conn = await globalAny._mongoose.promise;
-  return globalAny._mongoose.conn;
-}
-
-/** util helper: máscara credenciais da URI para logs (não exponha tudo) */
-function maskUri(uri: string) {
-  try {
-    const url = new URL(uri.replace("mongodb+srv://", "https://"));
-    if (url.username) {
-      return uri.replace(url.username, "***").replace(url.password, "***");
-    }
-    return uri;
-  } catch {
-    return "***";
-  }
+  global._mongoose!.conn = await global._mongoose!.promise;
+  return global._mongoose!.conn;
 }

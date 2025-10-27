@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
     // Remove o post pelo hash
     const beforeCount = user.posts.length;
-    user.posts = user.posts.filter((p: any) => p.hash !== hash);
+    user.posts = user.posts.filter((p: IPost) => p.hash !== hash);
 
     if (beforeCount === user.posts.length) {
       return NextResponse.json({ error: "Post não encontrado" }, { status: 404 });
