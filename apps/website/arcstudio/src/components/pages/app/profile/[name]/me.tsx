@@ -20,11 +20,11 @@ import {
 import { FaEdit, FaShareAlt } from "react-icons/fa";
 import { FiCopy, FiTrash2 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
-import PostCard from "@/components/config/PostCard";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import { TbCodeCircle2Filled } from "react-icons/tb";
 import { usePathname } from "next/navigation";
 
+import PostCard from "@/components/config/PostCard";
 
 interface UpdateUserPayload {
   email: string;

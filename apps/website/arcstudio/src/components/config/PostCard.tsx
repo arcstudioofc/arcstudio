@@ -593,6 +593,7 @@ export default function PostCard({
                 alt={`Banner ${hash}`}
                 className="max-w-full max-h-[95vh] object-contain rounded-xl shadow-2xl"
                 draggable={false}
+                // width={800}
               />
             </motion.div>
           </motion.div>
