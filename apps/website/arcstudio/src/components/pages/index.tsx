@@ -2,11 +2,20 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 import { TfiNewWindow } from "react-icons/tfi";
-import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 
 export default function Home() {
-  const { data: session } = useSession();
+  const { theme, systemTheme } = useTheme();
+  const t = useTranslations("Home");
+
+  const currentTheme = theme === "system" ? systemTheme : theme;
+
+  const iconSrc =
+    currentTheme === "dark"
+      ? "/images/dark/arcstudioofc.png"
+      : "/images/arcstudioofc.png";
 
   return (
     <>
@@ -15,11 +24,17 @@ export default function Home() {
           {/* Ícone */}
           <div className="flex items-center justify-center order-1 md:order-2">
             <Image
-              src="/images/icone.png"
-              alt="Ícone do site"
-              width={300}
-              height={300}
-              className="select-none w-[220px] h-[220px] sm:w-[300px] sm:h-[300px] md:w-[360px] md:h-[360px] object-contain"
+              src={iconSrc}
+              alt={"arcstudioofc"}
+              width={400}
+              height={400}
+              className="
+                select-none
+                w-[260px] h-[260px]
+                sm:w-[330px] sm:h-[330px]
+                md:w-[400px] md:h-[400px]
+                object-contain
+              "
               priority
             />
           </div>
@@ -27,24 +42,23 @@ export default function Home() {
           {/* Texto */}
           <div className="flex flex-col justify-center text-center md:text-left order-2 md:order-1 w-full max-w-sm mx-auto md:max-w-none">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">
-              Quer tirar sua ideia do papel?
+              {t("title")}
             </h1>
             <p className="text-base sm:text-lg text-gray-500 mb-2">
-              Seu projeto merece o melhor — vamos torná-lo realidade com
-              inovação e dedicação.
+              {t("description")}
             </p>
             <p className="text-base sm:text-lg text-gray-500 mb-5">
-              Conheça nossa{" "}
+              {t("meetOur")}{" "}
               <Link href="/team" className="text-blue-600 underline">
-                Equipe
+                {t("team")}
               </Link>
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Link
-                href={session?.user?.name ? `/app/profile/${session.user.name}` : '/app'}
-                className="select-none px-6 py-2 rounded-xl border border-blue-600 text-blue-600 hover:bg-grid-line transition cursor-pointer inline-flex items-center gap-2 justify-center"
+                href={"/app"}
+                className="select-none px-6 py-2 rounded-xl border border-blue-600 text-blue-600 hover:bg-grid-line hover:bg-blue-600/50 hover:text-foreground transition cursor-pointer inline-flex items-center gap-2 justify-center"
               >
-                Seu perfil <TfiNewWindow />
+                {t("yourProfile")} <TfiNewWindow />
               </Link>
             </div>
           </div>

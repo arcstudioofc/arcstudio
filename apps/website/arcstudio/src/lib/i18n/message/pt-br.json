@@ -1,0 +1,70 @@
+{
+  "Home": {
+    "metaTitle": "ARC Studio — Início",
+    "metaDescription": "Seu projeto merece o melhor — vamos torná-lo realidade com inovação e dedicação.",
+    "title": "Quer tirar sua ideia do papel?",
+    "description": "Seu projeto merece o melhor — vamos torná-lo realidade com inovação e dedicação.",
+    "meetOur": "Conheça nossa",
+    "team": "Equipe",
+    "yourProfile": "Acessar seu perfil"
+  },
+  "components": {
+    "UI": {
+      "Footer": {
+        "product": {
+          "title": "Produto",
+          "links": {
+            "app": "Acessar pelo navegador",
+            "pricing": "Preços",
+            "changelog": "Novidades"
+          }
+        },
+        "company": {
+          "title": "Empresa",
+          "links": {
+            "about": "Sobre Nós",
+            "team": "Equipe",
+            "contact": "Contato"
+          }
+        },
+        "support": {
+          "title": "Suporte",
+          "links": {
+            "faq": "FAQ",
+            "docs": "Documentação",
+            "terms": "Termos de Serviço"
+          }
+        },
+        "copyright": {
+          "developedBy": "Desenvolvido com 💙 por",
+          "rightsReserved": "Todos os direitos reservados."
+        },
+        "tagline": "O melhor de suas ideias — só aqui, na ARC Studio."
+      },
+      "Navbar": {
+        "links": {
+          "changelog": "Novidades",
+          "pricing": "Apoiar",
+          "about": "Sobre Nós"
+        },
+        "buttons": {
+          "start": "Começar"
+        },
+        "ariaLabels": {
+          "toggleMenu": "Alternar menu"
+        }
+      }
+    }
+  },
+  "lib": {
+    "i18n": {
+      "localeSwitcher": {
+        "ariaLabel": "Trocar idioma",
+        "languages": {
+          "pt-br": "Português",
+          "en-us": "Inglês"
+        }
+      }
+    }
+  }
+}

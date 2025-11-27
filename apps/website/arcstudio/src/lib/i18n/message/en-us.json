@@ -1,0 +1,70 @@
+{
+  "Home": {
+    "metaTitle": "ARC Studio — Home",
+    "metaDescription": "Your project deserves the best — let's make it a reality with innovation and dedication.",
+    "title": "Want to bring your idea to life?",
+    "description": "Your project deserves the best — let's make it a reality with innovation and dedication.",
+    "meetOur": "Meet our",
+    "team": "Team",
+    "yourProfile": "Access your profile"
+  },
+  "components": {
+    "UI": {
+      "Footer": {
+        "product": {
+          "title": "Product",
+          "links": {
+            "app": "Access via browser",
+            "pricing": "Pricing",
+            "changelog": "Changelog"
+          }
+        },
+        "company": {
+          "title": "Company",
+          "links": {
+            "about": "About Us",
+            "team": "Team",
+            "contact": "Contact"
+          }
+        },
+        "support": {
+          "title": "Support",
+          "links": {
+            "faq": "FAQ",
+            "docs": "Documentation",
+            "terms": "Terms of Service"
+          }
+        },
+        "copyright": {
+          "developedBy": "Developed with 💙 by",
+          "rightsReserved": "All rights reserved."
+        },
+        "tagline": "The best of your ideas — only here, at ARC Studio."
+      },
+      "Navbar": {
+        "links": {
+          "changelog": "Changelog",
+          "pricing": "Support Us",
+          "about": "About Us"
+        },
+        "buttons": {
+          "start": "Get Started"
+        },
+        "ariaLabels": {
+          "toggleMenu": "Toggle menu"
+        }
+      }
+    }
+  },
+  "lib": {
+    "i18n": {
+      "localeSwitcher": {
+        "ariaLabel": "Language Switcher",
+        "languages": {
+          "pt-br": "Portuguese",
+          "en-us": "English"
+        }
+      }
+    }
+  }
+}

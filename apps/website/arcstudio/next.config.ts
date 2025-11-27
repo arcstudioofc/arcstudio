@@ -1,29 +1,42 @@
-import type { NextConfig } from "next";
+import { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+import { settings } from "@/lib";
+
+const withNextIntl = createNextIntlPlugin("./src/lib/i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  reactCompiler: true,
+
   async redirects() {
     return [
+      // {
+      //   source: "/discord",
+      //   destination: "https://discord.gg/seu-link",
+      //   permanent: false
+      // },
       {
-        source: "/discord",
-        destination: "https://discord.gg/arcstudio.ofc",
-        permanent: true,
+        source: "/github",
+        destination: settings.links.github,
+        permanent: false
       },
       {
         source: "/instagram",
-        destination: "https://www.instagram.com/arcstudio.oficial/",
-        permanent: false,
+        destination: "https://instagram.com/arcstudio.oficial",
+        permanent: false
       },
       {
         source: "/twitter",
         destination: "https://twitter.com/arcstudio_ofc",
-        permanent: false,
+        permanent: false
       },
+      {
+        source: "/app",
+        destination: settings.links.app,
+        permanent: false
+      }
     ];
-  },
-
-  images: {
-    domains: ["cdn.discordapp.com", "picsum.photos", "wallpapers-clan.com", "i.imgur.com", "www.arcstudio.online", "arcstudio.online", "github.com", "atos.js.org"],
-  },
+  }
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);
