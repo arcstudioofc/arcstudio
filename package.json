@@ -1,6 +1,6 @@
 {
   "name": "@arcstudio/monorepo",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Advanced Resource Center Studio (ARC Studio), a monorepo.",
   "scripts": {
     "dev": "turbo dev --parallel",
