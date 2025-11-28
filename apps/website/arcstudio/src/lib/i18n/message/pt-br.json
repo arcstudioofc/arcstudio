@@ -8,6 +8,10 @@
     "team": "Equipe",
     "yourProfile": "Acessar seu perfil"
   },
+  "Team": {
+    "metaTitle": "Equipe",
+    "metaDescription": "Conheça as pessoas incríveis por trás da ARC Studio — ARC Team."
+  },
   "components": {
     "UI": {
       "Footer": {
