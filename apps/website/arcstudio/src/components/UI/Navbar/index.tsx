@@ -2,16 +2,17 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { FaBars, FaTimes, FaFire, FaDonate, FaInfoCircle } from "react-icons/fa";
+import { FaBars, FaTimes, FaFire, FaInfoCircle } from "react-icons/fa";
 import { IconType } from "react-icons";
 
 import LocaleSwitcher from "@/components/UI/switcher/locale";
+import { GrProjects } from "react-icons/gr";
 
 type NavLink = { key: string; href: string; icon: IconType };
 
 const navLinks: NavLink[] = [
   { key: "changelog", href: "/changelog", icon: FaFire },
-  { key: "pricing", href: "/pricing", icon: FaDonate },
+  { key: "official-projects", href: "/official-projects", icon: GrProjects },
   { key: "about", href: "/about", icon: FaInfoCircle },
 ];
 
