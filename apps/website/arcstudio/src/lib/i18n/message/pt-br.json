@@ -19,7 +19,7 @@
           "title": "Produto",
           "links": {
             "app": "Acessar pelo navegador",
-            "official-projects": "Projetos Oficiais",
+            "pricing": "Apoiar",
             "changelog": "Novidades"
           }
         },
@@ -48,7 +48,7 @@
       "Navbar": {
         "links": {
           "changelog": "Novidades",
-          "pricing": "Apoiar",
+          "official-projects": "Projetos Oficiais",
           "about": "Sobre Nós"
         },
         "buttons": {

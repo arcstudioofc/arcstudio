@@ -19,7 +19,7 @@
           "title": "Product",
           "links": {
             "app": "Access via browser",
-            "official-projects": "Official Projects",
+            "pricing": "Support Us",
             "changelog": "Changelog"
           }
         },
@@ -49,6 +49,7 @@
         "links": {
           "changelog": "Changelog",
           "pricing": "Support Us",
+          "official-projects": "Official Projects",
           "about": "About Us"
         },
         "buttons": {
