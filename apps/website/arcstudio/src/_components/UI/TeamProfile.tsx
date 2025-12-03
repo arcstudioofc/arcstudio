@@ -1,72 +1,57 @@
 import Image from "next/image";
+import Link from "next/link";
+import { FaGithub, FaLink } from "react-icons/fa";
 
-export default function TeamProfile({ name, role, bio, image, banner, github, portfolio }: {
-    name: string;
-    role: string;
-    bio?: string;
-    image: string;
-    banner?: string;
-    github?: string;
-    portfolio?: string;
+// Agora totalmente responsivo e preparado para 1 ou 100 membros.
+// Basta usar este componente dentro de um grid.
 
-}) {
+export default function TeamProfile({ member }: TeamProfileProps) {
     return (
-        <div className="w-full max-w-sm mx-auto bg-white shadow-md rounded-2xl overflow-hidden">
-            {banner && (
-                <div className="w-full h-24 relative">
-                    <Image
-                        src={banner}
-                        alt={name + " banner"}
-                        fill
-                        className="object-cover"
-                    />
-                </div>
-            )}
+        <Link href={`/team?username=${member.username}`} className="w-full max-w-sm mx-auto shadow-lg dark:shadow-black/40 rounded-2xl overflow-hidden transition-transform duration-200 hover:scale-[1.02]">
 
-            <div className="p-6 flex flex-col items-center text-center gap-4">
-                <div className="w-28 h-28 rounded-full overflow-hidden shadow-md -mt-14 border-4 border-white">
-                    <Image
-                        src={image}
-                        alt={name}
-                        width={200}
-                        height={200}
-                        className="object-cover w-full h-full"
-                    />
-                </div>
-
-                <div>
-                    <h3 className="text-xl font-semibold text-gray-900">{name}</h3>
-                    <p className="text-sm text-gray-500">{role}</p>
-                </div>
-
-                {bio && (
-                    <p className="text-sm text-gray-600 leading-relaxed max-w-xs">
-                        {bio}
-                    </p>
-                )}
-
-                <div className="flex gap-3 mt-2">
-                    {github && (
-                        <a
-                            href={github}
-                            target="_blank"
-                            className="px-4 py-2 rounded-xl shadow bg-gray-900 text-white text-sm hover:opacity-80"
-                        >
-                            GitHub
-                        </a>
-                    )}
-
-                    {portfolio && (
-                        <a
-                            href={portfolio}
-                            target="_blank"
-                            className="px-4 py-2 rounded-xl shadow bg-blue-600 text-white text-sm hover:opacity-80"
-                        >
-                            Portfólio
-                        </a>
-                    )}
-                </div>
+            {/* IMAGE */}
+            <div className="relative w-full h-64">
+                <Image
+                    src={member.image}
+                    alt={member.name}
+                    fill
+                    className="object-cover"
+                />
             </div>
-        </div>
+
+            <div className="p-6">
+
+                {/* NAME */}
+                <h2 className="text-center text-xl font-bold">{member.name}</h2>
+
+                {/* ROLES */}
+                <p className="text-center text-sm mt-1 text-gray-600 dark:text-gray-300">
+                    {member.info.role.join(", ")}
+                </p>
+
+                {/* LINKS */}
+                <div className="flex justify-center text-center mt-4 space-x-6">
+                    {member.links?.github && (
+                        <Link
+                            href={member.links.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <FaGithub className="text-xl hover:text-blue-600 transition-colors duration-150" />
+                        </Link>
+                    )}
+                    {member.links?.portfolio && (
+                        <Link
+                            href={member.links.portfolio}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <FaLink className="text-xl hover:text-blue-600 transition-colors duration-150" />
+                        </Link>
+                    )}
+                </div>
+
+            </div>
+        </Link>
     );
 }

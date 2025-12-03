@@ -1,12 +1,12 @@
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { FaBars, FaTimes, FaFire, FaInfoCircle } from "react-icons/fa";
+import { GrProjects } from "react-icons/gr";
 import { IconType } from "react-icons";
 
 import LocaleSwitcher from "@/components/UI/switcher/locale";
-import { GrProjects } from "react-icons/gr";
+import ARC from "@/components/UI/ARC";
 
 type NavLink = { key: string; href: string; icon: IconType };
 
@@ -28,7 +28,9 @@ export function Navbar() {
     <header className="w-full sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-foreground/10">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 
-        <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
+
+        <ARC />
+        {/* <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
           <Image
             src="/favicon.ico"
             alt="Logo ARC Studio"
@@ -39,7 +41,7 @@ export function Navbar() {
           <span className="text-xl font-bold text-foreground tracking-tight">
             ARC Studio
           </span>
-        </Link>
+        </Link> */}
 
         <nav className="hidden md:flex items-center space-x-6">
           {navLinks.map((link) => (

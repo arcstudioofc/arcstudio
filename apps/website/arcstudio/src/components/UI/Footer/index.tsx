@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { FaGithub, FaEnvelope, FaInstagram, FaCube, FaBuilding } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
@@ -8,6 +7,7 @@ import { IconType } from "react-icons";
 import ThemeSwitcher from "@/components/UI/switcher/theme";
 import LocaleSwitcher from "@/components/UI/switcher/locale";
 import { settings } from "@/lib";
+import ARC from "@/components/UI/ARC";
 
 
 type FooterLink = { key: string; href: string; new?: boolean; isDisabled?: boolean };
@@ -59,17 +59,9 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 pb-10">
 
           <div className="col-span-2 md:col-span-2 space-y-4">
-            <div className="flex items-center space-x-2">
-              <Image
-                src="/favicon.ico"
-                alt="Logo ARC Studio"
-                width={32}
-                height={32}
-                className="rounded-lg"
-              />
-              <span className="text-xl font-bold text-foreground">
-                <Link className="hover:underline" href={"/"}>ARC Studio</Link>, Inc.
-              </span>
+            <div className="flex items-center">
+              <ARC />
+              <span className="text-xl font-bold text-foreground">, Inc.</span>
             </div>
 
             <p className="text-sm">
@@ -114,13 +106,13 @@ export function Footer() {
                         {t(`${section.key}.links.${link.key}`)}
                       </span>
                     ) : (
-                    <Link
-                      href={link.href}
-                      className={`text-sm hover:text-foreground hover:underline transition-colors`}
-                      target={link.href.startsWith("http") || link.href.startsWith("mailto:") ? "_blank" : "_self"}
-                    >
-                      {t(`${section.key}.links.${link.key}`)}
-                    </Link>
+                      <Link
+                        href={link.href}
+                        className={`text-sm hover:text-foreground hover:underline transition-colors`}
+                        target={link.href.startsWith("http") || link.href.startsWith("mailto:") ? "_blank" : "_self"}
+                      >
+                        {t(`${section.key}.links.${link.key}`)}
+                      </Link>
                     ))}
 
                     {link.new && (
