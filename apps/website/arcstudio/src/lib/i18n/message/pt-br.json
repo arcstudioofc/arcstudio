@@ -8,6 +8,12 @@
     "team": "Equipe",
     "yourProfile": "Acessar seu perfil"
   },
+  "NotFound": {
+    "title": "Página não encontrada!",
+    "prefix": "O caminho",
+    "suffix": "não existe.",
+    "backHome": "Voltar para a Página Inicial"
+  },
   "Team": {
     "metaTitle": "Equipe",
     "metaDescription": "Conheça as pessoas incríveis por trás da ARC Studio — ARC Team."

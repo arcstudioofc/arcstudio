@@ -8,6 +8,12 @@
     "team": "Team",
     "yourProfile": "Access your profile"
   },
+  "NotFound": {
+    "title": "Page not found!",
+    "prefix": "The path",
+    "suffix": "does not exist.",
+    "backHome": "Go Back to Home Page"
+  },
   "Team": {
     "metaTitle": "Team",
     "metaDescription": "Meet the amazing people behind ARC Studio. — ARC Team."
