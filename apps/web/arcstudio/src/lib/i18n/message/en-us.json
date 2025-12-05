@@ -18,6 +18,19 @@
     "metaTitle": "Team",
     "metaDescription": "Meet the amazing people behind ARC Studio. — ARC Team."
   },
+  "Changelog": {
+    "metaTitle": "Changelog — ARC Studio",
+    "metaDescription": "Stay updated with the latest features, improvements, and fixes in ARC Studio. Check out our changelog for all the details!",
+    "title": "Changelog",
+    "description": "Update history"
+  },
+  "data": {
+    "changelog": {
+      "test": {
+        "test": "Test"
+      }
+    }
+  },
   "components": {
     "UI": {
       "Footer": {

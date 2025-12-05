@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "node_modules/@tailwindcss/mdx-components.tsx"  ],
   "exclude": ["node_modules"]
 }
