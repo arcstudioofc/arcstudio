@@ -8,21 +8,16 @@ import { Providers } from "@/lib/providers";
 import { routing } from "@/lib/i18n/routing";
 import { settings } from "@/lib";
 
-export async function generateMetadata({
-  // params,
-}: {
-  params: { locale: string };
-}): Promise<Metadata> {
-  
-  const t = await getTranslations("Home"); 
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Home");
 
   return {
     metadataBase: new URL("https://arcstudio.online"),
     title: {
       default: settings.name,
-      template: `${settings.name} — %s`, 
+      template: `${settings.name} — %s`,
     },
-    description: t("metaDescription"), 
+    description: t("metaDescription"),
     authors: [{ name: settings.author, url: "https://github.com/yeytaken" }],
     creator: settings.author,
     icons: {

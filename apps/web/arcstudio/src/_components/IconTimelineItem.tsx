@@ -1,3 +1,4 @@
+import { useLocale, useTranslations } from "next-intl";
 import React from "react";
 import { FaShieldAlt, FaCode, FaBug, FaRocket, FaDatabase, FaUsers, FaCogs } from "react-icons/fa";
 
@@ -5,7 +6,7 @@ const Categories = {
   Security: { icon: FaShieldAlt, style: "bg-orange-600 text-white" },
   "Anti-Spam Security": { icon: FaShieldAlt, style: "bg-orange-600 text-white" },
   Feature: { icon: FaCode, style: "bg-blue-600 text-white" },
-  Bug: { icon: FaBug, style: "bg-red-600 text-white" },
+  Bugfix: { icon: FaBug, style: "bg-red-600 text-white" },
   Performance: { icon: FaRocket, style: "bg-green-600 text-white" },
   Database: { icon: FaDatabase, style: "bg-purple-600 text-white" },
   Social: { icon: FaUsers, style: "bg-pink-600 text-white" },
@@ -14,7 +15,7 @@ const Categories = {
 
 export interface ChangelogEntry {
   title: string;
-  date: string;
+  date: Date;
   type: keyof typeof Categories;
   children: React.ReactNode;
 }
@@ -25,6 +26,8 @@ interface IconTimelineItemProps {
 
 export const IconTimelineItem = ({ entry }: IconTimelineItemProps) => {
   const { icon: IconComponent, style: tagStyle } = Categories[entry.type];
+  const t = useTranslations("_components.IconTimeLineItem");
+  const locale = useLocale();
 
   return (
     <div className="flex gap-4 md:gap-6">
@@ -48,7 +51,7 @@ export const IconTimelineItem = ({ entry }: IconTimelineItemProps) => {
         <div>{entry.children}</div>
 
         <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 mt-2">
-          Lançamento em: {entry.date}
+          {t('releaseDate', { date: entry.date.toLocaleDateString(locale) })}
         </div>
       </div>
     </div>

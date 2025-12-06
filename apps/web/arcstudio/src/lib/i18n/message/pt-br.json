@@ -79,6 +79,11 @@
       }
     }
   },
+  "_components":{
+    "IconTimeLineItem": {
+      "releaseDate": "Lançamento em: {date}"
+    }
+  },
   "lib": {
     "i18n": {
       "localeSwitcher": {

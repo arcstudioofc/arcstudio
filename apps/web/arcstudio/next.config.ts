@@ -1,5 +1,5 @@
-import { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { NextConfig } from "next";
 
 import { settings } from "@/lib";
 
@@ -17,8 +17,8 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "avatars.githubusercontent.com",
-      }
-    ]
+      },
+    ],
   },
 
   async redirects() {
@@ -31,25 +31,25 @@ const nextConfig: NextConfig = {
       {
         source: "/github",
         destination: settings.links.github,
-        permanent: false
+        permanent: false,
       },
       {
         source: "/instagram",
         destination: "https://instagram.com/arcstudio.oficial",
-        permanent: false
+        permanent: false,
       },
       {
         source: "/twitter",
         destination: "https://twitter.com/arcstudio_ofc",
-        permanent: false
+        permanent: false,
       },
       {
         source: "/app",
         destination: settings.links.app,
-        permanent: false
-      }
+        permanent: false,
+      },
     ];
-  }
+  },
 };
 
 export default withNextIntl(nextConfig);

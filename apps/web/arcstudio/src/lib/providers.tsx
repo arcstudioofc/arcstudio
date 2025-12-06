@@ -21,7 +21,7 @@ export function Providers({
       <NextIntlClientProvider locale={locale} messages={messages} timeZone="America/Sao_Paulo">
         <HeroUIProvider>
           <Navbar />
-          {children}
+          <main>{children}</main>
           <Footer />
         </HeroUIProvider>
       </NextIntlClientProvider>

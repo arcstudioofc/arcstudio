@@ -80,6 +80,11 @@
       }
     }
   },
+  "_components":{
+    "IconTimeLineItem": {
+      "releaseDate": "Release date: {date}"
+    }
+  },
   "lib": {
     "i18n": {
       "localeSwitcher": {

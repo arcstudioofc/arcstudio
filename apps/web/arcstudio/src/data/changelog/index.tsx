@@ -9,7 +9,6 @@ export const changelogs = [
 ];
 
 export const sortedChangelogs = [...changelogs].sort((a, b) => {
-  const [dayA, monthA, yearA] = a.date.split("/").map(Number);
-  const [dayB, monthB, yearB] = b.date.split("/").map(Number);
-  return new Date(yearB, monthB - 1, dayB).getTime() - new Date(yearA, monthA - 1, dayA).getTime();
+  // a.date e b.date já são Date
+  return b.date.getTime() - a.date.getTime();
 });

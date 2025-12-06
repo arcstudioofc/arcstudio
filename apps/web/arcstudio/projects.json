@@ -1,0 +1,19 @@
+{
+    "projects": [
+        {
+            "key": "atosjs",
+            "authors": [
+                "Israel R. Jatobá"
+            ],
+            "infos": {
+                "images": {
+                    "banner": "/images/projects/atos_banner.png"
+                },
+                "links": {
+                    "website": "https://atos.js.org/",
+                    "github": "https://github.com/arcstudioofc/atos.js"
+                }
+            }
+        }
+    ]
+}
