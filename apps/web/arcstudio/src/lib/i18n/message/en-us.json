@@ -18,12 +18,138 @@
     "metaTitle": "Team",
     "metaDescription": "Meet the amazing people behind ARC Studio. — ARC Team."
   },
+  "OfficialProjects": {
+    "OfficialProjectsCard": {
+      "author": "Author(s)"
+    }
+  },
+  "Faq": {
+    "title": "Frequently Asked Questions",
+    "items": [
+      {
+        "question": "What does ARC Studio do?",
+        "subtitle": "Click to expand",
+        "answer": "ARC Studio transforms ideas into memorable digital experiences. We offer design services, application development, interactive experiences, and digital content that connects brands and people."
+      },
+      {
+        "question": "What are the advantages of ARC Studio?",
+        "subtitle": "Our advantage lies in <bold>creativity and technology</bold>",
+        "answer": "Each project is personalized, innovative, and delivered with attention to detail and excellence."
+      },
+      {
+        "question": "How can I request a quote?",
+        "subtitle": "Contact us",
+        "answer": "You can contact us through our <bold>contact form</bold> or via the official email. Our team will understand your needs and present a personalized proposal."
+      },
+      {
+        "question": "Do you work with companies of any size?",
+        "subtitle": "For all company sizes",
+        "answer": "Yes! We work with startups, SMEs, and large corporations, adapting our approach to offer solutions according to each client."
+      },
+      {
+        "question": "What is the average project delivery time?",
+        "subtitle": "Depends on the project",
+        "answer": "The timeframe varies according to the project's complexity, but we always aim to deliver high-quality results within a realistic schedule, maintaining constant communication with the client."
+      }
+    ]
+  },
+  "About": {
+    "title": "About",
+    "headline": "We turn ideas into memorable digital experiences. At <arc_studio>ARC Studio</arc_studio>, we create solutions that inspire, engage, and connect brands with people in a unique way.",
+    "intro_paragraph_1": "Founded with the aim of redefining standards in the design and technology market, ARC Studio combines creativity, innovation, and strategy to deliver projects that impress and make a difference. Our team of specialists merges artistic talent and technological mastery to create high-impact digital experiences.",
+    "intro_paragraph_2": "Each project is approached with attention to detail, deep understanding of the client's purpose, and a clear vision of how to communicate their message powerfully. We are always ahead of trends, ensuring unique and relevant results.",
+    "mission_title": "Mission",
+    "mission_content": "To transform ideas into unforgettable experiences, connecting brands and people meaningfully.",
+    "vision_title": "Vision",
+    "vision_content": "To be a benchmark in creativity and technology, recognized for the excellence and innovation of every project.",
+    "values_title": "Values",
+    "values_content": "Creativity, innovation, collaboration, excellence, and commitment to impactful results.",
+    "conclusion": "At ARC Studio, every project is more than work: it's an opportunity to create something memorable and leave a digital legacy. We are ready to transform your vision into reality, with excellence and innovation in every detail."
+  },
+  "Terms": {
+    "title": "📜 Terms and Conditions of Service",
+    "subtitle": "We recommend carefully reading all clauses.",
+    "last_updated": "Last Updated: December 2025.",
+    "sections": {
+      "1": {
+        "title": "1. Acceptance of Terms",
+        "content": "By accessing or using the services offered by ARC Studio, you agree to comply with these Terms and Conditions. If you do not agree with any of these Terms, please do not use the Services."
+      },
+      "2": {
+        "title": "2. Definitions",
+        "content": {
+          "services": "“Services” refer to all products, software, websites, apps, features, and functionalities made available by ARC Studio.",
+          "user": "“User” refers to any person who accesses or uses the Services.",
+          "content": "“Content” refers to texts, images, videos, audio, code, or any material provided by ARC Studio or the User within the scope of the Services."
+        }
+      },
+      "3": {
+        "title": "3. Use of Services",
+        "content": "The User agrees to use the Services lawfully and in accordance with all applicable laws. It is forbidden to use the Services to: (a) violate third-party rights; (b) send or share illegal, offensive, defamatory, discriminatory, or hateful content; (c) engage in fraud, phishing, spam, or any malicious activity; (d) attempt to gain unauthorized access to systems, data, or accounts."
+      },
+      "4": {
+        "title": "4. Account Registration and Security",
+        "content": "If it is necessary to create an account to use the Services, the User commits to providing true, current, and complete information. The User is responsible for protecting their password and access credentials, and for all activities carried out with their account. In case of unauthorized use of the account, the User must immediately notify ARC Studio."
+      },
+      "5": {
+        "title": "5. Intellectual Property",
+        "content": "All Content made available by ARC Studio — including software, design, text, images, trademarks, logos, and other materials — is protected by copyrights, trademarks, and other intellectual property laws. The User does not acquire any right over this Content, except for the limited, non-exclusive, and non-transferable license to use the Services as permitted by these Terms."
+      },
+      "6": {
+        "title": "6. User Content",
+        "content": "When the User submits or makes Content available through the Services (e.g., comments, uploads, created materials), they grant ARC Studio a worldwide, non-exclusive, royalty-free license to use, reproduce, modify, adapt, and display that Content as necessary to provide the Services. The User declares that they are the owner or have legal authorization to use and grant this license. ARC Studio may remove or refuse any Content that violates these Terms or applicable laws."
+      },
+      "7": {
+        "title": "7. Payments and Billing (If applicable)",
+        "content": "If any Service is paid, prices, fees, and payment methods will be defined separately. The User agrees to pay all associated fees and accepts that ARC Studio may add, modify, or remove plans upon prior notification. There are no refunds, unless expressly provided otherwise."
+      },
+      "8": {
+        "title": "8. Disclaimer of Warranties",
+        "content": "The Services are provided “as is” and “as available.” ARC Studio does not warrant that the Services will be uninterrupted, error-free, secure, or suitable for a specific purpose. The User uses the Services at their own risk."
+      },
+      "9": {
+        "title": "9. Limitation of Liability",
+        "content": "In no event shall ARC Studio be liable for any indirect, incidental, special, consequential, or exemplary damages, or for loss of data, profits, or revenue, arising from the use or inability to use the Services — even if advised of the possibility of such damages. ARC Studio's total liability shall be limited to the amount actually paid by the User for the Services, if any."
+      },
+      "10": {
+        "title": "10. Suspension and Termination",
+        "content": "ARC Studio reserves the right to suspend or terminate any User’s access to the Services, at any time and for any reason — especially in case of a violation of these Terms. The articles that, by their nature, must survive termination (such as Intellectual Property, Limitation of Liability, etc.) will remain in effect after termination."
+      },
+      "11": {
+        "title": "11. Modifications to the Terms",
+        "content": "ARC Studio may modify these Terms at any time. By continuing to use the Services after the modifications, the User agrees to the revised Terms. If the User does not agree, they must stop using the Services."
+      },
+      "12": {
+        "title": "12. Privacy and Data",
+        "content": "The use and processing of personal data are governed by ARC Studio's privacy policy. By using the Services, the User agrees to the collection, use, and storage of their data as described in that policy. (If one doesn't exist — it is recommended to create a separate policy.)"
+      },
+      "13": {
+        "title": "13. Governing Law and Jurisdiction",
+        "content": "These Terms shall be governed by and interpreted in accordance with the laws of Brazil. Any disputes will be settled in the competent court in the district where ARC Studio is headquartered — unless otherwise provided."
+      },
+      "14": {
+        "title": "14. General Provisions",
+        "content": "The failure to exercise any right or clause of these Terms does not constitute a waiver of that right. If any provision of these Terms is deemed invalid or unenforceable, the remaining provisions will remain in full force and effect. These Terms constitute the entire agreement between the User and ARC Studio regarding the Services."
+      },
+      "15": {
+        "title": "15. Contact",
+        "content": "In case of questions, suggestions, or complaints about these Terms or the Services, please contact us by email: arcstudio.ofical@gmail.com."
+      }
+    }
+  },
   "Changelog": {
     "metaTitle": "Changelog — ARC Studio",
     "metaDescription": "Stay updated with the latest features, improvements, and fixes in ARC Studio. Check out our changelog for all the details!",
     "title": "Changelog",
     "description": "Update history"
   },
+
+
+
+
+
+
+
   "data": {
     "changelog": {
       "test": {
@@ -91,7 +217,8 @@
         "ariaLabel": "Language Switcher",
         "languages": {
           "pt-br": "Portuguese",
-          "en-us": "English"
+          "en-us": "English",
+          "es-es": "Spanish"
         }
       }
     }

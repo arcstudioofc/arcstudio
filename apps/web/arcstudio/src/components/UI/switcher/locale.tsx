@@ -33,10 +33,12 @@ export default function LocaleSwitcher() {
 
   const getIconByLocale = (loc: string) => {
     switch (loc) {
-      case "en-us":
-        return <Image src="/images/usa-flag.png" width={18} height={18} alt="EUA" />;
       case "pt-br":
         return <Image src="/images/brazil-flag.png" width={18} height={18} alt="Brasil" />;
+      case "en-us":
+        return <Image src="/images/usa-flag.png" width={18} height={18} alt="EUA" />;
+      case "es-es":
+        return <Image src="/images/spanish-flag.png" width={18} height={18} alt="Espanha" />;
       default:
         return <MdTranslate size={20} />;
     }

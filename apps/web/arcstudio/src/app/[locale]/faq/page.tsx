@@ -1,91 +1,58 @@
 "use client";
 
-import { ReactNode } from "react";
 import { Accordion, AccordionItem, Avatar } from "@heroui/react";
+import { useTranslations } from "next-intl";
 
-interface FAQItem {
-    question: ReactNode;
-    startContent?: ReactNode;
-    subtitle?: ReactNode;
-    answer: ReactNode;
-}
 
-const faqs: FAQItem[] = [
-    {
-        question: "O que a ARC Studio faz?",
-        startContent: (
+export default function FAQ() {
+    const t = useTranslations('Faq');
+
+    const dynamicFaqs = Array.from({ length: 5 }, (_, index) => {
+        const key = index.toString();
+        const question = t(`items.${key}.question`);
+        const subtitleKey = `items.${key}.subtitle`;
+        const answerKey = `items.${key}.answer`;
+
+        const renderSubtitle = () => {
+            return t.rich(subtitleKey, {
+                bold: (children) => <strong>{children}</strong>,
+            });
+        };
+
+        const renderAnswer = () => {
+            return t.rich(answerKey, {
+                bold: (children) => <strong>{children}</strong>,
+            });
+        };
+
+        const startContent = index === 0 ? (
             <Avatar
                 isBordered
                 color="primary"
                 radius="lg"
                 src="/favicon.ico"
             />
-        ),
-        subtitle: "Clique para expandir",
-        answer: (
-            <>
-                A ARC Studio transforma ideias em experiências digitais memoráveis. Oferecemos serviços de design, desenvolvimento de aplicações, experiências interativas e conteúdo digital que conecta marcas e pessoas.
-            </>
-        ),
-    },
-    {
-        question: "Quais são os diferenciais da ARC Studio?",
-        subtitle: (
-            <>
-                Nosso diferencial está na <strong>criatividade e tecnologia</strong>
-            </>
-        ),
-        answer: (
-            <>
-                Cada projeto é personalizado, inovador e entregue com atenção aos detalhes e excelência.
-            </>
-        ),
-    },
-    {
-        question: "Como posso solicitar um orçamento?",
-        subtitle: "Entre em contato conosco",
-        answer: (
-            <>
-                Você pode entrar em contato através do nosso <strong>formulário de contato</strong> ou pelo e-mail oficial. Nossa equipe vai entender sua necessidade e apresentar uma proposta personalizada.
-            </>
-        ),
-    },
-    {
-        question: "Vocês trabalham com empresas de qualquer tamanho?",
-        subtitle: "Para todos os tamanhos de empresa",
-        answer: (
-            <>
-                Sim! Atuamos com startups, PMEs e grandes empresas, adaptando nossa abordagem para oferecer soluções de acordo com cada cliente.
-            </>
-        ),
-    },
-    {
-        question: "Qual é o tempo médio de entrega de um projeto?",
-        subtitle: "Depende do projeto",
-        answer: (
-            <>
-                O prazo varia de acordo com a complexidade do projeto, mas sempre buscamos entregar resultados de alta qualidade dentro de um cronograma realista, mantendo comunicação constante com o cliente.
-            </>
-        ),
-    },
-];
+        ) : undefined;
 
-export default function FAQ() {
+
+        return (
+             <AccordionItem
+                key={key}
+                aria-label={`Accordion ${index + 1}`}
+                title={question}
+                subtitle={renderSubtitle()}
+                startContent={startContent}
+            >
+                <div className="text-lg">{renderAnswer()}</div>
+            </AccordionItem>
+        );
+    });
+
     return (
         <div className="max-w-5xl mx-auto py-16 px-4">
-            <h2 className="text-4xl font-extrabold text-center mb-12">Perguntas Frequentes</h2>
+            <h2 className="text-4xl font-extrabold text-center mb-12">{t('title')}</h2>
             <Accordion defaultExpandedKeys={["0"]} className="space-y-4">
-                {faqs.map((faq, index) => (
-                    <AccordionItem
-                        key={index}
-                        aria-label={`Accordion ${index + 1}`}
-                        title={faq.question}
-                        subtitle={faq.subtitle}
-                        startContent={faq.startContent}
-                    >
-                        <div className="text-lg">{faq.answer}</div>
-                    </AccordionItem>
-                ))}
+                {dynamicFaqs}
             </Accordion>
         </div>
     );

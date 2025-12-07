@@ -18,12 +18,138 @@
     "metaTitle": "Equipe",
     "metaDescription": "Conheça as pessoas incríveis por trás da ARC Studio — ARC Team."
   },
+  "OfficialProjects": {
+    "OfficialProjectsCard": {
+      "author": "Autor(es)"
+    }
+  },
+  "Faq": {
+    "title": "Perguntas Frequentes",
+    "items": [
+      {
+        "question": "O que a ARC Studio faz?",
+        "subtitle": "Clique para expandir",
+        "answer": "A ARC Studio transforma ideias em experiências digitais memoráveis. Oferecemos serviços de design, desenvolvimento de aplicações, experiências interativas e conteúdo digital que conecta marcas e pessoas."
+      },
+      {
+        "question": "Quais são os diferenciais da ARC Studio?",
+        "subtitle": "Nosso diferencial está na <bold>criatividade e tecnologia</bold>",
+        "answer": "Cada projeto é personalizado, inovador e entregue com atenção aos detalhes e excelência."
+      },
+      {
+        "question": "Como posso solicitar um orçamento?",
+        "subtitle": "Entre em contato conosco",
+        "answer": "Você pode entrar em contato através do nosso <bold>formulário de contato</bold> ou pelo e-mail oficial. Nossa equipe vai entender sua necessidade e apresentar uma proposta personalizada."
+      },
+      {
+        "question": "Vocês trabalham com empresas de qualquer tamanho?",
+        "subtitle": "Para todos os tamanhos de empresa",
+        "answer": "Sim! Atuamos com startups, PMEs e grandes empresas, adaptando nossa abordagem para oferecer soluções de acordo com cada cliente."
+      },
+      {
+        "question": "Qual é o tempo médio de entrega de um projeto?",
+        "subtitle": "Depende do projeto",
+        "answer": "O prazo varia de acordo com a complexidade do projeto, mas sempre buscamos entregar resultados de alta qualidade dentro de um cronograma realista, mantendo comunicação constante com o cliente."
+      }
+    ]
+  },
+  "About": {
+    "title": "Sobre a",
+    "headline": "Transformamos ideias em experiências digitais memoráveis. Na <arc_studio>ARC Studio</arc_studio>, criamos soluções que inspiram, engajam e conectam marcas com pessoas de forma única.",
+    "intro_paragraph_1": "Fundada com o objetivo de redefinir padrões no mercado de design e tecnologia, a ARC Studio combina criatividade, inovação e estratégia para entregar projetos que impressionam e fazem diferença. Nosso time de especialistas une talento artístico e domínio tecnológico para criar experiências digitais de alto impacto.",
+    "intro_paragraph_2": "Cada projeto é abordado com atenção aos detalhes, compreensão profunda do propósito do cliente e uma visão clara de como comunicar sua mensagem de forma poderosa. Estamos sempre à frente das tendências, garantindo resultados únicos e relevantes.",
+    "mission_title": "Missão",
+    "mission_content": "Transformar ideias em experiências inesquecíveis, conectando marcas e pessoas de forma significativa.",
+    "vision_title": "Visão",
+    "vision_content": "Ser referência em criatividade e tecnologia, reconhecida pela excelência e inovação de cada projeto.",
+    "values_title": "Valores",
+    "values_content": "Criatividade, inovação, colaboração, excelência e compromisso com resultados impactantes.",
+    "conclusion": "Na ARC Studio, cada projeto é mais que trabalho: é uma oportunidade de criar algo memorável e deixar um legado digital. Estamos prontos para transformar sua visão em realidade, com excelência e inovação em cada detalhe."
+  },
+  "Terms": {
+    "title": "📜 Termos e Condições de Serviço",
+    "subtitle": "Recomendamos a leitura atenta de todas as cláusulas.",
+    "last_updated": "Última Atualização: Dezembro de 2025.",
+    "sections": {
+      "1": {
+        "title": "1. Aceitação dos Termos",
+        "content": "Ao acessar ou usar os serviços oferecidos pela ARC Studio, você concorda em cumprir estes Termos e Condições. Caso não concorde com algum destes Termos, por favor, não utilize os Serviços."
+      },
+      "2": {
+        "title": "2. Definições",
+        "content": {
+          "services": "“Serviços” referem-se a todos os produtos, software, websites, apps, recursos e funcionalidades disponibilizados pela ARC Studio.",
+          "user": "“Usuário” refere-se a qualquer pessoa que acesse ou utilize os Serviços.",
+          "content": "“Conteúdo” refere-se a textos, imagens, vídeos, áudio, código ou qualquer material fornecido pela ARC Studio ou pelo Usuário no âmbito dos Serviços."
+        }
+      },
+      "3": {
+        "title": "3. Uso dos Serviços",
+        "content": "O Usuário concorda em usar os Serviços de forma lícita e de acordo com todas as leis aplicáveis. É proibido usar os Serviços para: (a) violar direitos de terceiros; (b) enviar ou compartilhar conteúdos ilícitos, ofensivos, difamatórios, discriminatórios ou de ódio; (c) praticar fraude, phishing, spam ou qualquer atividade maliciosa; (d) tentar obter acesso não autorizado a sistemas, dados ou contas."
+      },
+      "4": {
+        "title": "4. Registro e Segurança de Conta",
+        "content": "Se for necessário criar uma conta para usar os Serviços, o Usuário se compromete a fornecer informações verdadeiras, atuais e completas. O Usuário é responsável por proteger sua senha e credenciais de acesso, e por todas as atividades realizadas com sua conta. Em caso de uso não autorizado da conta, o Usuário deve notificar imediatamente a ARC Studio."
+      },
+      "5": {
+        "title": "5. Propriedade Intelectual",
+        "content": "Todo o Conteúdo disponibilizado pela ARC Studio — incluindo software, design, texto, imagens, marcas, logotipos e demais materiais — é protegido por direitos autorais, marcas registradas e outras leis de propriedade intelectual. O Usuário não adquire nenhum direito sobre esse Conteúdo, exceto a licença limitada, não exclusiva e intransferível para utilizar os Serviços conforme permitido por estes Termos."
+      },
+      "6": {
+        "title": "6. Conteúdo do Usuário",
+        "content": "Quando o Usuário enviar ou disponibilizar Conteúdo através dos Serviços (por exemplo, comentários, uploads, materiais criados), concede à ARC Studio uma licença mundial, não exclusiva, livre de royalties, para usar, reproduzir, modificar, adaptar e exibir esse Conteúdo conforme necessário para fornecer os Serviços. O Usuário declara que é titular ou possui autorização legal para usar e conceder essa licença. A ARC Studio pode remover ou recusar qualquer Conteúdo que viole estes Termos ou leis aplicáveis."
+      },
+      "7": {
+        "title": "7. Pagamentos e Cobranças (Se aplicável)",
+        "content": "Se algum Serviço for pago, os preços, taxas e formas de pagamento serão definidos separadamente. O Usuário concorda em pagar todas as taxas associadas, e aceita que a ARC Studio possa adicionar, modificar ou remover planos mediante notificação prévia. Não há reembolso, salvo se expressamente previsto."
+      },
+      "8": {
+        "title": "8. Isenção de Garantias",
+        "content": "Os Serviços são fornecidos “no estado em que se encontram” e “conforme disponíveis”. A ARC Studio não garante que os Serviços serão ininterruptos, livres de erros, seguros ou adequados a um propósito específico. O Usuário utiliza os Serviços por sua conta e risco."
+      },
+      "9": {
+        "title": "9. Limitação de Responsabilidade",
+        "content": "Em nenhuma hipótese a ARC Studio será responsável por quaisquer danos indiretos, incidentais, especiais, consequenciais ou exemplares, ou por perda de dados, lucros ou receitas, decorrentes do uso ou da incapacidade de usar os Serviços — mesmo que avisada da possibilidade desses danos. A responsabilidade total da ARC Studio será limitada ao valor efetivamente pago pelo Usuário pelos Serviços, se houver."
+      },
+      "10": {
+        "title": "10. Suspensão e Encerramento",
+        "content": "A ARC Studio se reserva o direito de suspender ou encerrar o acesso de qualquer Usuário aos Serviços, a qualquer momento e por qualquer motivo — especialmente em caso de violação destes Termos. Os artigos que, por sua natureza, devam sobreviver à rescisão (como Propriedade Intelectual, Limitação de Responsabilidade, etc.) continuarão vigentes após o encerramento."
+      },
+      "11": {
+        "title": "11. Modificações nos Termos",
+        "content": "A ARC Studio pode modificar estes Termos a qualquer momento. Ao continuar a usar os Serviços após as modificações, o Usuário concorda com os Termos revisados. Caso não concorde, deve interromper o uso dos Serviços."
+      },
+      "12": {
+        "title": "12. Privacidade e Dados",
+        "content": "O uso e tratamento de dados pessoais é regido pela política de privacidade da ARC Studio. Ao usar os Serviços, o Usuário concorda com a coleta, uso e armazenamento de seus dados conforme descrito naquela política. (Caso não tenha — é recomendável criar uma política separada.)"
+      },
+      "13": {
+        "title": "13. Lei Aplicável e Foro",
+        "content": "Estes Termos serão regidos e interpretados conforme as leis vigentes no Brasil. Quaisquer controvérsias serão dirimidas no foro competente na comarca onde a ARC Studio estiver sediada — salvo disposição em contrário."
+      },
+      "14": {
+        "title": "14. Disposições Gerais",
+        "content": "O não exercício de qualquer direito ou cláusula destes Termos não constitui renúncia a esse direito. Se qualquer disposição destes Termos for considerada inválida ou inexequível, as demais continuarão em pleno vigor. Estes Termos constituem o acordo integral entre o Usuário e a ARC Studio em relação aos Serviços."
+      },
+      "15": {
+        "title": "15. Contato",
+        "content": "Em caso de dúvidas, sugestões ou reclamações sobre estes Termos ou os Serviços, entre em contato conosco pelo e‑mail: arcstudio.ofical@gmail.com."
+      }
+    }
+  },
   "Changelog": {
     "metaTitle": "Changelog — ARC Studio",
     "metaDescription": "Fique atualizado com os últimos recursos, melhorias e correções no ARC Studio. Confira nosso changelog para todos os detalhes!",
     "title": "Changelog",
     "description": "Histórico de atualizações"
   },
+
+
+
+
+
+
+
   "data": {
     "changelog": {
       "test": {
@@ -90,7 +216,8 @@
         "ariaLabel": "Trocar idioma",
         "languages": {
           "pt-br": "Português",
-          "en-us": "Inglês"
+          "en-us": "Inglês",
+          "es-es": "Espanhol"
         }
       }
     }

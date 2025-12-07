@@ -2,12 +2,13 @@
     "projects": [
         {
             "key": "atosjs",
+            "name": "AtosJS",
             "authors": [
                 "Israel R. Jatobá"
             ],
             "infos": {
                 "images": {
-                    "banner": "/images/projects/atos_banner.png"
+                    "banner": "/images/projects/atos.png"
                 },
                 "links": {
                     "website": "https://atos.js.org/",
