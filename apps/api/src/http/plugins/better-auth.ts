@@ -11,7 +11,8 @@ export const betterAuthPlugins = new Elysia({
   .mount(auth.handler)
   .macro({
     auth: {
-      async resolve({ status, request: { headers } }) {
+      async resolve({ status, headers }) {
+        // headers = Fetch API Headers (correto para Better Auth)
         const session = await auth.api.getSession({ headers });
 
         if (!session) {
@@ -27,7 +28,9 @@ export const betterAuthPlugins = new Elysia({
   });
 
 let _schema: ReturnType<typeof auth.api.generateOpenAPISchema>;
-const getSchema = async () => (_schema ??= auth.api.generateOpenAPISchema());
+
+const getSchema = async () =>
+  (_schema ??= auth.api.generateOpenAPISchema());
 
 export const OpenAPI = {
   getPaths: (prefix = "/auth") =>
@@ -36,7 +39,7 @@ export const OpenAPI = {
 
       for (const path of Object.keys(paths)) {
         const original = paths[path];
-        if (!original) continue; // <-- FIX: ensure not undefined
+        if (!original) continue; // Evita undefined
 
         const key = prefix + path;
         reference[key] = original;
@@ -49,5 +52,6 @@ export const OpenAPI = {
 
       return reference;
     }) as Promise<any>,
+
   components: getSchema().then(({ components }) => components) as Promise<any>,
 } as const;
