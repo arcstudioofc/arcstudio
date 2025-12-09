@@ -5,9 +5,9 @@ import { ChangelogEntry } from "@/_components/IconTimelineItem";
 import ARC from "@/components/UI/ARC";
 
 export const changelog: ChangelogEntry = {
-  title: "v3.0.0 - Reboot (Nova era!)",
+  title: "v3.1.0-beta.1 - ARC Studio, api",
   date: new Date(2025, 11, 31),
-  type: "Performance",
+  type: "Security",
   children: <Changelog />,
 };
 

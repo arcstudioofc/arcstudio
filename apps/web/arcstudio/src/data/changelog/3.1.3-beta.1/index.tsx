@@ -2,12 +2,12 @@
 // import { useTranslations } from "next-intl";
 
 import { ChangelogEntry } from "@/_components/IconTimelineItem";
-import ARC from "@/components/UI/ARC";
+// import ARC from "@/components/UI/ARC";
 
 export const changelog: ChangelogEntry = {
-  title: "v3.0.0 - Reboot (Nova era!)",
+  title: "v3.1.3-beta.1 - reconstrução do workspace",
   date: new Date(2025, 11, 31),
-  type: "Performance",
+  type: "Settings",
   children: <Changelog />,
 };
 
@@ -17,7 +17,7 @@ function Changelog() {
   return (
     <div>
       <h1 className="text-2xl font-semibold flex gap-2">
-        Foi feito uma atualização geral em nosso sistema <ARC />
+        removamos a api de nossa workspace
       </h1>
       {/* <p className="mt-4 text-justify">
         Update em desenvolvimento.
