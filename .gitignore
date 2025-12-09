@@ -2,9 +2,6 @@
 node_modules/*
 .turbo/*
 
-# Ignore all files starting with _
-_*
-
 # Ignore build output directory
 dist/*
 .next/*
