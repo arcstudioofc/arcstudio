@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 
-import { ChangelogEntry } from "@/_components/IconTimelineItem";
+import { ChangelogEntry } from "@/app/_components/IconTimelineItem";
 import ARC from "@/components/UI/ARC";
 
 export const changelog: ChangelogEntry = {

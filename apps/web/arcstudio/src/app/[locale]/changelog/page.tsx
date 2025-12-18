@@ -2,7 +2,7 @@ import { FaCalendarAlt } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 // import Link from "next/link";
 
-import { IconTimelineItem } from "@/_components/IconTimelineItem";
+import { IconTimelineItem } from "@/app/_components/IconTimelineItem";
 import { sortedChangelogs } from "@/data/changelog";
 
 

@@ -4,8 +4,8 @@ import { FaGithub, FaEnvelope, FaInstagram, FaCube, FaBuilding } from "react-ico
 import { FaXTwitter } from "react-icons/fa6";
 import { IconType } from "react-icons";
 
-import ThemeSwitcher from "@/components/UI/switcher/theme";
-import LocaleSwitcher from "@/components/UI/switcher/locale";
+import ThemeSwitcher from "@/widgets/switcher/theme";
+import LocaleSwitcher from "@/widgets/switcher/locale";
 import { settings } from "@/lib";
 import ARC from "@/components/UI/ARC";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import TeamProfile from "@/_components/UI/TeamProfile";
+import TeamProfile from "@/app/_components/UI/TeamProfile";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";

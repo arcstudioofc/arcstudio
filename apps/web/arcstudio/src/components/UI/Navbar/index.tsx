@@ -5,7 +5,7 @@ import { FaBars, FaTimes, FaFire, FaInfoCircle } from "react-icons/fa";
 import { GrProjects } from "react-icons/gr";
 import { IconType } from "react-icons";
 
-import LocaleSwitcher from "@/components/UI/switcher/locale";
+import LocaleSwitcher from "@/widgets/switcher/locale";
 import ARC from "@/components/UI/ARC";
 
 type NavLink = { key: string; href: string; icon: IconType };
