@@ -72,8 +72,8 @@ export default function AdminSignIn() {
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-3xl" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-3xl" />
 
-      <Link 
-        href="/" 
+      <Link
+        href="/"
         className="absolute top-8 left-8 flex items-center gap-2 text-foreground/60 hover:text-primary transition-colors group"
       >
         <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
@@ -83,9 +83,7 @@ export default function AdminSignIn() {
       <div className="w-full max-w-md space-y-8 relative z-10">
         <div className="text-center space-y-2">
           <div className="flex justify-center mb-4">
-            <div className="p-4 bg-primary/10 rounded-2xl shadow-inner">
-              <ARC />
-            </div>
+            <ARC />
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight">Painel Administrativo</h1>
           <p className="text-foreground/60">Entre com suas credenciais para gerenciar o ARC Studio</p>
