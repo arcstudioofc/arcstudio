@@ -40,7 +40,7 @@ export default function NotFound() {
 
                 <Link
                     href="/"
-                    className="mt-6 px-6 py-3 text-lg font-medium text-white bg-indigo-600 rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 ease-in-out transform hover:scale-105"
+                    className="mt-6 px-6 py-3 text-lg font-medium text-white bg-indigo-600 rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 ease-in-out transform"
                 >
                     {t("backHome")}
                 </Link>

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getMessages, getTranslations } from "next-intl/server"; 
+import { getMessages, getTranslations } from "next-intl/server";
 import { hasLocale } from "next-intl";
 
 import "../../../public/styles/globals.css";
-import { Providers } from "@/lib/providers";
+import { ProvidersWrapper } from "@/lib/providers"; // wrapper client
 import { routing } from "@/lib/i18n/routing";
 import { settings } from "@/lib";
 
@@ -37,9 +37,9 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className="antialiased">
-        <Providers locale={locale} messages={messages}>
+        <ProvidersWrapper locale={locale} messages={messages}>
           {children}
-        </Providers>
+        </ProvidersWrapper>
       </body>
     </html>
   );

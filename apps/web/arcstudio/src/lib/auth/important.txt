@@ -1,0 +1,4 @@
+ echo '{"name":"","email":"","password":"","image":"","callbackURL":"","rememberMe":true}' |  \
+  http POST http://localhost:3333/auth/sign-up/email \
+  Authorization:'Bearer AUTH_TOKEN' \
+  Content-Type:application/json

@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { FaGithub, FaEnvelope, FaInstagram, FaCube, FaBuilding } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { IconType } from "react-icons";
+import { useEffect, useState } from "react";
 
 import ThemeSwitcher from "@/widgets/switcher/theme";
 import LocaleSwitcher from "@/widgets/switcher/locale";
@@ -52,6 +55,20 @@ const socialLinks = [
 
 export function Footer() {
   const t = useTranslations("components.UI.Footer");
+  const [showNewTag, setShowNewTag] = useState(false);
+
+  useEffect(() => {
+    async function checkRecentChangelogs() {
+      try {
+        const res = await fetch("/api/changelogs/recent");
+        const data = await res.json();
+        setShowNewTag(data.hasRecent);
+      } catch (err) {
+        console.error("Failed to check recent changelogs", err);
+      }
+    }
+    checkRecentChangelogs();
+  }, []);
 
   return (
     <footer className="w-full bg-background pt-12 pb-6 border-t border-foreground/10 text-foreground/80">
@@ -115,8 +132,8 @@ export function Footer() {
                       </Link>
                     ))}
 
-                    {link.new && (
-                      <span className="text-xs font-extrabold bg-primary/20 text-primary py-1 px-1 rounded-md uppercase tracking-widest leading-none">
+                    {link.key === "changelog" && showNewTag && (
+                      <span className="text-[10px] font-extrabold bg-primary/20 text-primary py-0.5 px-1.5 rounded-md uppercase tracking-widest leading-none animate-pulse">
                         NEW
                       </span>
                     )}

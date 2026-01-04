@@ -11,7 +11,7 @@
   },
   "packageManager": "pnpm@10.9.0",
   "workspaces": [
-    "packages/*",
+    "api/",
     "apps/*"
   ],
   "keywords": [],
