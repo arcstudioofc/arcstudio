@@ -6,7 +6,7 @@ import { FaSignOutAlt, FaUserShield, FaCalendarAlt, FaEnvelope, FaCheckCircle, F
 import Link from "next/link";
 
 import { auth } from "@/lib/auth";
-import { Card, CardHeader, CardBody, CardFooter, Avatar, Button, Divider, Chip } from "@heroui/react";
+import { Card, CardHeader, CardBody, Avatar, Button, Divider, Chip } from "@heroui/react";
 import ARC from "@/components/UI/ARC";
 
 export default function AdminMe() {
@@ -41,10 +41,7 @@ export default function AdminMe() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-background/50 p-6 md:p-12 relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-3xl" />
+    <div className="min-h-screen p-6 md:p-12 relative overflow-hidden">
 
       <div className="max-w-4xl mx-auto relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
