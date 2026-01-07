@@ -2,6 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 import { usePathname, useRouter } from "@/lib/i18n/navigation";
 import { routing } from "@/lib/i18n/routing";
@@ -16,12 +17,36 @@ import {
 
 import { MdTranslate } from "react-icons/md";
 
-export default function LocaleSwitcher() {
+interface LocaleSwitcherProps {
+  isElectronHeader?: boolean;
+}
+
+export default function LocaleSwitcher({ isElectronHeader = false }: LocaleSwitcherProps) {
   const t = useTranslations("lib.i18n.localeSwitcher");
+  const [isElectron, setIsElectron] = useState(false);
 
   const router = useRouter();
   const locale = useLocale();
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && !!window.windowControls) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsElectron(true);
+    }
+  }, []);
+
+  // Se estiver no Electron e este for o switcher da Navbar, não renderiza
+  if (isElectron && !isElectronHeader && !pathname.includes('admin')) {
+    // Nota: Mantemos no admin ou se explicitamente solicitado
+    // Mas o pedido do usuário é: "no site se mantem no navbar no electron some e vai pro header"
+    return null;
+  }
+
+  // Se NÃO estiver no Electron e este for o switcher do Header, não renderiza
+  if (!isElectron && isElectronHeader) {
+    return null;
+  }
 
   function handlerSelectLocale(newLocale: (typeof routing.locales)[number]) {
     const query = Object.fromEntries(
@@ -51,10 +76,10 @@ export default function LocaleSwitcher() {
           isIconOnly
           radius="full"
           variant="light"
-          className="min-w-0 h-auto p-2 hover:bg-foreground/10 transition rounded-md"
+          className={`min-w-0 h-auto p-2 hover:bg-foreground/10 transition rounded-md ${isElectronHeader ? 'w-8 h-8' : ''}`}
           aria-label={t("ariaLabel")}
         >
-          <MdTranslate size={24} />
+          <MdTranslate size={isElectronHeader ? 18 : 24} />
         </Button>
       </DropdownTrigger>
 

@@ -47,6 +47,7 @@ export function CommandPalette() {
             const results = fuse.search(search);
             setFilteredCommands(results.map(res => res.item));
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
     // Listener para duplo clique direito

@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { FaBars, FaTimes, FaFire, FaInfoCircle } from "react-icons/fa";
 import { GrProjects } from "react-icons/gr";
@@ -18,30 +20,26 @@ const navLinks: NavLink[] = [
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isElectron, setIsElectron] = useState(false);
   const t = useTranslations("components.UI.Navbar");
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && !!window.windowControls) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsElectron(true);
+    }
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   return (
-    <header className="w-full sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-foreground/10">
+    <header className="w-full sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-foreground/10">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 
 
         <ARC />
-        {/* <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
-          <Image
-            src="/favicon.ico"
-            alt="Logo ARC Studio"
-            width={28}
-            height={28}
-            className="rounded-md"
-          />
-          <span className="text-xl font-bold text-foreground tracking-tight">
-            ARC Studio
-          </span>
-        </Link> */}
 
         <nav className="hidden md:flex items-center space-x-6">
           {navLinks.map((link) => (
@@ -69,7 +67,7 @@ export function Navbar() {
             >
               {t("buttons.start")}
             </Link>
-            <LocaleSwitcher />
+            {!isElectron && <LocaleSwitcher />}
           </div>
 
 
@@ -112,9 +110,11 @@ export function Navbar() {
             {t("buttons.start")}
           </Link>
 
-          <div className="flex justify-start space-x-4 pt-2">
-            <LocaleSwitcher />
-          </div>
+          {!isElectron && (
+            <div className="flex justify-start space-x-4 pt-2">
+              <LocaleSwitcher />
+            </div>
+          )}
         </div>
       </div>
     </header>

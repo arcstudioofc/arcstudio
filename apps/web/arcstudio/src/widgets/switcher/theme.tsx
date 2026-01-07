@@ -14,18 +14,35 @@ import { FiSun, FiMoon } from "react-icons/fi";
 import { LuMonitor } from "react-icons/lu";
 import { useEffect, useState } from "react";
 
-export default function ThemeSwitcher() {
+interface ThemeSwitcherProps {
+  isElectronHeader?: boolean;
+}
+
+export default function ThemeSwitcher({ isElectronHeader = false }: ThemeSwitcherProps) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [isElectron, setIsElectron] = useState(false);
 
   useEffect(() => {
-    // Defer state update to the next macrotask to avoid synchronous setState in effect
     const id = window.setTimeout(() => setMounted(true), 0);
+    if (typeof window !== "undefined" && !!window.windowControls) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsElectron(true);
+    }
     return () => clearTimeout(id);
   }, []);
 
-  // Evita erro de hidratação retornando null até carregar no cliente
   if (!mounted) return null;
+
+  // Se estiver no Electron e este for o switcher padrão (não do header), não renderiza
+  if (isElectron && !isElectronHeader) {
+    return null;
+  }
+
+  // Se NÃO estiver no Electron e este for o switcher do Header, não renderiza
+  if (!isElectron && isElectronHeader) {
+    return null;
+  }
 
   const isDark = theme === "dark";
   const isSystem = theme === "system";
@@ -38,8 +55,9 @@ export default function ThemeSwitcher() {
   };
 
   const renderIcon = () => {
-    if (isSystem) return <LuMonitor size={20} />;
-    return isDark ? <FiSun size={20} /> : <FiMoon size={20} />;
+    const size = isElectronHeader ? 18 : 20;
+    if (isSystem) return <LuMonitor size={size} />;
+    return isDark ? <FiSun size={size} /> : <FiMoon size={size} />;
   };
 
   return (
@@ -49,7 +67,7 @@ export default function ThemeSwitcher() {
           isIconOnly
           radius="full"
           variant="light"
-          className="min-w-0 h-auto p-2 hover:bg-foreground/10 transition rounded-md"
+          className={`min-w-0 h-auto p-2 hover:bg-foreground/10 transition rounded-md ${isElectronHeader ? 'w-8 h-8' : ''}`}
         >
           <AnimatePresence mode="wait" initial={false}>
             <motion.span

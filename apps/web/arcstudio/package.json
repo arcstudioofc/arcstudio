@@ -1,6 +1,7 @@
 {
   "name": "@arcstudio/website",
   "version": "3.2.0-beta.1",
+  "description": "Your project deserves the best — let's make it a reality with innovation and dedication.",
   "type": "module",
   "private": true,
   "scripts": {

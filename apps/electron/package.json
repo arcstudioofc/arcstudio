@@ -1,0 +1,54 @@
+{
+  "name": "arc-studio",
+  "version": "1.0.0",
+  "description": "Your project deserves the best — let's make it a reality with innovation and dedication.",
+  "homepage": "https://arcstudio.online",
+  "main": "main.js",
+
+  "author": {
+    "name": "Israel R. Jatobá",
+    "email": "israel@arcstudio.dev"
+  },
+
+  "private": true,
+
+  "scripts": {
+    "dev": "pnpx electron .",
+    "build": "pnpx electron-builder",
+    "build:win": "pnpx electron-builder --win",
+    "build:mac": "pnpx electron-builder --mac",
+    "build:linux": "pnpx electron-builder --linux"
+  },
+
+  "build": {
+    "appId": "studio.arc.app",
+    "productName": "ARC Studio",
+
+    "directories": {
+      "buildResources": "assets"
+    },
+
+    "files": [
+      "**/*",
+      "!node_modules/.cache/**"
+    ],
+
+    "win": {
+      "target": "nsis",
+      "icon": "icon.png"
+    },
+
+    "linux": {
+      "target": ["AppImage"],
+      "icon": "icon.png",
+      "category": "Development",
+      "maintainer": "Israel R. Jatobá <israel@arcstudio.dev>"
+    },
+
+    "mac": {
+      "target": "dmg",
+      "icon": "icon.png",
+      "category": "public.app-category.developer-tools"
+    }
+  }
+}

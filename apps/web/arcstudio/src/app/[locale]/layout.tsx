@@ -26,6 +26,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+interface Props {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}
+
 export default async function LocaleLayout({ children, params }: Props ) {
   const { locale } = await params;
   const messages = await getMessages();
@@ -35,8 +40,8 @@ export default async function LocaleLayout({ children, params }: Props ) {
   }
 
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body className="antialiased min-h-screen w-full relative">
+    <html lang={locale} suppressHydrationWarning className="h-full overflow-hidden">
+      <body className="antialiased h-full w-full relative overflow-hidden">
         {/* Background Grid Adaptativo */}
         <div
           className="fixed inset-0 z-0 pointer-events-none"
@@ -88,10 +93,7 @@ export default async function LocaleLayout({ children, params }: Props ) {
         />
 
         <ProvidersWrapper locale={locale} messages={messages}>
-          {/* Conteúdo principal com z-index para ficar acima do bg */}
-          <div className="relative z-10">
-            {children}
-          </div>
+          {children}
         </ProvidersWrapper>
       </body>
     </html>

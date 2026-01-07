@@ -61,8 +61,10 @@ export function Footer() {
     async function checkRecentChangelogs() {
       try {
         const res = await fetch("/api/changelogs/recent");
-        const data = await res.json();
-        setShowNewTag(data.hasRecent);
+        if (res.ok) {
+          const data = await res.json();
+          setShowNewTag(data.hasRecent);
+        }
       } catch (err) {
         console.error("Failed to check recent changelogs", err);
       }
@@ -71,7 +73,7 @@ export function Footer() {
   }, []);
 
   return (
-    <footer className="w-full bg-background pt-12 pb-6 border-t border-foreground/10 text-foreground/80">
+    <footer className="w-full bg-background pt-12 pb-6 border-t border-foreground/10 text-foreground/80 mt-auto relative z-10">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 pb-10">
 
