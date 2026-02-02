@@ -1,3 +1,4 @@
+import type { User } from "better-auth/types";
 import { Elysia } from "elysia";
 import { z } from "zod";
 
@@ -7,17 +8,7 @@ export const userRoutes = new Elysia({ prefix: "/me" })
   .use(betterAuthPlugin)
   .get(
     "/",
-    ({ user }) => {
-      const { id, name, email, emailVerified, role } = user;
-
-      return {
-        id,
-        name,
-        email,
-        emailVerified,
-        role,
-      };
-    },
+    ({ user }) => user,
     {
       auth: true,
       detail: {
@@ -25,16 +16,8 @@ export const userRoutes = new Elysia({ prefix: "/me" })
         tags: ["User"],
       },
       response: {
-        201: z.object({
-          id: z.string(),
-          name: z.string(),
-          email: z.string().email(),
-          emailVerified: z.boolean(),
-          role: z.string(),
-        }),
-        401: z.object({
-          message: z.string(),
-        }),
+        201: z.object<User>(),
+        401: z.object({ message: z.string() }),
       },
     },
   );

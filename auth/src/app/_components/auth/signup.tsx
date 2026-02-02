@@ -10,30 +10,31 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Accordion,
   addToast,
 } from "@heroui/react";
 import Cropper from "react-easy-crop";
-
-// Tipagem manual do Area, evitando erro de TS
-type Area = { x: number; y: number; width: number; height: number };
+import { useTranslations } from "next-intl";
 
 import { auth } from "@/lib/auth";
 import Icon from "@/widgets/Icon";
 import LocaleSwitcher from "@/widgets/switcher/locale";
 import ThemeSwitcher from "@/widgets/switcher/theme";
 
+type Area = { x: number; y: number; width: number; height: number };
+
 type FieldErrors = {
   email?: string;
   password?: string;
   confirmPassword?: string;
   displayName?: string;
-  avatar?: string;
 };
 
 export function SignupSection({ callback }: { callback?: string }) {
+  const t = useTranslations("_components.auth.signup");
   const router = useRouter();
+
   const signinHref = "/?auth=signin";
+  const callbackURL = callback || process.env.NEXT_PUBLIC_BASE_URL;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,25 +45,29 @@ export function SignupSection({ callback }: { callback?: string }) {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
 
-  // Cropper states
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [cropImage, setCropImage] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
-  const callbackURL = callback || process.env.NEXT_PUBLIC_BASE_URL;
-
   function validate(): boolean {
     const nextErrors: FieldErrors = {};
-    if (!displayName) nextErrors.displayName = "Nome obrigatório";
-    if (!email) nextErrors.email = "E-mail obrigatório";
-    else if (!email.includes("@")) nextErrors.email = "E-mail inválido";
-    if (!password) nextErrors.password = "Senha obrigatória";
+
+    if (!displayName)
+      nextErrors.displayName = t("validation.nameRequired");
+
+    if (!email) nextErrors.email = t("validation.emailRequired");
+    else if (!email.includes("@"))
+      nextErrors.email = t("validation.emailInvalid");
+
+    if (!password) nextErrors.password = t("validation.passwordRequired");
     else if (password.length < 6)
-      nextErrors.password = "Mínimo de 6 caracteres";
+      nextErrors.password = t("validation.passwordMin");
+
     if (password !== confirmPassword)
-      nextErrors.confirmPassword = "Senhas não conferem";
+      nextErrors.confirmPassword = t("validation.passwordMismatch");
+
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   }
@@ -73,12 +78,14 @@ export function SignupSection({ callback }: { callback?: string }) {
     setCropModalOpen(true);
   }
 
-  const onCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
+  const onCropComplete = useCallback(
+    (_: Area, cropped: Area) => setCroppedAreaPixels(cropped),
+    [],
+  );
 
   const getCroppedImage = useCallback(async () => {
-    if (!cropImage || !croppedAreaPixels) return null;
+    if (!cropImage || !croppedAreaPixels) return;
+
     const image = new Image();
     image.src = cropImage;
     await new Promise((res) => (image.onload = res));
@@ -100,15 +107,12 @@ export function SignupSection({ callback }: { callback?: string }) {
       croppedAreaPixels.height,
     );
 
-    return new Promise<File | null>((resolve) => {
-      canvas.toBlob((blob) => {
-        if (!blob) return resolve(null);
-        const file = new File([blob], "avatar.png", { type: "image/png" });
-        setAvatar(file);
-        setAvatarPreview(URL.createObjectURL(file));
-        resolve(file);
-        setCropModalOpen(false);
-      }, "image/png");
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const file = new File([blob], "avatar.png", { type: "image/png" });
+      setAvatar(file);
+      setAvatarPreview(URL.createObjectURL(file));
+      setCropModalOpen(false);
     });
   }, [cropImage, croppedAreaPixels]);
 
@@ -123,10 +127,11 @@ export function SignupSection({ callback }: { callback?: string }) {
 
   async function submitHandler(e: React.FormEvent) {
     e.preventDefault();
+
     if (!validate()) {
       addToast({
-        title: "Erro ao criar conta",
-        description: "Verifique os campos e tente novamente.",
+        title: t("toast.createError"),
+        description: t("toast.checkFields"),
         color: "danger",
       });
       return;
@@ -135,9 +140,7 @@ export function SignupSection({ callback }: { callback?: string }) {
     setLoading(true);
     try {
       let avatarUrl = "/images/avatar-placeholder.png";
-      if (avatar) {
-        avatarUrl = await fileToBase64(avatar);
-      }
+      if (avatar) avatarUrl = await fileToBase64(avatar);
 
       const result = await auth.signUp.email({
         email,
@@ -149,25 +152,24 @@ export function SignupSection({ callback }: { callback?: string }) {
 
       if (result.error) {
         addToast({
-          title: "Falha ao criar conta",
-          description: result.error.message || "Erro desconhecido",
+          title: t("toast.createFailed"),
+          description: result.error.message || t("toast.unexpectedError"),
           color: "danger",
         });
-        setLoading(false);
         return;
       }
 
       addToast({
-        title: "Conta criada com sucesso",
-        description: "Redirecionando…",
+        title: t("toast.createSuccess"),
+        description: t("toast.redirecting"),
         color: "success",
       });
 
       setTimeout(() => router.refresh(), 500);
     } catch (err: any) {
       addToast({
-        title: "Erro inesperado",
-        description: err.message || "Tente novamente mais tarde.",
+        title: t("toast.unexpectedError"),
+        description: err.message || t("toast.tryLater"),
         color: "danger",
       });
     } finally {
@@ -179,31 +181,28 @@ export function SignupSection({ callback }: { callback?: string }) {
     <Card className="w-full max-w-md rounded-lg shadow-lg bg-background/50 backdrop-blur-md border border-gray-200 dark:border-gray-700">
       <CardHeader className="flex flex-col items-center gap-4 px-8 pt-8">
         <span className="text-xs font-semibold uppercase tracking-wider text-primary bg-primary/20 px-3 py-1 rounded-full">
-          Cadastro
+          {t("badge")}
         </span>
 
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 text-center">
-          Crie sua conta
+        <h1 className="text-4xl font-bold text-center">
+          {t("title")}
         </h1>
 
-        <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-          Preencha os campos para começar
+        <p className="text-sm text-center text-gray-600 dark:text-gray-400">
+          {t("subtitle")}
         </p>
       </CardHeader>
 
       <CardBody className="px-8 pb-8">
         <form className="space-y-6" onSubmit={submitHandler}>
           <div className="flex items-center gap-4">
-            <div
-              className="relative flex-shrink-0 cursor-pointer"
-              onClick={() => avatarPreview && setCropModalOpen(true)}
-            >
+            <div className="relative cursor-pointer">
               <img
                 src={avatarPreview || "/images/avatar-placeholder.png"}
                 alt="Avatar"
-                className="h-16 w-16 aspect-square object-cover rounded-full border-2 border-primary dark:border-primary/70"
+                className="h-16 w-16 rounded-full border-2 border-primary"
               />
-              <label className="absolute bottom-0 right-0 bg-primary p-1 rounded-full hover:bg-primary/80">
+              <label className="absolute bottom-0 right-0 bg-primary p-1 rounded-full">
                 <FaCamera className="text-white text-xs" />
                 <input
                   type="file"
@@ -216,130 +215,52 @@ export function SignupSection({ callback }: { callback?: string }) {
               </label>
             </div>
 
-            <div className="flex-1">
-              <Input
-                label="Nome de exibição"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="Seu nome"
-                variant="bordered"
-                isInvalid={!!errors.displayName}
-                errorMessage={errors.displayName}
-                classNames={{
-                  inputWrapper:
-                    "transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30",
-                  input: "bg-background/80 dark:bg-gray-800",
-                }}
-              />
-            </div>
+            <Input
+              label={t("displayName")}
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              isInvalid={!!errors.displayName}
+              errorMessage={errors.displayName}
+            />
           </div>
 
           <Input
-            label="E‑mail"
+            label={t("email")}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="voce@empresa.com"
-            variant="bordered"
             isInvalid={!!errors.email}
             errorMessage={errors.email}
-            classNames={{
-              inputWrapper:
-                "transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30",
-              input: "bg-background/80 dark:bg-gray-800",
-            }}
           />
 
           <Input
-            label="Senha"
+            label={t("password")}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            variant="bordered"
             isInvalid={!!errors.password}
             errorMessage={errors.password}
-            classNames={{
-              inputWrapper:
-                "transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30",
-              input: "bg-background/80 dark:bg-gray-800",
-            }}
           />
 
           <Input
-            label="Confirmar senha"
+            label={t("confirmPassword")}
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="••••••••"
-            variant="bordered"
             isInvalid={!!errors.confirmPassword}
             errorMessage={errors.confirmPassword}
-            classNames={{
-              inputWrapper:
-                "transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30",
-              input: "bg-background/80 dark:bg-gray-800",
-            }}
           />
 
           <Button
             type="submit"
-            variant="solid"
             color="primary"
             size="lg"
             fullWidth
             isLoading={loading}
-            className="mt-4 font-semibold tracking-wide"
           >
-            Criar conta
+            {t("submit")}
           </Button>
         </form>
-
-        {/* Cropper Modal */}
-        {cropModalOpen && cropImage && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-background rounded-lg p-4 w-full max-w-sm">
-              <div className="relative w-full h-64 bg-gray-200">
-                <Cropper
-                  image={cropImage}
-                  crop={crop}
-                  zoom={zoom}
-                  aspect={1}
-                  cropShape="round"
-                  onCropChange={setCrop}
-                  onZoomChange={setZoom}
-                  onCropComplete={onCropComplete}
-                />
-              </div>
-              <div className="mt-4">
-                <input
-                  type="range"
-                  min={1}
-                  max={3}
-                  step={0.1}
-                  value={zoom}
-                  onChange={(e) => setZoom(Number(e.target.value))}
-                />
-              </div>
-              <div className="flex justify-end gap-2 mt-4">
-                <Button
-                  variant="ghost"
-                  color="default"
-                  onPress={() => setCropModalOpen(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  variant="solid"
-                  color="primary"
-                  onPress={getCroppedImage}
-                >
-                  Salvar
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
 
         <div className="flex items-center justify-center gap-4 pt-6">
           <Icon />
@@ -349,16 +270,41 @@ export function SignupSection({ callback }: { callback?: string }) {
           <ThemeSwitcher />
         </div>
 
-        <div className="mt-6 border-t border-gray-200 dark:border-gray-700 pt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-          Já tem conta?{" "}
-          <Link
-            href={signinHref}
-            className="font-medium text-primary hover:underline"
-          >
-            Entrar
+        <div className="mt-6 border-t pt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+          {t("haveAccount")}{" "}
+          <Link href={signinHref} className="text-primary hover:underline">
+            {t("signIn")}
           </Link>
         </div>
       </CardBody>
+
+      {cropModalOpen && cropImage && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-background p-4 rounded-lg w-full max-w-sm">
+            <div className="relative w-full h-64">
+              <Cropper
+                image={cropImage}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                cropShape="round"
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+              />
+            </div>
+
+            <div className="mt-4 flex justify-end gap-2">
+              <Button variant="ghost" onPress={() => setCropModalOpen(false)}>
+                {t("avatar.cancel")}
+              </Button>
+              <Button color="primary" onPress={getCroppedImage}>
+                {t("avatar.save")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   );
 }

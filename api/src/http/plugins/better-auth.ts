@@ -9,9 +9,9 @@ export const betterAuthPlugin = new Elysia({
   .mount(auth.handler)
   .macro({
     auth: {
-      async resolve({ status, request }) {
+      async resolve({ status, request: { headers } }) {
         const session = await auth.api.getSession({ 
-          headers: request.headers 
+          headers
         });
 
         if (!session) {

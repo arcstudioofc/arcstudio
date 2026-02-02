@@ -1,6 +1,10 @@
 {
   "Home": {
-    "metaTitle": "ARC Studio — AUTH"
+    "metaTitle": "ARC Studio — AUTH",
+    "loading": "Carregando…",
+    "checkingConnection": "Buscando conexão",
+    "error": "Eita!",
+    "authSystem": "Sistema de autenticação"
   },
   "NotFound": {
     "title": "Página não encontrada!",
@@ -8,7 +12,83 @@
     "suffix": "não existe.",
     "backHome": "Voltar para a Página Inicial"
   },
-
+  "_components": {
+    "auth": {
+      "session": {
+        "emailVerified": "E-mail verificado",
+        "yes": "Sim",
+        "no": "Não",
+        "memberSince": "Membro desde",
+        "lastUpdate": "Última atualização",
+        "signOut": "Sair"
+      },
+      "signin": {
+        "badge": "Autenticação",
+        "title": "Bem-vindo de volta",
+        "subtitle": "Entre com suas credenciais para continuar",
+        "email": "E-mail",
+        "password": "Senha",
+        "rememberMe": "Manter conectado",
+        "forgotPassword": "Esqueceu a senha?",
+        "submit": "Entrar na plataforma",
+        "github": "Entrar com GitHub",
+        "noAccount": "Ainda não tem conta?",
+        "createAccount": "Criar conta",
+        "validation": {
+          "emailRequired": "E-mail obrigatório",
+          "emailInvalid": "E-mail inválido",
+          "passwordRequired": "Senha obrigatória",
+          "passwordMin": "Mínimo de 6 caracteres"
+        },
+        "toast": {
+          "errorTitle": "Erro ao entrar",
+          "errorDescription": "Verifique os campos e tente novamente.",
+          "loginFailed": "Falha no login",
+          "loginSuccess": "Login bem-sucedido",
+          "connecting": "Conectando…",
+          "unexpectedError": "Erro inesperado",
+          "tryLater": "Tente novamente mais tarde.",
+          "githubFailed": "Falha no login com GitHub",
+          "passwordRecovery": "Recuperação de senha",
+          "notAvailable": "Fluxo ainda não disponível."
+        }
+      },
+      "signup": {
+        "badge": "Cadastro",
+        "title": "Crie sua conta",
+        "subtitle": "Preencha os campos para começar",
+        "displayName": "Nome de exibição",
+        "email": "E-mail",
+        "password": "Senha",
+        "confirmPassword": "Confirmar senha",
+        "submit": "Criar conta",
+        "haveAccount": "Já tem conta?",
+        "signIn": "Entrar",
+        "avatar": {
+          "change": "Alterar avatar",
+          "cancel": "Cancelar",
+          "save": "Salvar"
+        },
+        "validation": {
+          "nameRequired": "Nome obrigatório",
+          "emailRequired": "E-mail obrigatório",
+          "emailInvalid": "E-mail inválido",
+          "passwordRequired": "Senha obrigatória",
+          "passwordMin": "Mínimo de 6 caracteres",
+          "passwordMismatch": "Senhas não conferem"
+        },
+        "toast": {
+          "createError": "Erro ao criar conta",
+          "checkFields": "Verifique os campos e tente novamente.",
+          "createFailed": "Falha ao criar conta",
+          "createSuccess": "Conta criada com sucesso",
+          "redirecting": "Redirecionando…",
+          "unexpectedError": "Erro inesperado",
+          "tryLater": "Tente novamente mais tarde."
+        }
+      }
+    }
+  },
   "components": {
     "UI": {
       "Footer": {

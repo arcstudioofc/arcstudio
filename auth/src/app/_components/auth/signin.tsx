@@ -11,10 +11,9 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Accordion,
-  AccordionItem,
   addToast,
 } from "@heroui/react";
+import { useTranslations } from "next-intl";
 
 import { auth } from "@/lib/auth";
 import Icon from "@/widgets/Icon";
@@ -27,10 +26,11 @@ type FieldErrors = {
 };
 
 export function SigninSection({ callback }: { callback: string }) {
+  const t = useTranslations("_components.auth.signin");
   const router = useRouter();
+
   const signupHref = "/?auth=signup";
   const callbackURL = callback || process.env.NEXT_PUBLIC_BASE_URL;
-  console.log(callbackURL);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,21 +40,26 @@ export function SigninSection({ callback }: { callback: string }) {
 
   function validate(): boolean {
     const nextErrors: FieldErrors = {};
-    if (!email) nextErrors.email = "E-mail obrigatório";
-    else if (!email.includes("@")) nextErrors.email = "E-mail inválido";
-    if (!password) nextErrors.password = "Senha obrigatória";
+
+    if (!email) nextErrors.email = t("validation.emailRequired");
+    else if (!email.includes("@"))
+      nextErrors.email = t("validation.emailInvalid");
+
+    if (!password) nextErrors.password = t("validation.passwordRequired");
     else if (password.length < 6)
-      nextErrors.password = "Mínimo de 6 caracteres";
+      nextErrors.password = t("validation.passwordMin");
+
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   }
 
   async function submitHandler(e: React.FormEvent) {
     e.preventDefault();
+
     if (!validate()) {
       addToast({
-        title: "Erro ao entrar",
-        description: "Verifique os campos e tente novamente.",
+        title: t("toast.errorTitle"),
+        description: t("toast.errorDescription"),
         color: "danger",
       });
       return;
@@ -71,8 +76,8 @@ export function SigninSection({ callback }: { callback: string }) {
 
       if (result.error) {
         addToast({
-          title: "Falha no login",
-          description: result.error.message || "Erro desconhecido",
+          title: t("toast.loginFailed"),
+          description: result.error.message || t("toast.unexpectedError"),
           color: "danger",
         });
         setLoading(false);
@@ -80,16 +85,16 @@ export function SigninSection({ callback }: { callback: string }) {
       }
 
       addToast({
-        title: "Login bem‑sucedido",
-        description: "Conectando…",
+        title: t("toast.loginSuccess"),
+        description: t("toast.connecting"),
         color: "success",
       });
 
       setTimeout(() => router.refresh(), 500);
     } catch (err: any) {
       addToast({
-        title: "Erro inesperado",
-        description: err.message || "Tente novamente mais tarde.",
+        title: t("toast.unexpectedError"),
+        description: err.message || t("toast.tryLater"),
         color: "danger",
       });
     } finally {
@@ -107,8 +112,8 @@ export function SigninSection({ callback }: { callback: string }) {
 
       if (result.error) {
         addToast({
-          title: "Falha no login com GitHub",
-          description: result.error.message || "Erro desconhecido",
+          title: t("toast.githubFailed"),
+          description: result.error.message || t("toast.unexpectedError"),
           color: "danger",
         });
         setLoading(false);
@@ -116,16 +121,16 @@ export function SigninSection({ callback }: { callback: string }) {
       }
 
       addToast({
-        title: "Login com GitHub bem‑sucedido",
-        description: "Conectando…",
+        title: t("toast.loginSuccess"),
+        description: t("toast.connecting"),
         color: "success",
       });
 
       setTimeout(() => router.refresh(), 500);
     } catch (err: any) {
       addToast({
-        title: "Erro inesperado",
-        description: err.message || "Tente novamente mais tarde.",
+        title: t("toast.unexpectedError"),
+        description: err.message || t("toast.tryLater"),
         color: "danger",
       });
     } finally {
@@ -137,20 +142,22 @@ export function SigninSection({ callback }: { callback: string }) {
     <Card className="w-full max-w-md rounded-lg shadow-lg bg-background/50 backdrop-blur-md border border-gray-200 dark:border-gray-700">
       <CardHeader className="flex flex-col gap-2 px-8 pt-8">
         <span className="text-xs font-semibold uppercase tracking-wider text-primary bg-primary/20 px-3 py-1 rounded-full">
-          Autenticação
+          {t("badge")}
         </span>
+
         <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">
-          Bem‑vindo de volta
+          {t("title")}
         </h1>
+
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Entre com suas credenciais para continuar
+          {t("subtitle")}
         </p>
       </CardHeader>
 
       <CardBody className="px-8 pb-8">
         <form className="space-y-6" onSubmit={submitHandler}>
           <Input
-            label="E‑mail"
+            label={t("email")}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -158,15 +165,10 @@ export function SigninSection({ callback }: { callback: string }) {
             variant="bordered"
             isInvalid={!!errors.email}
             errorMessage={errors.email}
-            classNames={{
-              inputWrapper:
-                "transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30",
-              input: "bg-background/80 dark:bg-gray-800",
-            }}
           />
 
           <Input
-            label="Senha"
+            label={t("password")}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -174,11 +176,6 @@ export function SigninSection({ callback }: { callback: string }) {
             variant="bordered"
             isInvalid={!!errors.password}
             errorMessage={errors.password}
-            classNames={{
-              inputWrapper:
-                "transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30",
-              input: "bg-background/80 dark:bg-gray-800",
-            }}
           />
 
           <div className="flex items-center justify-between pt-1">
@@ -187,7 +184,7 @@ export function SigninSection({ callback }: { callback: string }) {
               onValueChange={setRememberMe}
               size="sm"
             >
-              Manter conectado
+              {t("rememberMe")}
             </Checkbox>
 
             <button
@@ -195,50 +192,48 @@ export function SigninSection({ callback }: { callback: string }) {
               className="text-sm text-primary hover:underline"
               onClick={() =>
                 addToast({
-                  title: "Recuperação de senha",
-                  description: "Fluxo ainda não disponível.",
+                  title: t("toast.passwordRecovery"),
+                  description: t("toast.notAvailable"),
                   color: "warning",
                 })
               }
             >
-              Esqueceu a senha?
+              {t("forgotPassword")}
             </button>
           </div>
 
           <Button
             type="submit"
-            variant="solid"
             color="primary"
             size="lg"
             fullWidth
             isLoading={loading}
             className="mt-4 font-semibold tracking-wide"
           >
-            Entrar na plataforma
+            {t("submit")}
           </Button>
         </form>
 
         <div className="mt-6 flex flex-col gap-3">
           <Button
             variant="bordered"
-            color="default"
             size="lg"
             fullWidth
             onPress={githubSignIn}
             isLoading={loading}
             startContent={<FaGithub />}
           >
-            Entrar com GitHub
+            {t("github")}
           </Button>
         </div>
 
         <div className="mt-6 border-t border-gray-200 dark:border-gray-700 pt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-          Ainda não tem conta?{" "}
+          {t("noAccount")}{" "}
           <Link
             href={signupHref}
             className="font-medium text-primary hover:underline"
           >
-            Criar conta
+            {t("createAccount")}
           </Link>
         </div>
 

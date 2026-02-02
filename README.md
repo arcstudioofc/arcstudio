@@ -68,12 +68,35 @@ Sem exceções.
 
 ---
 
+### ⚠️ Versionamento do Projeto
+
+O versionamento do `package.json` **na raiz da monorepo** segue um **formato baseado em data**, e **não** Semantic Versioning.
+
+#### 📦 Formato oficial
+```json
+"version": "02.01.2026-beta.1"
+````
+
+#### 📅 Padrão
+
+* **MM.DD.YYYY**
+* Sufixos opcionais: `-alpha.X`, `-beta.X`, `-rc.X`
+
+#### ❗ Importante
+
+* Este padrão é **obrigatório**
+* Versionamentos fora desse formato **não serão aceitos**
+* A regra se aplica **apenas ao `package.json` root**
+
+---
+
 ### 🚀 Iniciando o projeto
 
 1. Instale as dependências na raiz da monorepo:
+
 ```bash
 pnpm install
-````
+```
 
 2. Configure os arquivos de ambiente:
 

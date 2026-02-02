@@ -6,6 +6,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaCircle } from "react-icons/fa";
+import { useTranslations } from "next-intl";
 
 import { UserSession } from "../_components/auth/session";
 import { SigninSection } from "../_components/auth/signin";
@@ -16,6 +17,8 @@ import { auth } from "@/lib/auth";
 type ApiStatus = "loading" | "online" | "error";
 
 export default function HomePage() {
+  const t = useTranslations("Home");
+
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const searchParams = useSearchParams();
@@ -31,13 +34,13 @@ export default function HomePage() {
     const timeout = setTimeout(() => {
       setApiStatus("error");
       controller.abort();
-    }, 10000); // tempo máximo de espera
+    }, 10000);
 
     fetch(process.env.NEXT_PUBLIC_API_URL + "/about", {
       signal: controller.signal,
     })
       .then((res) => {
-        if (!res.ok) throw new Error("Erro");
+        if (!res.ok) throw new Error();
         return res.json();
       })
       .then((data) => {
@@ -63,7 +66,7 @@ export default function HomePage() {
   if (isPending) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-lg text-gray-500">Carregando…</p>
+        <p className="text-lg text-gray-500">{t("loading")}</p>
       </div>
     );
   }
@@ -83,13 +86,13 @@ export default function HomePage() {
       bg: "bg-yellow-500/15 border-yellow-500/30",
       text: "text-yellow-600 dark:text-yellow-400",
       pulse: ["#854d0e", "#eab308", "#854d0e"],
-      label: "Buscando conexão",
+      label: t("checkingConnection"),
     },
     error: {
       bg: "bg-red-500/15 border-red-500/30",
       text: "text-red-600 dark:text-red-400",
       pulse: ["#7f1d1d", "#ef4444", "#7f1d1d"],
-      label: "Ops!",
+      label: t("error"),
     },
   }[apiStatus];
 
@@ -113,7 +116,6 @@ export default function HomePage() {
         />
       </div>
 
-      {/* STATUS FOOTER */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 font-mono">
         <motion.div
           initial={{ opacity: 0 }}
@@ -140,7 +142,7 @@ export default function HomePage() {
         </motion.div>
 
         <span className="text-[11px] text-muted-foreground text-center">
-          &copy; ARC Studio · Auth system ·{" "}
+          &copy; ARC Studio · {t("authSystem")} ·{" "}
           <a
             href="https://arcstudio.online"
             target="_blank"

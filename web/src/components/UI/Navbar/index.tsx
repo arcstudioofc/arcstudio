@@ -62,7 +62,7 @@ export function Navbar() {
           <div className="hidden md:flex items-center space-x-4">
 
             <Link
-              href="/app"
+              href={process.env.NEXT_PUBLIC_AUTH_URL+"/?auth=signin&callback="+encodeURIComponent(window.location.href)}
               className="px-4 py-2 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors shadow-md"
             >
               {t("buttons.start")}

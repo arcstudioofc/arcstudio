@@ -1,6 +1,10 @@
 {
   "Home": {
-    "metaTitle": "ARC Studio — AUTH"
+    "metaTitle": "ARC Studio — AUTH",
+    "loading": "Loading…",
+    "checkingConnection": "Checking connection",
+    "error": "Yikes!",
+    "authSystem": "Auth system"
   },
   "NotFound": {
     "title": "Page not found!",
@@ -8,7 +12,83 @@
     "suffix": "does not exist.",
     "backHome": "Go Back to Home Page"
   },
-
+  "_components": {
+    "auth": {
+      "session": {
+        "emailVerified": "Email verified",
+        "yes": "Yes",
+        "no": "No",
+        "memberSince": "Member since",
+        "lastUpdate": "Last update",
+        "signOut": "Sign out"
+      },
+      "signin": {
+        "badge": "Authentication",
+        "title": "Welcome back",
+        "subtitle": "Sign in with your credentials to continue",
+        "email": "Email",
+        "password": "Password",
+        "rememberMe": "Keep me signed in",
+        "forgotPassword": "Forgot your password?",
+        "submit": "Sign in",
+        "github": "Sign in with GitHub",
+        "noAccount": "Don't have an account?",
+        "createAccount": "Create account",
+        "validation": {
+          "emailRequired": "Email is required",
+          "emailInvalid": "Invalid email",
+          "passwordRequired": "Password is required",
+          "passwordMin": "Minimum of 6 characters"
+        },
+        "toast": {
+          "errorTitle": "Sign-in error",
+          "errorDescription": "Check the fields and try again.",
+          "loginFailed": "Login failed",
+          "loginSuccess": "Login successful",
+          "connecting": "Connecting…",
+          "unexpectedError": "Unexpected error",
+          "tryLater": "Try again later.",
+          "githubFailed": "GitHub login failed",
+          "passwordRecovery": "Password recovery",
+          "notAvailable": "Flow not available yet."
+        }
+      },
+      "signup": {
+        "badge": "Sign up",
+        "title": "Create your account",
+        "subtitle": "Fill in the fields to get started",
+        "displayName": "Display name",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm password",
+        "submit": "Create account",
+        "haveAccount": "Already have an account?",
+        "signIn": "Sign in",
+        "avatar": {
+          "change": "Change avatar",
+          "cancel": "Cancel",
+          "save": "Save"
+        },
+        "validation": {
+          "nameRequired": "Name is required",
+          "emailRequired": "Email is required",
+          "emailInvalid": "Invalid email",
+          "passwordRequired": "Password is required",
+          "passwordMin": "Minimum of 6 characters",
+          "passwordMismatch": "Passwords do not match"
+        },
+        "toast": {
+          "createError": "Error creating account",
+          "checkFields": "Check the fields and try again.",
+          "createFailed": "Account creation failed",
+          "createSuccess": "Account created successfully",
+          "redirecting": "Redirecting…",
+          "unexpectedError": "Unexpected error",
+          "tryLater": "Try again later."
+        }
+      }
+    }
+  },
   "components": {
     "UI": {
       "Footer": {
