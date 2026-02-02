@@ -177,16 +177,15 @@ export function SignupSection({ callback }: { callback?: string }) {
     }
   }
 
-  return (
+  // ===================== VERSÃO DESKTOP =====================
+  const DesktopForm = (
     <Card className="w-full max-w-md rounded-lg shadow-lg bg-background/50 backdrop-blur-md border border-gray-200 dark:border-gray-700">
       <CardHeader className="flex flex-col items-center gap-4 px-8 pt-8">
         <span className="text-xs font-semibold uppercase tracking-wider text-primary bg-primary/20 px-3 py-1 rounded-full">
           {t("badge")}
         </span>
 
-        <h1 className="text-4xl font-bold text-center">
-          {t("title")}
-        </h1>
+        <h1 className="text-4xl font-bold text-center">{t("title")}</h1>
 
         <p className="text-sm text-center text-gray-600 dark:text-gray-400">
           {t("subtitle")}
@@ -218,6 +217,7 @@ export function SignupSection({ callback }: { callback?: string }) {
             <Input
               label={t("displayName")}
               value={displayName}
+              variant="bordered"
               onChange={(e) => setDisplayName(e.target.value)}
               isInvalid={!!errors.displayName}
               errorMessage={errors.displayName}
@@ -228,6 +228,7 @@ export function SignupSection({ callback }: { callback?: string }) {
             label={t("email")}
             type="email"
             value={email}
+            variant="bordered"
             onChange={(e) => setEmail(e.target.value)}
             isInvalid={!!errors.email}
             errorMessage={errors.email}
@@ -237,6 +238,7 @@ export function SignupSection({ callback }: { callback?: string }) {
             label={t("password")}
             type="password"
             value={password}
+            variant="bordered"
             onChange={(e) => setPassword(e.target.value)}
             isInvalid={!!errors.password}
             errorMessage={errors.password}
@@ -246,6 +248,7 @@ export function SignupSection({ callback }: { callback?: string }) {
             label={t("confirmPassword")}
             type="password"
             value={confirmPassword}
+            variant="bordered"
             onChange={(e) => setConfirmPassword(e.target.value)}
             isInvalid={!!errors.confirmPassword}
             errorMessage={errors.confirmPassword}
@@ -277,6 +280,119 @@ export function SignupSection({ callback }: { callback?: string }) {
           </Link>
         </div>
       </CardBody>
+    </Card>
+  );
+
+  // ===================== VERSÃO MOBILE =====================
+  const MobileForm = (
+    <Card className="w-full max-w-sm rounded-lg shadow-lg bg-background/50 backdrop-blur-md border border-gray-200 dark:border-gray-700">
+      <CardHeader className="flex flex-col items-center gap-4 px-6 pt-6">
+        <span className="text-xs font-semibold uppercase tracking-wider text-primary bg-primary/20 px-2 py-1 rounded-full">
+          {t("badge")}
+        </span>
+
+        <h1 className="text-2xl font-bold text-center">{t("title")}</h1>
+
+        <p className="text-sm text-center text-gray-600 dark:text-gray-400">
+          {t("subtitle")}
+        </p>
+      </CardHeader>
+
+      <CardBody className="px-6 pb-6">
+        <form className="space-y-4" onSubmit={submitHandler}>
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative cursor-pointer">
+              <img
+                src={avatarPreview || "/images/avatar-placeholder.png"}
+                alt="Avatar"
+                className="h-14 w-14 rounded-full border-2 border-primary"
+              />
+              <label className="absolute bottom-0 right-0 bg-primary p-1 rounded-full">
+                <FaCamera className="text-white text-xs" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    e.target.files && handleAvatarChange(e.target.files[0])
+                  }
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            <Input
+              label={t("displayName")}
+              value={displayName}
+              variant="bordered"
+              onChange={(e) => setDisplayName(e.target.value)}
+              isInvalid={!!errors.displayName}
+              errorMessage={errors.displayName}
+            />
+          </div>
+
+          <Input
+            label={t("email")}
+            type="email"
+            value={email}
+            variant="bordered"
+            onChange={(e) => setEmail(e.target.value)}
+            isInvalid={!!errors.email}
+            errorMessage={errors.email}
+          />
+
+          <Input
+            label={t("password")}
+            type="password"
+            value={password}
+            variant="bordered"
+            onChange={(e) => setPassword(e.target.value)}
+            isInvalid={!!errors.password}
+            errorMessage={errors.password}
+          />
+
+          <Input
+            label={t("confirmPassword")}
+            type="password"
+            value={confirmPassword}
+            variant="bordered"
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            isInvalid={!!errors.confirmPassword}
+            errorMessage={errors.confirmPassword}
+          />
+
+          <Button
+            type="submit"
+            color="primary"
+            size="lg"
+            fullWidth
+            isLoading={loading}
+          >
+            {t("submit")}
+          </Button>
+        </form>
+
+        <div className="flex items-center justify-center gap-4 pt-6">
+          <Icon />
+          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
+          <LocaleSwitcher />
+          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
+          <ThemeSwitcher />
+        </div>
+
+        <div className="mt-4 border-t pt-3 text-center text-sm text-gray-600 dark:text-gray-400">
+          {t("haveAccount")}{" "}
+          <Link href={signinHref} className="text-primary hover:underline">
+            {t("signIn")}
+          </Link>
+        </div>
+      </CardBody>
+    </Card>
+  );
+
+  return (
+    <>
+      <div className="hidden md:flex justify-center">{DesktopForm}</div>
+      <div className="md:hidden flex justify-center">{MobileForm}</div>
 
       {cropModalOpen && cropImage && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -305,6 +421,6 @@ export function SignupSection({ callback }: { callback?: string }) {
           </div>
         </div>
       )}
-    </Card>
+    </>
   );
 }

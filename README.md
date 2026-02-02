@@ -67,26 +67,77 @@ Contribuições são bem-vindas, desde que sigam **rigorosamente** o padrão do 
 Sem exceções.
 
 ---
+### ⚠️ Versionamento do Projeto (OFICIAL)
 
-### ⚠️ Versionamento do Projeto
+O versionamento do `package.json` **na raiz do monorepo** segue um **formato baseado em data**, **não usando Semantic Versioning**.
 
-O versionamento do `package.json` **na raiz da monorepo** segue um **formato baseado em data**, e **não** Semantic Versioning.
+---
 
 #### 📦 Formato oficial
+
 ```json
-"version": "02.01.2026-beta.1"
-````
+"version": "YYYY.MM.DD-hash"
+```
 
-#### 📅 Padrão
+* **Exemplo:** `2026.02.02-4f5e6d7a`
 
-* **MM.DD.YYYY**
-* Sufixos opcionais: `-alpha.X`, `-beta.X`, `-rc.X`
+---
 
-#### ❗ Importante
+### 📅 Padrão de data
 
-* Este padrão é **obrigatório**
-* Versionamentos fora desse formato **não serão aceitos**
-* A regra se aplica **apenas ao `package.json` root**
+* Ano.Mês.Dia → `YYYY.MM.DD`
+* O **hash** é gerado no momento do build e garante que cada versão seja **única**
+
+---
+
+> [!WARNING]
+> * Este padrão é **obrigatório**
+> * Versionamentos fora desse formato **não serão aceitos**
+> * A regra se aplica **apenas ao `package.json` da raiz**
+> * Pré-releases e releases seguem o **mesmo padrão**
+> * O changelog é **opcional** e será criado em `docs/changelog/<tipo>/<version>.md` quando solicitado
+
+---
+
+### 🔄 Atualização de Versão
+
+Para atualizar a versão do root, use o script dedicado:
+
+```bash
+pnpm run update:version
+```
+
+#### Como funciona
+
+1. O script pede uma **descrição da versão** (ex: `Correção de bugs`)
+2. Pergunta o **tipo de release** (`release` ou `pre-release`) — ambos seguem o mesmo padrão de versão
+3. Gera automaticamente uma **versão no formato `YYYY.MM.DD-HASH`**
+4. Atualiza o `package.json` do root
+5. Pergunta se você deseja **criar o changelog** (opcional)
+6. Mostra no console a **versão antiga → nova** e o caminho do changelog, caso criado
+
+#### Exemplo de saída
+
+```text
+Versão atualizada com sucesso!
+
+Versão de build atualizada: 2026.01.02-a1b2c3d → 2026.02.02-4f5e6d7a
+Changelog criado em: docs/changelog/release/2026.02.02-4f5e6d7a.md
+```
+
+---
+
+### ⚙️ Observações
+
+* Cada build gera um **hash único**, mesmo que não haja novos commits
+* O fluxo garante **consistência do versionamento** e facilita rastreabilidade de builds
+
+> [!IMPORTANT]
+> **Quando deve ser usado?**  
+> - Toda vez que for fazer um commit e enviar, **deve-se rodar primeiro `pnpm run update:version`**  
+> - Se optar por criar o changelog, configure-o antes  
+> - Depois de gerar a versão e (opcionalmente) o changelog, só então faça o commit e envie com segurança
+
 
 ---
 
@@ -139,6 +190,23 @@ Mudança sem changelog não existe.
 * **📸 Instagram:** [https://instagram.com/arcstudio.oficial](https://instagram.com/arcstudio.oficial)
 * **🐦 X (Twitter):** [https://twitter.com/arcstudio_ofc](https://twitter.com/arcstudio_ofc)
 * **💼 Fundador:** [https://github.com/yeyTaken](https://github.com/yeyTaken)
+
+<br>
+
+
+<div style="text-align: center;">
+<pre style="display: inline-block;">
+          _____   _____    _____ _             _ _          _____              
+    /\   |  __ \ / ____|  / ____| |           | (_)        |_   _|             
+   /  \  | |__) | |      | (___ | |_ _   _  __| |_  ___      | |  _ __   ___   
+  / /\ \ |  _  /| |       \___ \| __| | | |/ _` | |/ _ \     | | | '_ \ / __|  
+ / ____ \| | \ \| |____   ____) | |_| |_| | (_| | | (_) |   _| |_| | | | (__ _ 
+/_/    \_\_|  \_\\_____| |_____/ \__|\__,_|\__,_|_|\___( ) |_____|_| |_|\___(_)
+                                                       |/                      
+</pre>
+</div>
+
+
 
 <br>
 

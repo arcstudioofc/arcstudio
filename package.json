@@ -1,12 +1,13 @@
 {
   "name": "@arcstudio/root",
-  "version": "02.01.2026-beta.1",
+  "version": "2026.02.02-e6a92d26",
   "description": "Advanced Resource Center Studio (ARC Studio), a monorepo.",
   "license": "ISC",
   "scripts": {
     "dev": "turbo dev --parallel",
-    "build": "turbo build --parallel",
-    "clean": "tsx scripts/src/lib/clean.ts"
+    "build": "turbo build --parallel && pnpm update:version",
+    "clean": "tsx scripts/src/lib/clean.ts",
+    "update:version": "tsx scripts/src/lib/version.ts"
   },
   "dependencies": {
     "typescript": "catalog:",

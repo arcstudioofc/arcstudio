@@ -25,7 +25,7 @@ type FieldErrors = {
   password?: string;
 };
 
-export function SigninSection({ callback }: { callback: string }) {
+export function SigninSection({ callback }: { callback?: string }) {
   const t = useTranslations("_components.auth.signin");
   const router = useRouter();
 
@@ -138,8 +138,9 @@ export function SigninSection({ callback }: { callback: string }) {
     }
   }
 
-  return (
-    <Card className="w-full max-w-md rounded-lg shadow-lg bg-background/50 backdrop-blur-md border border-gray-200 dark:border-gray-700">
+  // ===================== DESKTOP =====================
+  const DesktopForm = (
+    <Card className="hidden md:flex w-full max-w-md rounded-lg shadow-lg bg-background/50 backdrop-blur-md border border-gray-200 dark:border-gray-700">
       <CardHeader className="flex flex-col gap-2 px-8 pt-8">
         <span className="text-xs font-semibold uppercase tracking-wider text-primary bg-primary/20 px-3 py-1 rounded-full">
           {t("badge")}
@@ -149,9 +150,7 @@ export function SigninSection({ callback }: { callback: string }) {
           {t("title")}
         </h1>
 
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {t("subtitle")}
-        </p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">{t("subtitle")}</p>
       </CardHeader>
 
       <CardBody className="px-8 pb-8">
@@ -246,5 +245,121 @@ export function SigninSection({ callback }: { callback: string }) {
         </div>
       </CardBody>
     </Card>
+  );
+
+  // ===================== MOBILE =====================
+  const MobileForm = (
+    <Card className="md:hidden w-full max-w-sm rounded-lg shadow-lg bg-background/50 backdrop-blur-md border border-gray-200 dark:border-gray-700">
+      <CardHeader className="flex flex-col gap-2 px-6 pt-6">
+        <span className="text-xs font-semibold uppercase tracking-wider text-primary bg-primary/20 px-2 py-1 rounded-full">
+          {t("badge")}
+        </span>
+
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          {t("title")}
+        </h1>
+
+        <p className="text-sm text-gray-600 dark:text-gray-400">{t("subtitle")}</p>
+      </CardHeader>
+
+      <CardBody className="px-6 pb-6">
+        <form className="space-y-4" onSubmit={submitHandler}>
+          <Input
+            label={t("email")}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="voce@empresa.com"
+            variant="bordered"
+            isInvalid={!!errors.email}
+            errorMessage={errors.email}
+          />
+
+          <Input
+            label={t("password")}
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            variant="bordered"
+            isInvalid={!!errors.password}
+            errorMessage={errors.password}
+          />
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-1 gap-2">
+            <Checkbox
+              isSelected={rememberMe}
+              onValueChange={setRememberMe}
+              size="sm"
+            >
+              {t("rememberMe")}
+            </Checkbox>
+
+            <button
+              type="button"
+              className="text-sm text-primary hover:underline"
+              onClick={() =>
+                addToast({
+                  title: t("toast.passwordRecovery"),
+                  description: t("toast.notAvailable"),
+                  color: "warning",
+                })
+              }
+            >
+              {t("forgotPassword")}
+            </button>
+          </div>
+
+          <Button
+            type="submit"
+            color="primary"
+            size="lg"
+            fullWidth
+            isLoading={loading}
+            className="mt-4 font-semibold tracking-wide"
+          >
+            {t("submit")}
+          </Button>
+        </form>
+
+        <div className="mt-4 flex flex-col gap-3">
+          <Button
+            variant="bordered"
+            size="lg"
+            fullWidth
+            onPress={githubSignIn}
+            isLoading={loading}
+            startContent={<FaGithub />}
+          >
+            {t("github")}
+          </Button>
+        </div>
+
+        <div className="mt-4 border-t border-gray-200/50 dark:border-gray-700/50 pt-3 text-center text-sm text-gray-600 dark:text-gray-400">
+          {t("noAccount")}{" "}
+          <Link
+            href={signupHref}
+            className="font-medium text-primary hover:underline"
+          >
+            {t("createAccount")}
+          </Link>
+        </div>
+
+        <div className="flex items-center justify-center gap-4 pt-6">
+          <Icon />
+          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
+          <LocaleSwitcher />
+          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
+          <ThemeSwitcher />
+        </div>
+      </CardBody>
+    </Card>
+  );
+
+  return (
+    <>
+      {DesktopForm}
+      {MobileForm}
+    </>
   );
 }

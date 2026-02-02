@@ -97,62 +97,133 @@ export default function HomePage() {
   }[apiStatus];
 
   return (
-    <section className="min-h-screen grid grid-cols-1 md:grid-cols-2 relative">
-      <div className="flex items-center justify-center px-6">
-        {authParam === "signup" ? (
-          <SignupSection callback={callback!} />
-        ) : (
-          <SigninSection callback={callback!} />
-        )}
-      </div>
+    <>
+      {/* ===================== DESKTOP VERSION ===================== */}
+      <section className="hidden md:grid min-h-screen grid-cols-2 relative gap-4">
+        {/* Form Section */}
+        <div className="flex items-center justify-center px-6 w-full">
+          <div className="w-full max-w-md">
+            {authParam === "signup" ? (
+              <SignupSection callback={callback!} />
+            ) : (
+              <SigninSection callback={callback!} />
+            )}
+          </div>
+        </div>
 
-      <div className="hidden md:flex items-center justify-center">
-        <Image
-          src={iconSrc}
-          alt="ARC Studio"
-          width={510}
-          height={600}
-          priority
-        />
-      </div>
+        {/* Desktop Image */}
+        <div className="flex items-center justify-center">
+          <Image
+            src={iconSrc}
+            alt="ARC Studio"
+            width={510}
+            height={600}
+            priority
+            className="object-contain max-h-[70vh]"
+          />
+        </div>
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 font-mono">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className={`flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur border ${statusStyles.bg}`}
-        >
-          <motion.span
-            animate={{
-              opacity: [0.4, 1, 0.4],
-              color: statusStyles.pulse,
-            }}
-            transition={{
-              duration: 1.6,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
+        {/* API Status & Footer */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 font-mono px-2 sm:px-0">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={`flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur border ${statusStyles.bg}`}
           >
-            <FaCircle size={8} />
-          </motion.span>
+            <motion.span
+              animate={{
+                opacity: [0.4, 1, 0.4],
+                color: statusStyles.pulse,
+              }}
+              transition={{
+                duration: 1.6,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            >
+              <FaCircle size={8} />
+            </motion.span>
 
-          <span className={`text-xs ${statusStyles.text}`}>
-            {statusStyles.label}
+            <span className={`text-xs ${statusStyles.text}`}>
+              {statusStyles.label}
+            </span>
+          </motion.div>
+
+          <span className="text-[11px] sm:text-[12px] text-muted-foreground text-center mt-1">
+            &copy; ARC Studio · {t("authSystem")} ·{" "}
+            <a
+              href="https://arcstudio.online"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-primary/80 transition-colors"
+            >
+              arcstudio.online
+            </a>
           </span>
-        </motion.div>
+        </div>
+      </section>
 
-        <span className="text-[11px] text-muted-foreground text-center">
-          &copy; ARC Studio · {t("authSystem")} ·{" "}
-          <a
-            href="https://arcstudio.online"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-primary/80 transition-colors"
+      {/* ===================== MOBILE VERSION ===================== */}
+      <section className="md:hidden min-h-screen flex flex-col items-center justify-center px-4 py-6 relative gap-6">
+        {/* Image */}
+        <div className="flex items-center justify-center w-full">
+          <Image
+            src={iconSrc}
+            alt="ARC Studio"
+            width={300}
+            height={350}
+            className="object-contain"
+          />
+        </div>
+
+        {/* Form Section */}
+        <div className="w-full max-w-sm">
+          {authParam === "signup" ? (
+            <SignupSection callback={callback!} />
+          ) : (
+            <SigninSection callback={callback!} />
+          )}
+        </div>
+
+        {/* API Status & Footer */}
+        <div className="flex flex-col items-center gap-2 mt-4 font-mono w-full">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={`flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur border ${statusStyles.bg}`}
           >
-            arcstudio.online
-          </a>
-        </span>
-      </div>
-    </section>
+            <motion.span
+              animate={{
+                opacity: [0.4, 1, 0.4],
+                color: statusStyles.pulse,
+              }}
+              transition={{
+                duration: 1.6,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            >
+              <FaCircle size={8} />
+            </motion.span>
+
+            <span className={`text-xs ${statusStyles.text}`}>
+              {statusStyles.label}
+            </span>
+          </motion.div>
+
+          <span className="text-[11px] text-muted-foreground text-center mt-1">
+            &copy; ARC Studio · {t("authSystem")} ·{" "}
+            <a
+              href="https://arcstudio.online"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-primary/80 transition-colors"
+            >
+              arcstudio.online
+            </a>
+          </span>
+        </div>
+      </section>
+    </>
   );
 }
