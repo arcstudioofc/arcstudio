@@ -1,0 +1,73 @@
+{
+  "Home": {
+    "metaTitle": "ARC Studio — AUTH"
+  },
+  "NotFound": {
+    "title": "Page not found!",
+    "prefix": "The path",
+    "suffix": "does not exist.",
+    "backHome": "Go Back to Home Page"
+  },
+
+  "components": {
+    "UI": {
+      "Footer": {
+        "product": {
+          "title": "Product",
+          "links": {
+            "app": "Access via browser",
+            "pricing": "Support Us",
+            "changelog": "Changelog"
+          }
+        },
+        "company": {
+          "title": "Company",
+          "links": {
+            "about": "About Us",
+            "team": "Team",
+            "contact": "Contact"
+          }
+        },
+        "support": {
+          "title": "Support",
+          "links": {
+            "faq": "FAQ",
+            "docs": "Documentation",
+            "terms": "Terms of Service"
+          }
+        },
+        "copyright": {
+          "developedBy": "Developed with 💙 by",
+          "rightsReserved": "All rights reserved."
+        },
+        "tagline": "The best of your ideas — only here, at ARC Studio."
+      },
+      "Navbar": {
+        "links": {
+          "changelog": "Changelog",
+          "pricing": "Support Us",
+          "official-projects": "Official Projects",
+          "about": "About Us"
+        },
+        "buttons": {
+          "start": "Get Started"
+        },
+        "ariaLabels": {
+          "toggleMenu": "Toggle menu"
+        }
+      }
+    }
+  },
+  "lib": {
+    "i18n": {
+      "localeSwitcher": {
+        "ariaLabel": "Language Switcher",
+        "languages": {
+          "pt-br": "Portuguese",
+          "en-us": "English",
+          "es-es": "Spanish"
+        }
+      }
+    }
+  }
+}

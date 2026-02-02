@@ -25,7 +25,8 @@ function createWindow() {
     },
   });
 
-  mainWindow.loadURL("https://arcstudio.online");
+  // mainWindow.loadURL("https://arcstudio.online");
+  mainWindow.loadURL("http://localhost:3000");
 
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();

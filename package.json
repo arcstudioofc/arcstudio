@@ -1,20 +1,48 @@
 {
-  "name": "@arcstudio/monorepo",
-  "version": "3.2.0-beta.1",
+  "name": "@arcstudio/root",
+  "version": "0.0.0-beta.1",
   "description": "Advanced Resource Center Studio (ARC Studio), a monorepo.",
+  "license": "ISC",
   "scripts": {
     "dev": "turbo dev --parallel",
-    "build": "turbo build --parallel"
+    "build": "turbo build --parallel",
+    "clean": "tsx scripts/src/lib/clean.ts"
   },
   "dependencies": {
+    "typescript": "catalog:",
+    "tsx": "catalog:",
     "turbo": "^2.5.4"
   },
-  "packageManager": "pnpm@10.9.0",
   "workspaces": [
-    "api/",
-    "apps/*"
+    "api",
+    "apps/*",
+    "auth",
+    "packages/*",
+    "scripts",
+    "web"
   ],
-  "keywords": [],
-  "author": "Israel R. Jatobá",
-  "license": "ISC"
+  "cleanConfig": {
+    "defaultDirs": [
+      "node_modules",
+      "dist",
+      ".next",
+      ".turbo"
+    ],
+    "excludeDirs": [
+      "scripts",
+      "config"
+    ]
+  },
+  "keywords": [
+    ""
+  ],
+  "author": {
+    "name": "Israel R. Jatobá",
+    "email": "contact.israeljatoba@gmail.com",
+    "url": "https://yeytaken.vercel.app/en-us"
+  },
+  "packageManager": "pnpm@10.9.0",
+  "engines": {
+    "node": ">=24"
+  }
 }
