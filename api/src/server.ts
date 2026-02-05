@@ -10,6 +10,7 @@ import { logger } from "./utils/logger.js";
 import { indexRoutes } from "./http/routes/index.js";
 import { userRoutes } from "./http/routes/user.js";
 import { aboutRoutes } from "./http/routes/about.js";
+import { usersRoutes } from "./http/routes/users.js";
 import { Package } from "./config/package.js";
 
 const app = new Elysia({
@@ -51,6 +52,7 @@ const app = new Elysia({
   .use(betterAuthPlugin)
   .use(indexRoutes)
   .use(userRoutes)
+  .use(usersRoutes)
   .use(aboutRoutes)
   .listen({ port: env.DEFAULT_PORT }, (info) => {
     logger(`🔥 api is running at ${info.hostname}:${info.port}`);

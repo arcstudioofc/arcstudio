@@ -1,6 +1,6 @@
 {
   "name": "@arcstudio/api",
-  "version": "0.1.3-beta",
+  "version": "0.1.0-prerelease",
   "type": "module",
   "scripts": {
     "dev": "tsx watch --env-file=.env.development.local src/server.ts",

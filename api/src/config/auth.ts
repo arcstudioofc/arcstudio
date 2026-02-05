@@ -1,14 +1,26 @@
 import argon2 from "argon2";
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
-import { admin, openAPI, username } from "better-auth/plugins";
+import { admin, openAPI, organization, username } from "better-auth/plugins";
 
 import { env } from "../config/env.js";
 import { client, db } from "../database/client.js";
 import { generateSnowflakeId } from "../utils/snowflake.js";
 // import { is } from "zod/locales";
 
-const USERNAME_REGEX = /^[a-zA-Z0-9_-]+$/;
+const DISCORD_USERNAME_REGEX = /^[a-z0-9_.]+$/;
+const hasConsecutivePeriods = (value: string) => value.includes("..");
+const normalizeDiscordUsername = (value: string) =>
+	value.trim().toLowerCase();
+const isDiscordUsername = (value: string) => {
+	const username = normalizeDiscordUsername(value);
+
+	if (username.length < 2 || username.length > 32) return false;
+	if (!DISCORD_USERNAME_REGEX.test(username)) return false;
+	if (hasConsecutivePeriods(username)) return false;
+
+	return true;
+};
 // const isDev = process.env.NODE_ENV !== "production";
 
 export const auth = betterAuth({
@@ -24,19 +36,18 @@ export const auth = betterAuth({
 		admin(),
 		openAPI(),
 		username({
-			minUsernameLength: 3,
-			maxUsernameLength: 18,
+			minUsernameLength: 2,
+			maxUsernameLength: 32,
 
 			usernameValidator: (value) => {
-				const username = value.trim().toLowerCase();
-				return USERNAME_REGEX.test(username);
+				return isDiscordUsername(value);
 			},
 
 			displayUsernameValidator: (value) => {
-				const username = value.trim().toLowerCase();
-				return USERNAME_REGEX.test(username);
+				return isDiscordUsername(value);
 			},
 		}),
+		organization(),
 	],
 
 	advanced: {

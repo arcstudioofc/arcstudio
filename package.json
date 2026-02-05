@@ -1,6 +1,6 @@
 {
   "name": "@arcstudio/root",
-  "version": "2026.02.02-e6a92d26",
+  "version": "2026.02.05-f18a041f",
   "description": "Advanced Resource Center Studio (ARC Studio), a monorepo.",
   "license": "ISC",
   "scripts": {
