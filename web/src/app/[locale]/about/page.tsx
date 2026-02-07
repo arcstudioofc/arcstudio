@@ -1,4 +1,4 @@
-import ARC from "@/components/UI/ARC";
+import ARC from "@/widgets/Icon";
 import { useTranslations } from 'next-intl';
 
 export default function AboutPage() {

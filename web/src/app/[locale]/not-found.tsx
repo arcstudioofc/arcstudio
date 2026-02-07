@@ -2,9 +2,10 @@
 
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
-import Link from "next/link";
 import { FaGhost } from "react-icons/fa";
 import { useTranslations } from "next-intl";
+
+import { Link } from "@/lib/i18n/navigation";
 
 export default function NotFound() {
     const pathName = usePathname();

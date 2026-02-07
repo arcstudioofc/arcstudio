@@ -11,6 +11,8 @@ import { indexRoutes } from "./http/routes/index.js";
 import { userRoutes } from "./http/routes/user.js";
 import { aboutRoutes } from "./http/routes/about.js";
 import { usersRoutes } from "./http/routes/users.js";
+import { changelogRoutes } from "./http/routes/changelogs.js";
+import { officialProjectRoutes } from "./http/routes/official-projects.js";
 import { Package } from "./config/package.js";
 
 const app = new Elysia({
@@ -41,6 +43,8 @@ const app = new Elysia({
         tags: [
           { name: "Default", description: "Default routes" },
           { name: "User", description: "User related routes" },
+          { name: "Changelog", description: "Changelog routes" },
+          { name: "Official Projects", description: "Official projects routes" },
           {
             name: "Auth system",
             description: "System authentication for users in routes",
@@ -54,6 +58,8 @@ const app = new Elysia({
   .use(userRoutes)
   .use(usersRoutes)
   .use(aboutRoutes)
+  .use(changelogRoutes)
+  .use(officialProjectRoutes)
   .listen({ port: env.DEFAULT_PORT }, (info) => {
     logger(`🔥 api is running at ${info.hostname}:${info.port}`);
   });

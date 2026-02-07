@@ -1,6 +1,6 @@
 {
   "name": "@arcstudio/auth",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "private": true,
   "scripts": {
@@ -16,6 +16,7 @@
     "@heroui/react": "^2.8.5",
     "@heroui/theme": "^2.4.23",
     "@mui/material": "^7.3.7",
+    "@vercel/og": "^0.8.6",
     "better-auth": "^1.4.18",
     "framer-motion": "^12.23.25",
     "mongoose": "^9.0.2",

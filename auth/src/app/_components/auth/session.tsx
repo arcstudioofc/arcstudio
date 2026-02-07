@@ -22,8 +22,9 @@ import {
   FaTrash,
   FaDoorOpen,
   FaGhost,
+  FaKeyboard,
 } from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import Cropper from "react-easy-crop";
 import { motion } from "framer-motion";
@@ -157,15 +158,15 @@ const slugifyOrganization = (value: string) => {
     .replace(/-+$/, "");
 };
 
-export function UserSession({
-  user,
-}: {
-  user: typeof auth.$Infer.Session["user"];
-}) {
+export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"] }) {
   const router = useRouter();
+  const params = useParams<{ locale?: string; username?: string }>();
   const t = useTranslations("_components.auth.session");
   const locale = useLocale();
   const { data: sessionData, refetch } = auth.useSession();
+
+  const routeLocale = params?.locale;
+  const routeUsername = params?.username;
 
   const currentUsername = ((user as Record<string, unknown>).username ||
     "") as string;
@@ -222,7 +223,12 @@ export function UserSession({
   const [searchError, setSearchError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<SearchUser | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(false);
+  const [activeResultIndex, setActiveResultIndex] = useState<number>(-1);
+  const [pendingUserParam, setPendingUserParam] = useState<string | null>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const searchOverlayRef = useRef<HTMLDivElement>(null);
+  const searchOverlayInputRef = useRef<HTMLInputElement>(null);
   const [copiedId, setCopiedId] = useState(false);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [orgLoading, setOrgLoading] = useState(false);
@@ -771,8 +777,16 @@ export function UserSession({
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      // When the command palette overlay is open, its own handlers control visibility.
+      if (isSearchOverlayOpen) {
+        return;
+      }
+
+      if (searchOverlayRef.current?.contains(target)) return;
       if (!searchContainerRef.current) return;
-      if (!searchContainerRef.current.contains(event.target as Node)) {
+      if (!searchContainerRef.current.contains(target)) {
         setIsSearchOpen(false);
       }
     };
@@ -781,7 +795,7 @@ export function UserSession({
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, []);
+  }, [isSearchOverlayOpen]);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -805,6 +819,7 @@ export function UserSession({
       setSearchError(null);
       setSearchLoading(false);
       setIsSearchOpen(false);
+      setActiveResultIndex(-1);
       return;
     }
 
@@ -839,6 +854,122 @@ export function UserSession({
 
     return () => clearTimeout(timeout);
   }, [apiRoot, searchQuery, t]);
+
+  const updateUserQueryParam = useCallback(
+    (usernameOrId: string) => {
+      const targetUsername =
+        normalizeArcstudioUsername(usernameOrId) ||
+        usernameOrId ||
+        currentUsername;
+
+      const targetLocale = routeLocale || locale;
+      router.replace(`/${targetLocale}/profile/${targetUsername}`);
+    },
+    [currentUsername, locale, routeLocale, router],
+  );
+
+  // Abrir/fechar overlay por teclado e fora de inputs
+  useEffect(() => {
+    const handleKey = (event: KeyboardEvent) => {
+      const isModifier = event.metaKey || event.ctrlKey;
+      const target = event.target as HTMLElement | null;
+      const isTypingField =
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable);
+
+      if (event.key === "Escape") {
+        setIsSearchOverlayOpen(false);
+        setIsSearchOpen(false);
+        setActiveResultIndex(-1);
+      }
+
+      const shortcut =
+        (isModifier && (event.key === "k" || event.key === "K")) ||
+        (!isModifier && event.key === "/");
+
+      if (shortcut && !isTypingField) {
+        event.preventDefault();
+        setIsSearchOverlayOpen(true);
+        setIsSearchOpen(true);
+        setActiveResultIndex(
+          searchResults.length ? Math.max(0, activeResultIndex) : -1,
+        );
+        setTimeout(() => searchOverlayInputRef.current?.focus(), 0);
+      }
+
+      if (isSearchOverlayOpen && searchResults.length) {
+        if (event.key === "ArrowDown") {
+          event.preventDefault();
+          setActiveResultIndex((prev) =>
+            prev + 1 < searchResults.length ? prev + 1 : prev,
+          );
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault();
+          setActiveResultIndex((prev) => (prev - 1 >= 0 ? prev - 1 : 0));
+        } else if (event.key === "Enter" && activeResultIndex >= 0) {
+          const item = searchResults[activeResultIndex];
+          if (item) {
+            setSelectedUser(item);
+            setIsSearchOverlayOpen(false);
+            setIsSearchOpen(false);
+            setActiveResultIndex(-1);
+            setSearchQuery("");
+            updateUserQueryParam(
+              normalizeArcstudioUsername(item.username || "") || item.id,
+            );
+          }
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [
+    activeResultIndex,
+    isSearchOverlayOpen,
+    searchResults,
+    updateUserQueryParam,
+  ]);
+
+  // Carrega perfil ao acessar /profile/[username] diretamente
+  useEffect(() => {
+    if (!routeUsername) {
+      setPendingUserParam(null);
+      setSelectedUser(null);
+      return;
+    }
+
+    const normalized = normalizeArcstudioUsername(routeUsername.replace(/^@/, ""));
+    if (!normalized || normalized.length < 2) return;
+    if (pendingUserParam === normalized) return;
+
+    setPendingUserParam(normalized);
+
+    const selfUsername = normalizeArcstudioUsername(currentUsername);
+    if (normalized === selfUsername) {
+      setSelectedUser(null);
+      return;
+    }
+
+    setSearchLoading(true);
+    setSearchError(null);
+
+    fetch(
+      `${apiRoot || ""}/users/search?q=${encodeURIComponent(normalized)}&limit=1`,
+      { credentials: "include" },
+    )
+      .then(async (res) => {
+        if (!res.ok) throw new Error(t("searchError"));
+        const data = await res.json();
+        const first = Array.isArray(data) ? data[0] : null;
+        if (first) setSelectedUser(first);
+        else setSearchError(t("searchNoResults"));
+      })
+      .catch(() => setSearchError(t("searchError")))
+      .finally(() => setSearchLoading(false));
+  }, [apiRoot, currentUsername, pendingUserParam, routeUsername, t]);
 
   async function handleCopyId() {
     try {
@@ -884,6 +1015,7 @@ export function UserSession({
 
     ghostPrevX.current = currentX;
   }, []);
+
 
   function startEditOrganization(org: Organization) {
     if (!isOwnerForOrg(org.id)) return;
@@ -1320,38 +1452,637 @@ export function UserSession({
     }
   }
 
+  const orgsPanel = (
+    <div className="space-y-6">
+      <div className="rounded-3xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-gray-500">
+            <FaBuilding className="text-sm" />
+            {t("orgsTitle")}
+          </div>
+          {isViewingSelf && (
+            <div className="relative" ref={notificationsRef}>
+              <button
+                type="button"
+                onClick={() => setNotificationsOpen((prev) => !prev)}
+                className="relative flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition hover:border-primary/50 hover:text-primary dark:border-gray-700"
+                aria-label={t("orgNotificationsTitle")}
+              >
+                <FaBell />
+                {invitesCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold text-white">
+                    {invitesCount}
+                  </span>
+                )}
+              </button>
+
+              {notificationsOpen && (
+                <div className="absolute right-0 mt-3 w-80 overflow-hidden rounded-2xl border border-gray-200 bg-background/95 shadow-xl backdrop-blur dark:border-gray-700">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                    <span className="text-[11px] uppercase tracking-[0.2em] text-gray-500">
+                      {t("orgNotificationsTitle")}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {invitesCount}
+                    </span>
+                  </div>
+                  <div className="max-h-72 overflow-y-auto">
+                    {invitesLoading && (
+                      <p className="px-4 py-3 text-xs text-gray-500">
+                        {t("orgNotificationsLoading")}
+                      </p>
+                    )}
+
+                    {!invitesLoading && invitesError && (
+                      <p className="px-4 py-3 text-xs text-danger">
+                        {invitesError}
+                      </p>
+                    )}
+
+                    {!invitesLoading &&
+                      !invitesError &&
+                      invites.length === 0 && (
+                        <p className="px-4 py-3 text-xs text-gray-500">
+                          {t("orgNotificationsEmpty")}
+                        </p>
+                      )}
+
+                    {!invitesLoading &&
+                      !invitesError &&
+                      invites.map((invite) => (
+                        <div
+                          key={invite.id}
+                          className="px-4 py-3 border-b border-gray-100 last:border-b-0 dark:border-gray-800"
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-foreground truncate">
+                                {invite.organizationName || invite.organizationId}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                @{invite.role || "member"} · {formatDate(invite.createdAt)}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                size="sm"
+                                color="success"
+                                variant="flat"
+                                onPress={() => handleAcceptInvitation(invite.id)}
+                                isDisabled={inviteActionId === invite.id || invitesLoading}
+                                isLoading={inviteActionId === invite.id}
+                              >
+                                <FaCheckCircle className="text-sm" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                color="danger"
+                                variant="flat"
+                                onPress={() => handleRejectInvitation(invite.id)}
+                                isDisabled={inviteActionId === invite.id || invitesLoading}
+                                isLoading={inviteActionId === invite.id}
+                              >
+                                <FaTimesCircle className="text-sm" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {orgLoading && (
+          <p className="text-xs text-gray-500">{t("orgLoading")}</p>
+        )}
+
+        {orgError && <p className="text-xs text-danger">{orgError}</p>}
+
+        {!orgLoading && !orgError && organizations.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 px-4 py-6 text-center text-sm text-gray-500">
+            <div className="flex items-center justify-center gap-2">
+              <span>{t("orgEmpty")}</span>
+              <motion.span
+                className="inline-flex text-lg text-foreground/70"
+                style={{
+                  transformOrigin: "50% 50%",
+                  scaleX: ghostFacing,
+                }}
+                onUpdate={handleGhostUpdate}
+                animate={{
+                  x: [0, 18, 0],
+                }}
+                transition={{
+                  duration: 2.4,
+                  repeat: Number.POSITIVE_INFINITY,
+                  repeatDelay: 0.4,
+                  ease: "easeInOut",
+                }}
+              >
+                <FaGhost />
+              </motion.span>
+            </div>
+          </div>
+        )}
+
+        {!orgLoading && organizations.length > 0 && (
+          <div className="space-y-3">
+            {organizations.map((org) => {
+              const isActive = org.id === activeOrganizationId;
+              const memberRole =
+                org.currentRole ||
+                org.members?.find((member) => member.userId === user.id)?.role ||
+                (isActive && typeof activeMemberRole === "string"
+                  ? activeMemberRole
+                  : "");
+              const normalizedRole =
+                typeof memberRole === "string" ? memberRole.toLowerCase() : "";
+              const isOwner = normalizedRole === "owner";
+              const isCreator = getCreatorId(org.metadata) === user.id;
+              const canDeleteOrg = isViewingSelf && (isOwner || isCreator);
+              const canLeaveOrg =
+                isViewingSelf && !canDeleteOrg && !!normalizedRole;
+              return (
+                <div
+                  key={org.id}
+                  className={`rounded-2xl border border-gray-200 dark:border-gray-700 p-4 transition ${
+                    isActive && isViewingSelf
+                      ? "border-primary/50 bg-primary/5"
+                      : "hover:border-primary/40"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-foreground/5 text-sm font-bold text-foreground overflow-hidden">
+                      {org.logo ? (
+                        <img
+                          src={org.logo}
+                          alt={org.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <span>{org.name?.[0]?.toUpperCase() || "O"}</span>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-foreground truncate">
+                        {org.name}
+                      </p>
+                      <p className="text-xs text-gray-500">@{org.slug}</p>
+                    </div>
+                    {isViewingSelf && isActive && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-[10px] font-semibold text-primary">
+                        <FaCheckCircle className="text-[10px]" />
+                        {t("orgActive")}
+                      </span>
+                    )}
+                  </div>
+
+                  {canManageOrganizations && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Button
+                        size="sm"
+                        variant="bordered"
+                        onPress={() => handleSetActiveOrganization(org.id)}
+                        isDisabled={isActive}
+                        className="text-xs"
+                      >
+                        {t("orgSetActive")}
+                      </Button>
+                      {isOwner && (
+                        <Button
+                          size="sm"
+                          variant="flat"
+                          onPress={() => startEditOrganization(org)}
+                          className="text-xs"
+                        >
+                          <FaPen className="mr-1" />
+                          {t("orgEdit")}
+                        </Button>
+                      )}
+                      {canDeleteOrg && (
+                        <Button
+                          size="sm"
+                          variant="bordered"
+                          color="danger"
+                          onPress={() => handleDeleteOrganization(org.id, org.name)}
+                          className="text-xs"
+                        >
+                          <FaTrash className="mr-1" />
+                          {t("orgDelete")}
+                        </Button>
+                      )}
+                      {canLeaveOrg && (
+                        <Button
+                          size="sm"
+                          variant="bordered"
+                          onPress={() => handleLeaveOrganization(org.id)}
+                          className="text-xs"
+                        >
+                          <FaDoorOpen className="mr-1" />
+                          {t("orgLeave")}
+                        </Button>
+                      )}
+                    </div>
+                  )}
+
+                  {canManageOrganizations &&
+                    isOwner &&
+                    editingOrgId === org.id && (
+                      <div className="mt-4 space-y-3">
+                        <Input
+                          label={t("orgNameLabel")}
+                          value={editOrgName}
+                          variant="bordered"
+                          onChange={(e) => {
+                            setEditOrgName(e.target.value);
+                            if (editOrgErrors.name) {
+                              setEditOrgErrors((prev) => ({
+                                ...prev,
+                                name: undefined,
+                              }));
+                            }
+                          }}
+                          isInvalid={!!editOrgErrors.name}
+                          errorMessage={editOrgErrors.name}
+                        />
+                        <div className="space-y-1">
+                          <Input
+                            label={t("orgSlugLabel")}
+                            value={editOrgSlug}
+                            variant="bordered"
+                            onChange={(e) => {
+                              setEditOrgSlug(e.target.value);
+                              setEditSlugTouched(true);
+                              if (editOrgErrors.slug) {
+                                setEditOrgErrors((prev) => ({
+                                  ...prev,
+                                  slug: undefined,
+                                }));
+                              }
+                            }}
+                            isInvalid={!!editOrgErrors.slug}
+                            errorMessage={editOrgErrors.slug}
+                          />
+                          <p className="text-xs text-gray-500">
+                            {t("orgSlugHint")}
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[11px] uppercase tracking-[0.2em] text-gray-500">
+                            {t("orgLogoLabel")}
+                          </label>
+                          <div className="flex flex-wrap items-center gap-3">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-foreground/5 text-sm font-bold text-foreground overflow-hidden">
+                              {editOrgLogoPreview ? (
+                                <img
+                                  src={editOrgLogoPreview}
+                                  alt={editOrgName || "Organization"}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <FaBuilding className="text-sm text-gray-500" />
+                              )}
+                            </div>
+                            <label className="inline-flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-xs font-semibold text-foreground/80 transition hover:border-primary/40 cursor-pointer">
+                              <FaCamera className="text-xs" />
+                              {t("orgLogoSelect")}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) =>
+                                  handleEditOrgLogoFileChange(
+                                    e.target.files?.[0] || null,
+                                  )
+                                }
+                                className="hidden"
+                              />
+                            </label>
+                            {editOrgLogoFile && (
+                              <span className="text-xs text-gray-500">
+                                {editOrgLogoFile.name}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-500">
+                            {t("orgLogoHint")}
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <Button
+                            size="sm"
+                            color="primary"
+                            onPress={handleUpdateOrganization}
+                            isLoading={orgUpdating}
+                            className="font-semibold"
+                          >
+                            {orgUpdating
+                              ? t("orgUpdating")
+                              : t("orgUpdateButton")}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="light"
+                            onPress={resetEditOrganization}
+                            className="font-semibold"
+                          >
+                            <FaTimes className="mr-1" />
+                            {t("avatar.cancel")}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {canManageOrganizations && (
+        <div className="rounded-3xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-gray-500">
+            <FaPlus className="text-sm" />
+            {t("orgCreateTitle")}
+          </div>
+          <Input
+            label={t("orgNameLabel")}
+            value={orgName}
+            variant="bordered"
+            onChange={(e) => {
+              setOrgName(e.target.value);
+              if (orgFormErrors.name) {
+                setOrgFormErrors((prev) => ({
+                  ...prev,
+                  name: undefined,
+                }));
+              }
+            }}
+            isInvalid={!!orgFormErrors.name}
+            errorMessage={orgFormErrors.name}
+          />
+          <div className="space-y-1">
+            <Input
+              label={t("orgSlugLabel")}
+              value={orgSlug}
+              variant="bordered"
+              onChange={(e) => {
+                setOrgSlug(e.target.value);
+                setOrgSlugTouched(true);
+                if (orgFormErrors.slug) {
+                  setOrgFormErrors((prev) => ({
+                    ...prev,
+                    slug: undefined,
+                  }));
+                }
+              }}
+              isInvalid={!!orgFormErrors.slug}
+              errorMessage={orgFormErrors.slug}
+            />
+            <p className="text-xs text-gray-500">{t("orgSlugHint")}</p>
+          </div>
+          <div className="space-y-2">
+            <label className="text-[11px] uppercase tracking-[0.2em] text-gray-500">
+              {t("orgLogoLabel")}
+            </label>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-foreground/5 text-sm font-bold text-foreground overflow-hidden">
+                {orgLogoPreview ? (
+                  <img
+                    src={orgLogoPreview}
+                    alt={orgName || "Organization"}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <FaBuilding className="text-sm text-gray-500" />
+                )}
+              </div>
+              <label className="inline-flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-xs font-semibold text-foreground/80 transition hover:border-primary/40 cursor-pointer">
+                <FaCamera className="text-xs" />
+                {t("orgLogoSelect")}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    handleOrgLogoFileChange(e.target.files?.[0] || null)
+                  }
+                  className="hidden"
+                />
+              </label>
+              {orgLogoFile && (
+                <span className="text-xs text-gray-500">
+                  {orgLogoFile.name}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-gray-500">{t("orgLogoHint")}</p>
+          </div>
+          <Button
+            color="primary"
+            size="lg"
+            onPress={handleCreateOrganization}
+            isLoading={orgCreating}
+            className="font-semibold tracking-wide"
+          >
+            {orgCreating ? t("orgCreating") : t("orgCreateButton")}
+          </Button>
+        </div>
+      )}
+
+      {canInviteMembers && (
+        <div className="rounded-3xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-gray-500">
+            <FaUserPlus className="text-sm" />
+            {t("orgInviteTitle")}
+          </div>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-[11px] uppercase tracking-[0.2em] text-gray-500">
+                {t("orgSelectLabel")}
+              </label>
+              <select
+                value={selectedOrgId || ""}
+                onChange={(e) => setSelectedOrgId(e.target.value)}
+                disabled={!organizations.length}
+                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-60"
+              >
+                {!organizations.length && (
+                  <option value="">{t("orgSelectEmpty")}</option>
+                )}
+                {organizations.map((org) => (
+                  <option key={org.id} value={org.id}>
+                    {org.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <Input
+              label={t("orgInviteEmail")}
+              value={inviteEmail}
+              variant="bordered"
+              onChange={(e) => {
+                setInviteEmail(e.target.value);
+                if (inviteErrors.email) {
+                  setInviteErrors((prev) => ({
+                    ...prev,
+                    email: undefined,
+                  }));
+                }
+              }}
+              isInvalid={!!inviteErrors.email}
+              errorMessage={inviteErrors.email}
+            />
+            <Input
+              label={t("orgInviteRole")}
+              value={inviteRole}
+              variant="bordered"
+              onChange={(e) => {
+                setInviteRole(e.target.value);
+                if (inviteErrors.role) {
+                  setInviteErrors((prev) => ({
+                    ...prev,
+                    role: undefined,
+                  }));
+                }
+              }}
+              isInvalid={!!inviteErrors.role}
+              errorMessage={inviteErrors.role}
+            />
+            <Button
+              color="primary"
+              size="lg"
+              onPress={handleInviteMember}
+              isLoading={inviteLoading}
+              isDisabled={!organizations.length}
+              className="font-semibold tracking-wide"
+            >
+              {inviteLoading ? t("orgInviting") : t("orgInviteButton")}
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="min-h-screen w-full">
       <header className="sticky top-0 z-40 border-b border-gray-200/70 bg-background/90 backdrop-blur dark:border-gray-800/70">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-6 py-4 lg:flex-row lg:items-center">
-          <div className="flex items-center gap-4 shrink-0">
-            <Icon />
-            <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
-            <span className="text-lg font-extrabold font-mono text-foreground">
-              @{normalizeArcstudioUsername(nickname) || "user"}
-            </span>
+        <div className="mx-auto w-full max-w-6xl px-6 py-3 flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
+          <div className="flex items-center justify-between gap-3 md:gap-4 md:justify-start">
+            <div className="flex items-center gap-4 shrink-0">
+              <Icon />
+              <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
+              <span className="text-base md:text-lg font-extrabold font-mono text-foreground">
+                @{normalizeArcstudioUsername(nickname) || "user"}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 md:hidden">
+              <LocaleSwitcher />
+              <ThemeSwitcher />
+            </div>
           </div>
 
-          <div className="flex-1">
-            <div
-              className="relative mx-auto w-full max-w-xl"
-              ref={searchContainerRef}
-            >
+          <div className="hidden md:flex flex-1 max-w-2xl mx-6" ref={searchContainerRef}>
+            <div className="relative w-full">
+              <div className="absolute inset-y-0 left-3 flex items-center text-gray-500 pointer-events-none">
+                <FaSearch className="h-4 w-4" />
+              </div>
               <Input
                 value={searchQuery}
                 variant="bordered"
                 radius="full"
                 placeholder={t("searchPlaceholder")}
-                startContent={<FaSearch className="text-gray-500" />}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => {
-                  if (searchQuery.trim().length >= 2) setIsSearchOpen(true);
+                startContent={null}
+                readOnly
+                classNames={{
+                  inputWrapper:
+                    "pl-10 pr-4 border-foreground/10 hover:border-primary/30 transition cursor-pointer",
+                }}
+                onClick={() => {
+                  setIsSearchOverlayOpen(true);
+                  setIsSearchOpen(true);
+                  setTimeout(() => searchOverlayInputRef.current?.focus(), 0);
                 }}
               />
+            </div>
+          </div>
+
+          <div className="hidden md:flex items-center gap-3 md:ml-auto">
+            <div className="flex items-center gap-2.5 rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 shrink-0 shadow-[0_1px_6px_rgba(0,0,0,0.04)]">
+              <LocaleSwitcher />
+              <div className="h-5 w-px bg-gray-300 dark:bg-gray-600" />
+              <ThemeSwitcher />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Command Palette Search Overlay */}
+      {isSearchOverlayOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-background/70 backdrop-blur-md"
+            onClick={() => {
+              setIsSearchOverlayOpen(false);
+              setIsSearchOpen(false);
+              setActiveResultIndex(-1);
+            }}
+          />
+          <div className="fixed top-16 md:top-20 left-1/2 z-50 w-full max-w-lg md:max-w-2xl -translate-x-1/2 px-4">
+            <div
+              className="relative rounded-2xl border border-gray-200 dark:border-gray-700 bg-background/95 shadow-2xl p-4 space-y-3"
+              ref={searchOverlayRef}
+            >
+              <div className="flex items-center justify-between pb-2 border-b border-foreground/10">
+                <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <FaSearch className="text-gray-500" />
+                  {t("searchPlaceholder")}
+                </div>
+                <div className="hidden md:inline-flex items-center gap-2 text-[11px] text-muted-foreground bg-foreground/5 px-2.5 py-1 rounded-full border border-foreground/10">
+                  <FaKeyboard className="h-3.5 w-3.5" />
+                  <span className="font-semibold">Ctrl</span>
+                  <span className="text-foreground/50">+</span>
+                  <span className="font-semibold">K</span>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-foreground/10 bg-background/90 shadow-lg p-3 flex items-center gap-3">
+                <FaSearch className="text-gray-500" />
+                <Input
+                  value={searchQuery}
+                  variant="bordered"
+                  radius="full"
+                  placeholder={t("searchPlaceholder")}
+                  startContent={null}
+                  className="flex-1"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => {
+                    if (searchQuery.trim().length >= 2) setIsSearchOpen(true);
+                  }}
+                  autoFocus
+                  ref={searchOverlayInputRef}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSearchOverlayOpen(false);
+                    setIsSearchOpen(false);
+                    setActiveResultIndex(-1);
+                  }}
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-600 transition hover:border-primary/60 hover:text-primary dark:border-gray-700"
+                  aria-label={t("backToMe")}
+                  data-search-toggle
+                >
+                  <FaTimes />
+                </button>
+              </div>
 
               {isSearchOpen && searchQuery.trim().length >= 2 && (
-                <div className="absolute z-20 mt-2 w-full overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-background/95 shadow-lg backdrop-blur">
-                  <div className="max-h-72 overflow-y-auto">
+                <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-background/95 shadow-lg">
+                  <div className="max-h-72 overflow-y-auto divide-y divide-foreground/5">
                     {searchLoading && (
                       <p className="px-4 py-3 text-xs text-gray-500">
                         {t("searchLoading")}
@@ -1374,64 +2105,61 @@ export function UserSession({
 
                     {!searchLoading &&
                       !searchError &&
-                      searchResults.map((result) => (
+                      searchResults.map((result, index) => (
                         <button
                           key={result.id}
                           type="button"
                           onClick={() => {
                             setSelectedUser(result);
                             setIsSearchOpen(false);
-                          }}
-                          className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-foreground/5"
-                        >
-                          <img
-                            src={
-                              result.image || "/images/avatar-placeholder.png"
-                            }
-                            alt={result.name || "User"}
-                            className="h-10 w-10 rounded-full object-cover"
-                          />
-                          <div className="min-w-0">
-                            <p className="text-sm font-semibold text-foreground truncate">
-                              {result.name || result.username || result.id}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              @{normalizeArcstudioUsername(
+                            setIsSearchOverlayOpen(false);
+                            setActiveResultIndex(-1);
+                            setSearchQuery("");
+                            updateUserQueryParam(
+                              normalizeArcstudioUsername(
                                 result.username || "",
-                              ) || "user"}
-                            </p>
+                              ) || result.id,
+                            );
+                          }}
+                          className={`w-full text-left transition px-4 py-3 ${
+                            index === activeResultIndex
+                              ? "bg-primary/10 border-l-2 border-primary"
+                              : "hover:bg-foreground/5"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={
+                                result.image || "/images/avatar-placeholder.png"
+                              }
+                              alt={result.name || "User"}
+                              className="h-10 w-10 rounded-full object-cover"
+                            />
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-foreground truncate">
+                                {result.name || result.username || result.id}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                @{normalizeArcstudioUsername(
+                                  result.username || "",
+                                ) || "user"}
+                              </p>
+                            </div>
                           </div>
                         </button>
                       ))}
                   </div>
                 </div>
               )}
-            </div>
 
-            {!isViewingSelf && (
-              <div className="mt-2 flex items-center justify-center gap-2 text-xs text-gray-500">
-                <span>{t("viewOnlyHint")}</span>
-                <button
-                  type="button"
-                  className="text-primary hover:underline"
-                  onClick={() => {
-                    setSelectedUser(null);
-                    setSearchQuery("");
-                  }}
-                >
-                  {t("backToMe")}
-                </button>
+              <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                <span>↑↓ · Enter · Esc</span>
+                <span>/ ou Ctrl/Cmd + K</span>
               </div>
-            )}
+            </div>
           </div>
-
-          <div className="flex items-center gap-3 rounded-full border border-gray-200 dark:border-gray-700 px-4 py-2 shrink-0">
-            <LocaleSwitcher />
-            <div className="h-5 w-px bg-gray-300 dark:bg-gray-600" />
-            <ThemeSwitcher />
-          </div>
-        </div>
-      </header>
+        </>
+      )}
 
       <div className="mx-auto w-full max-w-6xl space-y-10 px-6 py-10">
         <div className="grid gap-10 lg:grid-cols-[2fr,1fr]">
@@ -1637,547 +2365,7 @@ export function UserSession({
             </div>
           </section>
 
-          <aside className="space-y-6">
-            <div className="rounded-3xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-gray-500">
-                  <FaBuilding className="text-sm" />
-                  {t("orgsTitle")}
-                </div>
-                {isViewingSelf && (
-                  <div className="relative" ref={notificationsRef}>
-                    <button
-                      type="button"
-                      onClick={() => setNotificationsOpen((prev) => !prev)}
-                      className="relative flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition hover:border-primary/50 hover:text-primary dark:border-gray-700"
-                      aria-label={t("orgNotificationsTitle")}
-                    >
-                      <FaBell />
-                      {invitesCount > 0 && (
-                        <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold text-white">
-                          {invitesCount}
-                        </span>
-                      )}
-                    </button>
-
-                    {notificationsOpen && (
-                      <div className="absolute right-0 mt-3 w-80 overflow-hidden rounded-2xl border border-gray-200 bg-background/95 shadow-xl backdrop-blur dark:border-gray-700">
-                        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                          <span className="text-[11px] uppercase tracking-[0.2em] text-gray-500">
-                            {t("orgNotificationsTitle")}
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            {invitesCount}
-                          </span>
-                        </div>
-                        <div className="max-h-72 overflow-y-auto">
-                          {invitesLoading && (
-                            <p className="px-4 py-3 text-xs text-gray-500">
-                              {t("orgNotificationsLoading")}
-                            </p>
-                          )}
-
-                          {!invitesLoading && invitesError && (
-                            <p className="px-4 py-3 text-xs text-danger">
-                              {invitesError}
-                            </p>
-                          )}
-
-                          {!invitesLoading &&
-                            !invitesError &&
-                            invites.length === 0 && (
-                              <p className="px-4 py-3 text-xs text-gray-500">
-                                {t("orgNotificationsEmpty")}
-                              </p>
-                            )}
-
-                          {!invitesLoading &&
-                            !invitesError &&
-                            invites.map((invite) => (
-                              <div
-                                key={invite.id}
-                                className="px-4 py-3 border-b border-gray-100 last:border-b-0 dark:border-gray-800"
-                              >
-                                <div className="flex items-center justify-between gap-3">
-                                  <div className="min-w-0">
-                                    <p className="text-sm font-semibold text-foreground truncate">
-                                      {invite.organizationName ||
-                                        invite.organizationId}
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                      @{invite.role || "member"} ·{" "}
-                                      {formatDate(invite.createdAt)}
-                                    </p>
-                                  </div>
-                                  <div className="flex items-center gap-1">
-                                    <Button
-                                      size="sm"
-                                      color="success"
-                                      variant="flat"
-                                      onPress={() =>
-                                        handleAcceptInvitation(invite.id)
-                                      }
-                                      isDisabled={
-                                        inviteActionId === invite.id ||
-                                        invitesLoading
-                                      }
-                                      isLoading={inviteActionId === invite.id}
-                                    >
-                                      <FaCheckCircle className="text-sm" />
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      color="danger"
-                                      variant="flat"
-                                      onPress={() =>
-                                        handleRejectInvitation(invite.id)
-                                      }
-                                      isDisabled={
-                                        inviteActionId === invite.id ||
-                                        invitesLoading
-                                      }
-                                      isLoading={inviteActionId === invite.id}
-                                    >
-                                      <FaTimesCircle className="text-sm" />
-                                    </Button>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {orgLoading && (
-                <p className="text-xs text-gray-500">{t("orgLoading")}</p>
-              )}
-
-              {orgError && <p className="text-xs text-danger">{orgError}</p>}
-
-              {!orgLoading && !orgError && organizations.length === 0 && (
-                <div className="rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 px-4 py-6 text-center text-sm text-gray-500">
-                  <div className="flex items-center justify-center gap-2">
-                    <span>{t("orgEmpty")}</span>
-                    <motion.span
-                      className="inline-flex text-lg text-foreground/70"
-                      style={{
-                        transformOrigin: "50% 50%",
-                        scaleX: ghostFacing,
-                      }}
-                      onUpdate={handleGhostUpdate}
-                      animate={{
-                        x: [0, 18, 0],
-                      }}
-                      transition={{
-                        duration: 2.4,
-                        repeat: Number.POSITIVE_INFINITY,
-                        repeatDelay: 0.4,
-                        ease: "easeInOut",
-                      }}
-                    >
-                      <FaGhost />
-                    </motion.span>
-                  </div>
-                </div>
-              )}
-
-              {!orgLoading && organizations.length > 0 && (
-                <div className="space-y-3">
-                  {organizations.map((org) => {
-                    const isActive = org.id === activeOrganizationId;
-                    const memberRole =
-                      org.currentRole ||
-                      org.members?.find(
-                        (member) => member.userId === user.id,
-                      )?.role ||
-                      (isActive && typeof activeMemberRole === "string"
-                        ? activeMemberRole
-                        : "");
-                    const normalizedRole =
-                      typeof memberRole === "string"
-                        ? memberRole.toLowerCase()
-                        : "";
-                    const isOwner = normalizedRole === "owner";
-                    const isCreator = getCreatorId(org.metadata) === user.id;
-                    const canDeleteOrg = isViewingSelf && (isOwner || isCreator);
-                    const canLeaveOrg =
-                      isViewingSelf && !canDeleteOrg && !!normalizedRole;
-                    return (
-                      <div
-                        key={org.id}
-                        className={`rounded-2xl border border-gray-200 dark:border-gray-700 p-4 transition ${
-                          isActive && isViewingSelf
-                            ? "border-primary/50 bg-primary/5"
-                            : "hover:border-primary/40"
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-foreground/5 text-sm font-bold text-foreground overflow-hidden">
-                            {org.logo ? (
-                              <img
-                                src={org.logo}
-                                alt={org.name}
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <span>
-                                {org.name?.[0]?.toUpperCase() || "O"}
-                              </span>
-                            )}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-semibold text-foreground truncate">
-                              {org.name}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              @{org.slug}
-                            </p>
-                          </div>
-                          {isViewingSelf && isActive && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-[10px] font-semibold text-primary">
-                              <FaCheckCircle className="text-[10px]" />
-                              {t("orgActive")}
-                            </span>
-                          )}
-                        </div>
-
-                        {canManageOrganizations && (
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            <Button
-                              size="sm"
-                              variant="bordered"
-                              onPress={() =>
-                                handleSetActiveOrganization(org.id)
-                              }
-                              isDisabled={isActive}
-                              className="text-xs"
-                            >
-                              {t("orgSetActive")}
-                            </Button>
-                            {isOwner && (
-                              <Button
-                                size="sm"
-                                variant="flat"
-                                onPress={() => startEditOrganization(org)}
-                                className="text-xs"
-                              >
-                                <FaPen className="mr-1" />
-                                {t("orgEdit")}
-                              </Button>
-                            )}
-                            {canDeleteOrg && (
-                              <Button
-                                size="sm"
-                                variant="bordered"
-                                color="danger"
-                                onPress={() =>
-                                  handleDeleteOrganization(org.id, org.name)
-                                }
-                                className="text-xs"
-                              >
-                                <FaTrash className="mr-1" />
-                                {t("orgDelete")}
-                              </Button>
-                            )}
-                            {canLeaveOrg && (
-                              <Button
-                                size="sm"
-                                variant="bordered"
-                                onPress={() => handleLeaveOrganization(org.id)}
-                                className="text-xs"
-                              >
-                                <FaDoorOpen className="mr-1" />
-                                {t("orgLeave")}
-                              </Button>
-                            )}
-                          </div>
-                        )}
-
-                        {canManageOrganizations &&
-                          isOwner &&
-                          editingOrgId === org.id && (
-                          <div className="mt-4 space-y-3">
-                            <Input
-                              label={t("orgNameLabel")}
-                              value={editOrgName}
-                              variant="bordered"
-                              onChange={(e) => {
-                                setEditOrgName(e.target.value);
-                                if (editOrgErrors.name) {
-                                  setEditOrgErrors((prev) => ({
-                                    ...prev,
-                                    name: undefined,
-                                  }));
-                                }
-                              }}
-                              isInvalid={!!editOrgErrors.name}
-                              errorMessage={editOrgErrors.name}
-                            />
-                            <div className="space-y-1">
-                              <Input
-                                label={t("orgSlugLabel")}
-                                value={editOrgSlug}
-                                variant="bordered"
-                                onChange={(e) => {
-                                  setEditOrgSlug(e.target.value);
-                                  setEditSlugTouched(true);
-                                  if (editOrgErrors.slug) {
-                                    setEditOrgErrors((prev) => ({
-                                      ...prev,
-                                      slug: undefined,
-                                    }));
-                                  }
-                                }}
-                                isInvalid={!!editOrgErrors.slug}
-                                errorMessage={editOrgErrors.slug}
-                              />
-                              <p className="text-xs text-gray-500">
-                                {t("orgSlugHint")}
-                              </p>
-                            </div>
-                            <div className="space-y-2">
-                              <label className="text-[11px] uppercase tracking-[0.2em] text-gray-500">
-                                {t("orgLogoLabel")}
-                              </label>
-                              <div className="flex flex-wrap items-center gap-3">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-foreground/5 text-sm font-bold text-foreground overflow-hidden">
-                                  {editOrgLogoPreview ? (
-                                    <img
-                                      src={editOrgLogoPreview}
-                                      alt={editOrgName || "Organization"}
-                                      className="h-full w-full object-cover"
-                                    />
-                                  ) : (
-                                    <FaBuilding className="text-sm text-gray-500" />
-                                  )}
-                                </div>
-                                <label className="inline-flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-xs font-semibold text-foreground/80 transition hover:border-primary/40 cursor-pointer">
-                                  <FaCamera className="text-xs" />
-                                  {t("orgLogoSelect")}
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) =>
-                                      handleEditOrgLogoFileChange(
-                                        e.target.files?.[0] || null,
-                                      )
-                                    }
-                                    className="hidden"
-                                  />
-                                </label>
-                                {editOrgLogoFile && (
-                                  <span className="text-xs text-gray-500">
-                                    {editOrgLogoFile.name}
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-xs text-gray-500">
-                                {t("orgLogoHint")}
-                              </p>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              <Button
-                                size="sm"
-                                color="primary"
-                                onPress={handleUpdateOrganization}
-                                isLoading={orgUpdating}
-                                className="font-semibold"
-                              >
-                                {orgUpdating
-                                  ? t("orgUpdating")
-                                  : t("orgUpdateButton")}
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="light"
-                                onPress={resetEditOrganization}
-                                className="font-semibold"
-                              >
-                                <FaTimes className="mr-1" />
-                                {t("avatar.cancel")}
-                              </Button>
-                            </div>
-                          </div>
-                        )}
-
-
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {canManageOrganizations && (
-                <div className="rounded-3xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-gray-500">
-                    <FaPlus className="text-sm" />
-                    {t("orgCreateTitle")}
-                  </div>
-                  <Input
-                    label={t("orgNameLabel")}
-                    value={orgName}
-                    variant="bordered"
-                    onChange={(e) => {
-                      setOrgName(e.target.value);
-                      if (orgFormErrors.name) {
-                        setOrgFormErrors((prev) => ({
-                          ...prev,
-                          name: undefined,
-                        }));
-                      }
-                    }}
-                    isInvalid={!!orgFormErrors.name}
-                    errorMessage={orgFormErrors.name}
-                  />
-                  <div className="space-y-1">
-                    <Input
-                      label={t("orgSlugLabel")}
-                      value={orgSlug}
-                      variant="bordered"
-                      onChange={(e) => {
-                        setOrgSlug(e.target.value);
-                        setOrgSlugTouched(true);
-                        if (orgFormErrors.slug) {
-                          setOrgFormErrors((prev) => ({
-                            ...prev,
-                            slug: undefined,
-                          }));
-                        }
-                      }}
-                      isInvalid={!!orgFormErrors.slug}
-                      errorMessage={orgFormErrors.slug}
-                    />
-                    <p className="text-xs text-gray-500">
-                      {t("orgSlugHint")}
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[11px] uppercase tracking-[0.2em] text-gray-500">
-                      {t("orgLogoLabel")}
-                    </label>
-                    <div className="flex flex-wrap items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-foreground/5 text-sm font-bold text-foreground overflow-hidden">
-                        {orgLogoPreview ? (
-                          <img
-                            src={orgLogoPreview}
-                            alt={orgName || "Organization"}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <FaBuilding className="text-sm text-gray-500" />
-                        )}
-                      </div>
-                      <label className="inline-flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-xs font-semibold text-foreground/80 transition hover:border-primary/40 cursor-pointer">
-                        <FaCamera className="text-xs" />
-                        {t("orgLogoSelect")}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) =>
-                            handleOrgLogoFileChange(
-                              e.target.files?.[0] || null,
-                            )
-                          }
-                          className="hidden"
-                        />
-                      </label>
-                      {orgLogoFile && (
-                        <span className="text-xs text-gray-500">
-                          {orgLogoFile.name}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-gray-500">{t("orgLogoHint")}</p>
-                  </div>
-                  <Button
-                    color="primary"
-                    size="lg"
-                    onPress={handleCreateOrganization}
-                    isLoading={orgCreating}
-                    className="font-semibold tracking-wide"
-                  >
-                    {orgCreating ? t("orgCreating") : t("orgCreateButton")}
-                  </Button>
-                </div>
-              )}
-
-            {canInviteMembers && (
-                <div className="rounded-3xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-gray-500">
-                    <FaUserPlus className="text-sm" />
-                    {t("orgInviteTitle")}
-                  </div>
-                  <div className="space-y-3">
-                    <div className="space-y-1">
-                      <label className="text-[11px] uppercase tracking-[0.2em] text-gray-500">
-                        {t("orgSelectLabel")}
-                      </label>
-                      <select
-                        value={selectedOrgId || ""}
-                        onChange={(e) => setSelectedOrgId(e.target.value)}
-                        disabled={!organizations.length}
-                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-60"
-                      >
-                        {!organizations.length && (
-                          <option value="">{t("orgSelectEmpty")}</option>
-                        )}
-                        {organizations.map((org) => (
-                          <option key={org.id} value={org.id}>
-                            {org.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <Input
-                      label={t("orgInviteEmail")}
-                      value={inviteEmail}
-                      variant="bordered"
-                      onChange={(e) => {
-                        setInviteEmail(e.target.value);
-                        if (inviteErrors.email) {
-                          setInviteErrors((prev) => ({
-                            ...prev,
-                            email: undefined,
-                          }));
-                        }
-                      }}
-                      isInvalid={!!inviteErrors.email}
-                      errorMessage={inviteErrors.email}
-                    />
-                    <Input
-                      label={t("orgInviteRole")}
-                      value={inviteRole}
-                      variant="bordered"
-                      onChange={(e) => {
-                        setInviteRole(e.target.value);
-                        if (inviteErrors.role) {
-                          setInviteErrors((prev) => ({
-                            ...prev,
-                            role: undefined,
-                          }));
-                        }
-                      }}
-                      isInvalid={!!inviteErrors.role}
-                      errorMessage={inviteErrors.role}
-                    />
-                    <Button
-                      color="primary"
-                      size="lg"
-                      onPress={handleInviteMember}
-                      isLoading={inviteLoading}
-                      isDisabled={!organizations.length}
-                      className="font-semibold tracking-wide"
-                    >
-                      {inviteLoading ? t("orgInviting") : t("orgInviteButton")}
-                    </Button>
-                  </div>
-                </div>
-            )}
-          </aside>
+          <aside className="space-y-6">{orgsPanel}</aside>
         </div>
       </div>
 

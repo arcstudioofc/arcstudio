@@ -1,28 +1,30 @@
 "use client";
 
-import Link from "next/link";
+import NextLink from "next/link";
 import { useTranslations } from "next-intl";
 import { FaGithub, FaEnvelope, FaInstagram, FaCube, FaBuilding } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { IconType } from "react-icons";
 import { useEffect, useState } from "react";
 
+import { Link } from "@/lib/i18n/navigation";
 import ThemeSwitcher from "@/widgets/switcher/theme";
 import LocaleSwitcher from "@/widgets/switcher/locale";
 import { settings } from "@/lib";
-import ARC from "@/components/UI/ARC";
+import ARC from "@/widgets/Icon";
 
 
 type FooterLink = { key: string; href: string; new?: boolean; isDisabled?: boolean };
 type FooterSection = { key: string; icon: IconType; links: FooterLink[] };
+
+const nonLocalizedPaths = new Set(["/app", "/github", "/instagram", "/twitter", "/discord"]);
 
 const footerSections: FooterSection[] = [
   {
     key: "product",
     icon: FaCube,
     links: [
-      { key: "app", href: "/app" },
-      { key: "pricing", href: "/pricing" },
+      { key: "app", href: process.env.NEXT_PUBLIC_AUTH_URL+"/?auth=signin&callback="+process.env.NEXT_PUBLIC_BASE_URL },
       { key: "changelog", href: "/changelog", new: true },
     ],
   },
@@ -40,7 +42,6 @@ const footerSections: FooterSection[] = [
     icon: FaEnvelope,
     links: [
       { key: "faq", href: "/faq" },
-      { key: "docs", href: "/docs", isDisabled: true },
       { key: "terms", href: "/terms" },
     ],
   },
@@ -56,11 +57,16 @@ const socialLinks = [
 export function Footer() {
   const t = useTranslations("components.UI.Footer");
   const [showNewTag, setShowNewTag] = useState(false);
+  const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 
   useEffect(() => {
     async function checkRecentChangelogs() {
       try {
-        const res = await fetch("/api/changelogs/recent");
+        if (!apiBase) {
+          console.warn("NEXT_PUBLIC_API_URL não definido");
+          return;
+        }
+        const res = await fetch(`${apiBase}/changelogs/recent`);
         if (res.ok) {
           const data = await res.json();
           setShowNewTag(data.hasRecent);
@@ -70,7 +76,7 @@ export function Footer() {
       }
     }
     checkRecentChangelogs();
-  }, []);
+  }, [apiBase]);
 
   return (
     <footer className="w-full bg-background pt-12 pb-6 border-t border-foreground/10 text-foreground/80 mt-auto relative z-10">
@@ -84,25 +90,65 @@ export function Footer() {
             </div>
 
             <p className="text-sm">
-              {t("copyright.developedBy")} <Link className="hover:underline" href={"https://github.com/yeytaken"}>Israel R. Jatobá</Link>
+              {t("copyright.developedBy")}{" "}
+              <a
+                className="hover:underline"
+                href="https://github.com/yeytaken"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Israel R. Jatobá
+              </a>
             </p>
             <p className="text-xs">
               © {new Date().getFullYear()} ARC Studio. {t("copyright.rightsReserved")}
             </p>
 
             <div className="flex space-x-4 mt-4">
-              {socialLinks.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-foreground/60 hover:text-primary transition-colors"
-                  aria-label={item.label}
-                >
-                  <item.icon className="h-6 w-6" />
-                </Link>
-              ))}
+              {socialLinks.map((item) => {
+                const isExternal =
+                  item.href.startsWith("http") || item.href.startsWith("mailto:");
+                const isNonLocalized = nonLocalizedPaths.has(item.href);
+                const linkProps = {
+                  className:
+                    "text-foreground/60 hover:text-primary transition-colors",
+                  "aria-label": item.label,
+                };
+
+                if (isExternal) {
+                  return (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      {...linkProps}
+                    >
+                      <item.icon className="h-6 w-6" />
+                    </a>
+                  );
+                }
+
+                if (isNonLocalized) {
+                  return (
+                    <NextLink
+                      key={item.label}
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      {...linkProps}
+                    >
+                      <item.icon className="h-6 w-6" />
+                    </NextLink>
+                  );
+                }
+
+                return (
+                  <Link key={item.label} href={item.href} {...linkProps}>
+                    <item.icon className="h-6 w-6" />
+                  </Link>
+                );
+              })}
             </div>
           </div>
 
@@ -125,13 +171,41 @@ export function Footer() {
                         {t(`${section.key}.links.${link.key}`)}
                       </span>
                     ) : (
-                      <Link
-                        href={link.href}
-                        className={`text-sm hover:text-foreground hover:underline transition-colors`}
-                        target={link.href.startsWith("http") || link.href.startsWith("mailto:") ? "_blank" : "_self"}
-                      >
-                        {t(`${section.key}.links.${link.key}`)}
-                      </Link>
+                      (() => {
+                        const isExternal =
+                          link.href.startsWith("http") ||
+                          link.href.startsWith("mailto:");
+                        const isNonLocalized = nonLocalizedPaths.has(link.href);
+                        const className =
+                          "text-sm hover:text-foreground hover:underline transition-colors";
+
+                        if (isExternal) {
+                          return (
+                            <a
+                              href={link.href}
+                              className={className}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {t(`${section.key}.links.${link.key}`)}
+                            </a>
+                          );
+                        }
+
+                        if (isNonLocalized) {
+                          return (
+                            <NextLink href={link.href} className={className}>
+                              {t(`${section.key}.links.${link.key}`)}
+                            </NextLink>
+                          );
+                        }
+
+                        return (
+                          <Link href={link.href} className={className}>
+                            {t(`${section.key}.links.${link.key}`)}
+                          </Link>
+                        );
+                      })()
                     ))}
 
                     {link.key === "changelog" && showNewTag && (

@@ -12,6 +12,7 @@ type UserDoc = {
   name?: string;
   username?: string;
   image?: string | null;
+  role?: string;
 };
 
 const usersCollection = db.collection<UserDoc>("user");
@@ -45,7 +46,7 @@ export const usersRoutes = new Elysia({ prefix: "/users" })
       const textRegex = new RegExp(safeQuery, "i");
       const idRegex = new RegExp(safeQuery);
 
-      const projection = { _id: 1, name: 1, username: 1, image: 1 };
+      const projection = { _id: 1, name: 1, username: 1, image: 1, role: 1 };
 
       const [byName, byUsername, byId] = await Promise.all([
         usersCollection
@@ -81,6 +82,7 @@ export const usersRoutes = new Elysia({ prefix: "/users" })
           name: user.name,
           username: user.username,
           image: user.image ?? null,
+          role: user.role,
         }));
     },
     {
@@ -95,6 +97,7 @@ export const usersRoutes = new Elysia({ prefix: "/users" })
             name: z.string().optional(),
             username: z.string().optional(),
             image: z.string().nullable().optional(),
+            role: z.string().optional(),
           }),
         ),
       },
@@ -110,7 +113,9 @@ export const usersRoutes = new Elysia({ prefix: "/users" })
       const context = await auth.$context;
       const organizationPlugin =
         context.getPlugin?.("organization") ??
-        auth.options.plugins?.find((plugin) => plugin.id === "organization") ??
+        (auth.options.plugins?.find(
+          (plugin) => (plugin as { id?: string }).id === "organization",
+        ) as { id?: string; options?: Parameters<typeof getOrgAdapter>[1] } | undefined) ??
         null;
 
       if (!organizationPlugin) return [];

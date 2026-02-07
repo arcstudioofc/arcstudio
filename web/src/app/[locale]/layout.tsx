@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getMessages, getTranslations } from "next-intl/server";
 import { hasLocale } from "next-intl";
 
-import "../../../public/styles/globals.css";
+import "@/styles/globals.css";
 import { ProvidersWrapper } from "@/lib/providers"; // wrapper client
 import { routing } from "@/lib/i18n/routing";
 import { settings } from "@/lib";

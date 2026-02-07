@@ -1,14 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaCircle } from "react-icons/fa";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
-import { UserSession } from "../_components/auth/session";
 import { SigninSection } from "../_components/auth/signin";
 import { SignupSection } from "../_components/auth/signup";
 
@@ -18,6 +17,8 @@ type ApiStatus = "loading" | "online" | "error";
 
 export default function HomePage() {
   const t = useTranslations("Home");
+  const locale = useLocale();
+  const router = useRouter();
 
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -57,6 +58,18 @@ export default function HomePage() {
 
   useEffect(() => setMounted(true), []);
 
+  useEffect(() => {
+    if (isPending) return;
+    if (!session?.user) return;
+
+    const username =
+      ((session.user as Record<string, unknown>).username as
+        | string
+        | undefined) ?? session.user.id;
+
+    router.replace(`/${locale}/profile/${username}`);
+  }, [isPending, locale, router, session?.user]);
+
   const currentTheme = theme === "system" ? systemTheme : theme;
   const iconSrc =
     mounted && currentTheme === "dark"
@@ -72,7 +85,11 @@ export default function HomePage() {
   }
 
   if (session?.user) {
-    return <UserSession user={session.user} />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg text-gray-500">{t("loading")}</p>
+      </div>
+    );
   }
 
   const statusStyles = {

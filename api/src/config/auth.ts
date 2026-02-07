@@ -1,7 +1,13 @@
 import argon2 from "argon2";
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
-import { admin, openAPI, organization, username } from "better-auth/plugins";
+import {
+	admin,
+	// createAccessControl,
+	openAPI,
+	organization,
+	username,
+} from "better-auth/plugins";
 
 import { env } from "../config/env.js";
 import { client, db } from "../database/client.js";
@@ -23,6 +29,82 @@ const isDiscordUsername = (value: string) => {
 };
 // const isDev = process.env.NODE_ENV !== "production";
 
+// export const ROLE_LIST = ["owner", "admin", "mod", "premium", "member"] as const;
+
+// const ADMIN_STATEMENTS = {
+// 	user: [
+// 		"create",
+// 		"list",
+// 		"set-role",
+// 		"ban",
+// 		"impersonate",
+// 		"delete",
+// 		"set-password",
+// 		"get",
+// 		"update",
+// 	],
+// 	session: ["list", "revoke", "delete"],
+// } as const;
+
+// const ORG_STATEMENTS = {
+// 	organization: ["update", "delete"],
+// 	member: ["create", "update", "delete"],
+// 	invitation: ["create", "cancel"],
+// 	team: ["create", "update", "delete"],
+// 	ac: ["create", "read", "update", "delete"],
+// } as const;
+
+// const adminAC = createAccessControl(ADMIN_STATEMENTS);
+// const orgAC = createAccessControl(ORG_STATEMENTS);
+
+// const ownerRole = adminAC.newRole({
+// 	user: [...ADMIN_STATEMENTS.user],
+// 	session: [...ADMIN_STATEMENTS.session],
+// });
+// const adminRole = adminAC.newRole({
+// 	user: [...ADMIN_STATEMENTS.user],
+// 	session: [...ADMIN_STATEMENTS.session],
+// });
+// const modRole = adminAC.newRole({ user: [], session: [] });
+// const premiumRole = adminAC.newRole({ user: [], session: [] });
+// const memberRole = adminAC.newRole({ user: [], session: [] });
+
+// const ownerOrgRole = orgAC.newRole({
+// 	organization: ["update", "delete"],
+// 	member: ["create", "update", "delete"],
+// 	invitation: ["create", "cancel"],
+// 	team: ["create", "update", "delete"],
+// 	ac: ["create", "read", "update", "delete"],
+// });
+// const adminOrgRole = orgAC.newRole({
+// 	organization: ["update"],
+// 	member: ["create", "update", "delete"],
+// 	invitation: ["create", "cancel"],
+// 	team: ["create", "update", "delete"],
+// 	ac: ["create", "read", "update", "delete"],
+// });
+// const modOrgRole = orgAC.newRole({
+// 	organization: [],
+// 	member: ["create", "update"],
+// 	invitation: ["create", "cancel"],
+// 	team: ["create", "update"],
+// 	ac: ["read"],
+// });
+// const premiumOrgRole = orgAC.newRole({
+// 	organization: [],
+// 	member: [],
+// 	invitation: [],
+// 	team: [],
+// 	ac: ["read"],
+// });
+// const memberOrgRole = orgAC.newRole({
+// 	organization: [],
+// 	member: [],
+// 	invitation: [],
+// 	team: [],
+// 	ac: ["read"],
+// });
+
 export const auth = betterAuth({
 	basePath: "/auth",
 	trustedOrigins: [env.ARCSTUDIO_AUTH_URL, env.ARCSTUDIO_URL, env.ARCSTUDIO_DEV_URL],
@@ -33,7 +115,19 @@ export const auth = betterAuth({
 	}),
 
 	plugins: [
-		admin(),
+		admin(
+			// {
+			// defaultRole: "member",
+			// adminRoles: ["owner", "admin"],
+			// roles: {
+			// 	owner: ownerRole,
+			// 	admin: adminRole,
+			// 	mod: modRole,
+			// 	premium: premiumRole,
+			// 	member: memberRole,
+			// },
+			// }
+		),
 		openAPI(),
 		username({
 			minUsernameLength: 2,
@@ -51,21 +145,21 @@ export const auth = betterAuth({
 	],
 
 	advanced: {
-			// crossSubDomainCookies: {
-			// 	enabled: true,
-			// 	domain: isDev ? "localhost" : env.BETTER_AUTH_DOMAIN,
-			// },
+		// crossSubDomainCookies: {
+		// 	enabled: true,
+		// 	domain: isDev ? "localhost" : env.BETTER_AUTH_DOMAIN,
+		// },
 		database: {
 			generateId: generateSnowflakeId,
 		},
 	},
 
-		session: {
-			expiresIn: 60 * 60 * 24 * 7, // Auto logout in 7 days
-			// cookieCache: {
-			// 	enabled: true,
-			// 	maxAge: 60 * 5, // salva os cookies por 5 minutos
-			// },
+	session: {
+		expiresIn: 60 * 60 * 24 * 7, // Auto logout in 7 days
+		// cookieCache: {
+		// 	enabled: true,
+		// 	maxAge: 60 * 5, // salva os cookies por 5 minutos
+		// },
 		// Para uso de Redis no futuro
 		// secondaryCookie: {
 		// 	get: async (key: string) => {},

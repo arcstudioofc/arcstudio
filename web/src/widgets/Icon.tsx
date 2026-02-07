@@ -1,11 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-export default function ARC() {
+import { Link } from "@/lib/i18n/navigation";
+
+export default function Icon() {
   const [isHovered, setIsHovered] = useState(false);
 
   return (

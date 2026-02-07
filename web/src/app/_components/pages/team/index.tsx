@@ -1,11 +1,12 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { FaGithub, FaLink } from "react-icons/fa";
 
 import TeamProfile from "@/app/_components/UI/TeamProfile";
+import { useRouter } from "@/lib/i18n/navigation";
 
 export const teams: TeamProps[] = [
   {

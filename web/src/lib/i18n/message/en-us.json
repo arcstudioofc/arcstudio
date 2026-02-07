@@ -6,7 +6,9 @@
     "description": "Your project deserves the best — let's make it a reality with innovation and dedication.",
     "meetOur": "Meet our",
     "team": "Team",
-    "yourProfile": "Access your profile"
+    "yourProfile": "Access your profile",
+    "contactCta": "Talk to the team",
+    "appCta": "Open the app"
   },
   "NotFound": {
     "title": "Page not found!",
@@ -198,7 +200,8 @@
           "about": "About Us"
         },
         "buttons": {
-          "start": "Get Started"
+          "start": "Get Started",
+          "contact": "Contact us"
         },
         "ariaLabels": {
           "toggleMenu": "Toggle menu"

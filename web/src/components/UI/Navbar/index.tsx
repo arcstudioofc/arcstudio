@@ -1,14 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { FaBars, FaTimes, FaFire, FaInfoCircle } from "react-icons/fa";
 import { GrProjects } from "react-icons/gr";
 import { IconType } from "react-icons";
 
+import { Link } from "@/lib/i18n/navigation";
 import LocaleSwitcher from "@/widgets/switcher/locale";
-import ARC from "@/components/UI/ARC";
+import ARC from "@/widgets/Icon";
+import { settings } from "@/lib";
 
 type NavLink = { key: string; href: string; icon: IconType };
 
@@ -33,6 +34,8 @@ export function Navbar() {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const contactHref = `mailto:${settings.email}`;
 
   return (
     <header className="w-full sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-foreground/10">
@@ -61,12 +64,12 @@ export function Navbar() {
 
           <div className="hidden md:flex items-center space-x-4">
 
-            <Link
-              href={process.env.NEXT_PUBLIC_AUTH_URL+"/?auth=signin&callback="+encodeURIComponent(window.location.href)}
+            <a
+              href={contactHref}
               className="px-4 py-2 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors shadow-md"
             >
-              {t("buttons.start")}
-            </Link>
+              {t("buttons.contact")}
+            </a>
             {!isElectron && <LocaleSwitcher />}
           </div>
 
@@ -102,13 +105,13 @@ export function Navbar() {
 
           <div className="h-px w-full bg-foreground/10 my-2" />
 
-          <Link
-            href={process.env.NEXT_PUBLIC_AUTH_URL+"/?auth=signin&callback="+encodeURIComponent(window.location.href)}
+          <a
+            href={contactHref}
             onClick={toggleMenu}
             className="w-full text-center px-4 py-2 text-base font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors shadow-md"
           >
-            {t("buttons.start")}
-          </Link>
+            {t("buttons.contact")}
+          </a>
 
           {!isElectron && (
             <div className="flex justify-start space-x-4 pt-2">

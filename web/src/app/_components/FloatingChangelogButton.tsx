@@ -8,15 +8,16 @@ import {
   DrawerHeader,
   DrawerBody,
   Input,
-  Textarea,
   Select,
   SelectItem,
 } from "@heroui/react";
 import { FaPlus } from "react-icons/fa";
 import { addToast } from "@heroui/react";
 import { ChangelogType } from "@/constants/changelogTypes";
+import { MarkdownEditor } from "@/app/_components/MarkdownEditor";
 
 export function FloatingChangelogButton() {
+  const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -26,15 +27,25 @@ export function FloatingChangelogButton() {
 
   async function handleSave() {
     if (!title.trim() || !content.trim()) return;
+    if (!apiBase) {
+      addToast({
+        title: "Configuração inválida",
+        description: "API não configurada.",
+        timeout: 3000,
+        shouldShowTimeoutProgress: true,
+      });
+      return;
+    }
 
     try {
       setLoading(true);
 
-      const res = await fetch("/api/changelogs", {
+      const res = await fetch(`${apiBase}/changelogs`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           title,
           content,
@@ -133,13 +144,11 @@ export function FloatingChangelogButton() {
                   ))}
                 </Select>
 
-                <Textarea
-                  label="Content"
-                  placeholder="Describe the change..."
-                  minRows={6}
+                <MarkdownEditor
+                  label="Conteúdo (Markdown)"
                   value={content}
-                  variant="bordered"
-                  onValueChange={setContent}
+                  onChange={setContent}
+                  minRows={8}
                 />
 
                 {/* Callout */}

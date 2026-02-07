@@ -6,7 +6,9 @@
     "description": "Seu projeto merece o melhor — vamos torná-lo realidade com inovação e dedicação.",
     "meetOur": "Conheça nossa",
     "team": "Equipe",
-    "yourProfile": "Acessar seu perfil"
+    "yourProfile": "Acessar seu perfil",
+    "contactCta": "Falar com a equipe",
+    "appCta": "Acessar o app"
   },
   "NotFound": {
     "title": "Página não encontrada!",
@@ -197,7 +199,8 @@
           "about": "Sobre Nós"
         },
         "buttons": {
-          "start": "Começar"
+          "start": "Começar",
+          "contact": "Fale conosco"
         },
         "ariaLabels": {
           "toggleMenu": "Alternar menu"

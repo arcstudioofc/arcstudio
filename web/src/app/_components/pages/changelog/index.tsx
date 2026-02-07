@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { FaCalendarAlt } from "react-icons/fa";
 import { useTranslations } from "next-intl";
-import { Drawer, DrawerContent, DrawerHeader, DrawerBody, Input, Button, Select, SelectItem, Textarea, addToast } from "@heroui/react";
+import { Drawer, DrawerContent, DrawerHeader, DrawerBody, Input, Button, Select, SelectItem, addToast } from "@heroui/react";
 
 import { IconTimelineItem } from "@/app/_components/IconTimelineItem";
 import { FloatingChangelogButton } from "../../FloatingChangelogButton";
+import { MarkdownContent } from "@/app/_components/MarkdownContent";
+import { MarkdownEditor } from "@/app/_components/MarkdownEditor";
 import { auth } from "@/lib/auth";
 import { useAltKey } from "@/lib/useAltKey";
 import { ChangelogType } from "@/constants/changelogTypes";
@@ -16,6 +18,7 @@ export default function ChangelogClient({ changelogs: initialChangelogs }: { cha
   const { data: session } = auth.useSession();
   const isAltPressed = useAltKey();
   const isAdmin = session?.user.role === "admin";
+  const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 
   const [changelogs, setChangelogs] = useState(initialChangelogs);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -40,9 +43,16 @@ export default function ChangelogClient({ changelogs: initialChangelogs }: { cha
 
   const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja deletar este changelog?")) return;
+    if (!apiBase) {
+      addToast({ title: "Erro", description: "API não configurada", color: "danger" });
+      return;
+    }
 
     try {
-      const res = await fetch(`/api/changelogs?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`${apiBase}/changelogs?id=${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
       if (res.ok) {
         setChangelogs(changelogs.filter(c => c._id !== id));
         addToast({ title: "Sucesso", description: "Changelog deletado", color: "success" });
@@ -57,11 +67,16 @@ export default function ChangelogClient({ changelogs: initialChangelogs }: { cha
       console.error("No editing item ID found");
       return;
     }
+    if (!apiBase) {
+      addToast({ title: "Erro", description: "API não configurada", color: "danger" });
+      return;
+    }
     setLoading(true);
     try {
-      const res = await fetch("/api/changelogs", {
+      const res = await fetch(`${apiBase}/changelogs`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ id: editingItem._id, title, content, type }),
       });
 
@@ -111,9 +126,10 @@ export default function ChangelogClient({ changelogs: initialChangelogs }: { cha
                   ...entry,
                   date: new Date(entry.date),
                   children: (
-                    <p className="text-gray-700 dark:text-gray-300">
-                      {entry.content}
-                    </p>
+                    <MarkdownContent
+                      content={entry.content}
+                      className="text-gray-700 dark:text-gray-300"
+                    />
                   ),
                 }}
               />
@@ -147,12 +163,11 @@ export default function ChangelogClient({ changelogs: initialChangelogs }: { cha
                     <SelectItem key={t} textValue={t}>{t}</SelectItem>
                   ))}
                 </Select>
-                <Textarea 
-                  label="Conteúdo" 
-                  value={content} 
-                  onValueChange={setContent} 
-                  variant="bordered" 
-                  minRows={5}
+                <MarkdownEditor
+                  label="Conteúdo (Markdown)"
+                  value={content}
+                  onChange={setContent}
+                  minRows={8}
                 />
                 <div className="flex justify-end gap-2 pt-4">
                   <Button variant="light" onPress={onClose}>Cancelar</Button>

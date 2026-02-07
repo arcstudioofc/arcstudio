@@ -1,0 +1,121 @@
+:root {
+  --arc-hl-bg: #f6f8fb91;
+  --arc-hl-fg: #1f2937;
+  --arc-hl-border: rgba(15, 23, 42, 0.08);
+  --arc-hl-comment: #6b7280;
+  --arc-hl-keyword: #4f46e5;
+  --arc-hl-string: #0f766e;
+  --arc-hl-number: #b45309;
+  --arc-hl-function: #c026d3;
+  --arc-hl-title: #be123c;
+  --arc-hl-built-in: #2563eb;
+  --arc-hl-attr: #a16207;
+  --arc-hl-literal: #0ea5e9;
+  --arc-hl-tag: #dc2626;
+  --arc-hl-name: #b91c1c;
+  --arc-hl-section: #7c3aed;
+  --arc-hl-meta: #475569;
+  --arc-hl-addition: #dcfce7;
+  --arc-hl-deletion: #fee2e2;
+}
+
+.dark {
+  --arc-hl-bg: #0b0f1796;
+  --arc-hl-fg: #e5e7eb;
+  --arc-hl-border: rgba(148, 163, 184, 0.16);
+  --arc-hl-comment: #64748b;
+  --arc-hl-keyword: #93c5fd;
+  --arc-hl-string: #6ee7b7;
+  --arc-hl-number: #fcd34d;
+  --arc-hl-function: #f472b6;
+  --arc-hl-title: #fda4af;
+  --arc-hl-built-in: #60a5fa;
+  --arc-hl-attr: #fbbf24;
+  --arc-hl-literal: #38bdf8;
+  --arc-hl-tag: #fb7185;
+  --arc-hl-name: #fda4af;
+  --arc-hl-section: #a78bfa;
+  --arc-hl-meta: #94a3b8;
+  --arc-hl-addition: rgba(34, 197, 94, 0.18);
+  --arc-hl-deletion: rgba(239, 68, 68, 0.18);
+}
+
+.hljs {
+  color: var(--arc-hl-fg);
+  background: var(--arc-hl-bg);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-variant-ligatures: contextual;
+}
+
+pre.hljs {
+  padding: 1rem;
+  border: 1px solid var(--arc-hl-border);
+  border-radius: 0.75rem;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: var(--arc-hl-comment);
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-doctag,
+.hljs-type {
+  color: var(--arc-hl-keyword);
+  font-weight: 600;
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-symbol,
+.hljs-bullet {
+  color: var(--arc-hl-string);
+}
+
+.hljs-number,
+.hljs-literal {
+  color: var(--arc-hl-number);
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-name {
+  color: var(--arc-hl-title);
+  font-weight: 600;
+}
+
+.hljs-built_in,
+.hljs-builtin-name {
+  color: var(--arc-hl-built-in);
+}
+
+.hljs-attr,
+.hljs-attribute {
+  color: var(--arc-hl-attr);
+}
+
+.hljs-function {
+  color: var(--arc-hl-function);
+}
+
+.hljs-meta,
+.hljs-meta-keyword,
+.hljs-meta-string {
+  color: var(--arc-hl-meta);
+}
+
+.hljs-tag,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: var(--arc-hl-tag);
+}
+
+.hljs-addition {
+  background-color: var(--arc-hl-addition);
+}
+
+.hljs-deletion {
+  background-color: var(--arc-hl-deletion);
+}

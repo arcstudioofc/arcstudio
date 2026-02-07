@@ -1,11 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import NextLink from "next/link";
 import { useTheme } from "next-themes";
 import { TfiNewWindow } from "react-icons/tfi";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+
+import { Link } from "@/lib/i18n/navigation";
+import { settings } from "@/lib";
 
 export default function Home() {
   const { theme, systemTheme } = useTheme();
@@ -65,12 +68,18 @@ export default function Home() {
             </Link>
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-            <Link
-              href="/app"
-              className="select-none px-6 py-2 rounded-xl border border-blue-600 text-blue-600 hover:bg-grid-line hover:bg-blue-600/50 hover:text-foreground transition cursor-pointer inline-flex items-center gap-2 justify-center"
+            <a
+              href={`mailto:${settings.email}`}
+              className="select-none px-6 py-2 rounded-xl bg-primary text-white hover:bg-primary/90 transition cursor-pointer inline-flex items-center gap-2 justify-center"
             >
-              {t("yourProfile")} <TfiNewWindow />
-            </Link>
+              {t("contactCta")}
+            </a>
+            <NextLink
+              href={process.env.NEXT_PUBLIC_AUTH_URL+"/?auth=signin&callback="+encodeURIComponent(window.location.href)}
+              className="select-none px-6 py-2 rounded-xl border border-primary text-primary hover:bg-primary/10 transition cursor-pointer inline-flex items-center gap-2 justify-center"
+            >
+              {t("appCta")} <TfiNewWindow />
+            </NextLink>
           </div>
         </div>
       </div>

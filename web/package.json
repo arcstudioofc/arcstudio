@@ -1,6 +1,6 @@
 {
   "name": "@arcstudio/website",
-  "version": "0.1.0-beta.2",
+  "version": "0.1.0-prerelease",
   "description": "Your project deserves the best — let's make it a reality with innovation and dedication.",
   "type": "module",
   "private": true,
@@ -38,6 +38,9 @@
     "react-dom": "19.2.0",
     "react-hook-form": "^7.69.0",
     "react-icons": "^5.5.0",
+    "react-markdown": "^10.1.0",
+    "highlight.js": "^11.10.0",
+    "remark-gfm": "^4.0.1",
     "zod": "^4.2.1"
   },
   "devDependencies": {
