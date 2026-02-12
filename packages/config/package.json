@@ -1,0 +1,25 @@
+{
+  "name": "@arcstudio/config",
+  "version": "1.0.0",
+  "description": "Shared TypeScript config for ARC Studio root.",
+  "license": "MIT",
+  "scripts": {
+    "update:version": "tsx scripts/src/lib/version.ts"
+  },
+  "files": [
+    "base.json",
+    "build.preset.ts",
+    "package.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": {
+    "name": "Israel R. Jatobá",
+    "email": "contact.israeljatoba@gmail.com",
+    "url": "https://yeytaken.vercel.app/en-us"
+  },
+  "dependencies": {
+    "unbuild": "^2.0.0"
+  }
+}

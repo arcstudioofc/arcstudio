@@ -1,0 +1,49 @@
+{
+  "name": "@arcstudio/base",
+  "description": "",
+  "version": "0.0.0",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "unbuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arcstudioofc/arcstudio",
+    "directory": "packages/"
+  },
+  "bugs": {
+    "url": "https://github.com/arcstudioofc/arcstudio/issues"
+  },
+  "homepage": "https://arcstudio.online/",
+  "keywords": [
+    ""
+  ],
+  "author": {
+    "name": "Israel R. Jatobá",
+    "organization": "ARC Studio, Inc.",
+    "email": "contact.israeljatoba@gmail.com",
+    "github": "https://github.com/yeyTaken"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@arcstudio/config": "catalog:",
+    "tsx": "catalog:",
+    "unbuild": "^3.3.1"
+  }
+}

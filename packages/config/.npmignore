@@ -1,0 +1,26 @@
+# node / pnpm
+node_modules
+.pnpm-store
+
+# logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# editor / OS
+.vscode
+.idea
+.DS_Store
+
+# git
+.git
+.gitignore
+
+# templetes
+templete
+
+# configs que não precisam ir
+tsconfig.json
+tsconfig.*.json
+unbuild.config.*
