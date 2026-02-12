@@ -1,24 +1,21 @@
 "use client";
 
-import Link from "next/link";
-import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { FaCamera } from "react-icons/fa";
 import {
-  Input,
+  addToast,
   Button,
   Card,
   CardBody,
   CardHeader,
-  addToast,
+  Input,
 } from "@heroui/react";
-import Cropper from "react-easy-crop";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useCallback, useState } from "react";
+import Cropper from "react-easy-crop";
+import { FaCamera } from "react-icons/fa";
 
 import { auth } from "@/lib/auth";
-import Icon from "@/widgets/Icon";
-import LocaleSwitcher from "@/widgets/switcher/locale";
-import ThemeSwitcher from "@/widgets/switcher/theme";
 
 type Area = { x: number; y: number; width: number; height: number };
 
@@ -54,8 +51,7 @@ export function SignupSection({ callback }: { callback?: string }) {
   function validate(): boolean {
     const nextErrors: FieldErrors = {};
 
-    if (!displayName)
-      nextErrors.displayName = t("validation.nameRequired");
+    if (!displayName) nextErrors.displayName = t("validation.nameRequired");
 
     if (!email) nextErrors.email = t("validation.emailRequired");
     else if (!email.includes("@"))
@@ -88,7 +84,9 @@ export function SignupSection({ callback }: { callback?: string }) {
 
     const image = new Image();
     image.src = cropImage;
-    await new Promise((res) => (image.onload = res));
+    await new Promise<void>((resolve) => {
+      image.onload = () => resolve();
+    });
 
     const canvas = document.createElement("canvas");
     canvas.width = croppedAreaPixels.width;
@@ -265,14 +263,6 @@ export function SignupSection({ callback }: { callback?: string }) {
           </Button>
         </form>
 
-        <div className="flex items-center justify-center gap-4 pt-6">
-          <Icon />
-          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
-          <LocaleSwitcher />
-          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
-          <ThemeSwitcher />
-        </div>
-
         <div className="mt-6 border-t pt-4 text-center text-sm text-gray-600 dark:text-gray-400">
           {t("haveAccount")}{" "}
           <Link href={signinHref} className="text-primary hover:underline">
@@ -370,14 +360,6 @@ export function SignupSection({ callback }: { callback?: string }) {
             {t("submit")}
           </Button>
         </form>
-
-        <div className="flex items-center justify-center gap-4 pt-6">
-          <Icon />
-          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
-          <LocaleSwitcher />
-          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
-          <ThemeSwitcher />
-        </div>
 
         <div className="mt-4 border-t pt-3 text-center text-sm text-gray-600 dark:text-gray-400">
           {t("haveAccount")}{" "}

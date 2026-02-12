@@ -10,6 +10,7 @@ import { Link } from "@/lib/i18n/navigation";
 import LocaleSwitcher from "@/widgets/switcher/locale";
 import ARC from "@/widgets/Icon";
 import { settings } from "@/lib";
+import ThemeSwitcher from "@/widgets/switcher/theme";
 
 type NavLink = { key: string; href: string; icon: IconType };
 
@@ -70,7 +71,8 @@ export function Navbar() {
             >
               {t("buttons.contact")}
             </a>
-            {!isElectron && <LocaleSwitcher />}
+            <ThemeSwitcher />
+            {/* {!isElectron && <LocaleSwitcher />} */}
           </div>
 
 
@@ -115,7 +117,8 @@ export function Navbar() {
 
           {!isElectron && (
             <div className="flex justify-start space-x-4 pt-2">
-              <LocaleSwitcher />
+              {/* <LocaleSwitcher /> */}
+              <ThemeSwitcher />
             </div>
           )}
         </div>

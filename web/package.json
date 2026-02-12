@@ -1,6 +1,6 @@
 {
   "name": "@arcstudio/website",
-  "version": "0.1.0-prerelease",
+  "version": "0.2.0-prerelease",
   "description": "Your project deserves the best — let's make it a reality with innovation and dedication.",
   "type": "module",
   "private": true,
@@ -16,6 +16,7 @@
     "url": "https://yeytaken.vercel.app/en-us"
   },
   "dependencies": {
+    "@arcstudio/i18n": "catalog:",
     "@heroui/react": "^2.8.5",
     "@heroui/theme": "^2.4.23",
     "@mdx-js/loader": "^3.1.1",

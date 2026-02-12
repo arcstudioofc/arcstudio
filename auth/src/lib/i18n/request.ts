@@ -1,16 +1,19 @@
+import { getScopedMessages, resolveLocale } from "@arcstudio/i18n";
 import { getRequestConfig } from "next-intl/server";
-import { hasLocale } from "next-intl";
 import { routing } from "./routing";
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
-  const locale = hasLocale(routing.locales, requested)
-    ? requested
-    : routing.defaultLocale;
+  const locale = await resolveLocale({
+    requestedLocale: requested,
+    allowedLocales: routing.locales,
+    fallbackLocale: routing.defaultLocale,
+  });
+  const messages = await getScopedMessages({ locale, scope: "auth" });
 
   return {
     locale,
     timeZone: "America/Sao_Paulo",
-    messages: (await import(`./message/${locale}.json`)).default,
+    messages,
   };
 });

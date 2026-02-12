@@ -1,40 +1,37 @@
 "use client";
 
+import { addToast, Button, Input } from "@heroui/react";
+import { motion } from "framer-motion";
+import { useParams, useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Cropper from "react-easy-crop";
 import {
-  FaSignOutAlt,
-  FaEnvelope,
-  FaCheckCircle,
-  FaTimesCircle,
+  FaBell,
+  FaBuilding,
   FaCalendarAlt,
   FaCamera,
-  FaCrown,
-  FaSearch,
-  FaRegCopy,
   FaCheck,
-  FaInfoCircle,
-  FaBuilding,
-  FaPlus,
-  FaBell,
-  FaUserPlus,
-  FaPen,
-  FaTimes,
-  FaTrash,
+  FaCheckCircle,
+  FaCrown,
   FaDoorOpen,
+  FaEnvelope,
   FaGhost,
+  FaInfoCircle,
   FaKeyboard,
+  FaPen,
+  FaPlus,
+  FaRegCopy,
+  FaSearch,
+  FaSignOutAlt,
+  FaTimes,
+  FaTimesCircle,
+  FaTrash,
+  FaUserPlus,
 } from "react-icons/fa";
-import { useParams, useRouter } from "next/navigation";
-import { useTranslations, useLocale } from "next-intl";
-import Cropper from "react-easy-crop";
-import { motion } from "framer-motion";
-
 import { auth } from "@/lib/auth";
-
-import { Button, Input, addToast } from "@heroui/react";
-import ThemeSwitcher from "@/widgets/switcher/theme";
-import LocaleSwitcher from "@/widgets/switcher/locale";
 import Icon from "@/widgets/Icon";
+import ThemeSwitcher from "@/widgets/switcher/theme";
 
 type Area = { x: number; y: number; width: number; height: number };
 
@@ -158,7 +155,11 @@ const slugifyOrganization = (value: string) => {
     .replace(/-+$/, "");
 };
 
-export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"] }) {
+export function UserSession({
+  user,
+}: {
+  user: (typeof auth.$Infer.Session)["user"];
+}) {
   const router = useRouter();
   const params = useParams<{ locale?: string; username?: string }>();
   const t = useTranslations("_components.auth.session");
@@ -477,10 +478,9 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
 
       const loadFromEndpoint = async () => {
         const root = apiRoot || "";
-        const res = await fetch(
-          `${root}/users/${targetUserId}/organizations`,
-          { credentials: "include" },
-        );
+        const res = await fetch(`${root}/users/${targetUserId}/organizations`, {
+          credentials: "include",
+        });
 
         if (!res.ok) {
           let message = t("orgLoadError");
@@ -552,9 +552,7 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
     try {
       const response = await organizationApi.listUserInvitations();
       if (response?.error) {
-        setInvitesError(
-          response.error.message || t("orgNotificationsError"),
-        );
+        setInvitesError(response.error.message || t("orgNotificationsError"));
         setInvites([]);
         return;
       }
@@ -758,7 +756,9 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
       });
 
       setBaselineName(displayName.trim());
-      setBaselineUsername(nicknameChanged ? normalizedNickname : baselineUsername);
+      setBaselineUsername(
+        nicknameChanged ? normalizedNickname : baselineUsername,
+      );
       if (avatarFile) {
         setAvatarFile(null);
       }
@@ -828,7 +828,6 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
     setIsSearchOpen(true);
 
     const timeout = setTimeout(async () => {
-
       try {
         const root = apiRoot || "";
         const response = await fetch(
@@ -941,7 +940,9 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
       return;
     }
 
-    const normalized = normalizeArcstudioUsername(routeUsername.replace(/^@/, ""));
+    const normalized = normalizeArcstudioUsername(
+      routeUsername.replace(/^@/, ""),
+    );
     if (!normalized || normalized.length < 2) return;
     if (pendingUserParam === normalized) return;
 
@@ -1015,7 +1016,6 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
 
     ghostPrevX.current = currentX;
   }, []);
-
 
   function startEditOrganization(org: Organization) {
     if (!isOwnerForOrg(org.id)) return;
@@ -1517,10 +1517,12 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
                           <div className="flex items-center justify-between gap-3">
                             <div className="min-w-0">
                               <p className="text-sm font-semibold text-foreground truncate">
-                                {invite.organizationName || invite.organizationId}
+                                {invite.organizationName ||
+                                  invite.organizationId}
                               </p>
                               <p className="text-xs text-gray-500">
-                                @{invite.role || "member"} · {formatDate(invite.createdAt)}
+                                @{invite.role || "member"} ·{" "}
+                                {formatDate(invite.createdAt)}
                               </p>
                             </div>
                             <div className="flex items-center gap-1">
@@ -1528,8 +1530,12 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
                                 size="sm"
                                 color="success"
                                 variant="flat"
-                                onPress={() => handleAcceptInvitation(invite.id)}
-                                isDisabled={inviteActionId === invite.id || invitesLoading}
+                                onPress={() =>
+                                  handleAcceptInvitation(invite.id)
+                                }
+                                isDisabled={
+                                  inviteActionId === invite.id || invitesLoading
+                                }
                                 isLoading={inviteActionId === invite.id}
                               >
                                 <FaCheckCircle className="text-sm" />
@@ -1538,8 +1544,12 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
                                 size="sm"
                                 color="danger"
                                 variant="flat"
-                                onPress={() => handleRejectInvitation(invite.id)}
-                                isDisabled={inviteActionId === invite.id || invitesLoading}
+                                onPress={() =>
+                                  handleRejectInvitation(invite.id)
+                                }
+                                isDisabled={
+                                  inviteActionId === invite.id || invitesLoading
+                                }
                                 isLoading={inviteActionId === invite.id}
                               >
                                 <FaTimesCircle className="text-sm" />
@@ -1594,7 +1604,8 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
               const isActive = org.id === activeOrganizationId;
               const memberRole =
                 org.currentRole ||
-                org.members?.find((member) => member.userId === user.id)?.role ||
+                org.members?.find((member) => member.userId === user.id)
+                  ?.role ||
                 (isActive && typeof activeMemberRole === "string"
                   ? activeMemberRole
                   : "");
@@ -1667,7 +1678,9 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
                           size="sm"
                           variant="bordered"
                           color="danger"
-                          onPress={() => handleDeleteOrganization(org.id, org.name)}
+                          onPress={() =>
+                            handleDeleteOrganization(org.id, org.name)
+                          }
                           className="text-xs"
                         >
                           <FaTrash className="mr-1" />
@@ -1980,12 +1993,14 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
             </div>
 
             <div className="flex items-center gap-2 md:hidden">
-              <LocaleSwitcher />
               <ThemeSwitcher />
             </div>
           </div>
 
-          <div className="hidden md:flex flex-1 max-w-2xl mx-6" ref={searchContainerRef}>
+          <div
+            className="hidden md:flex flex-1 max-w-2xl mx-6"
+            ref={searchContainerRef}
+          >
             <div className="relative w-full">
               <div className="absolute inset-y-0 left-3 flex items-center text-gray-500 pointer-events-none">
                 <FaSearch className="h-4 w-4" />
@@ -2011,11 +2026,7 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
           </div>
 
           <div className="hidden md:flex items-center gap-3 md:ml-auto">
-            <div className="flex items-center gap-2.5 rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 shrink-0 shadow-[0_1px_6px_rgba(0,0,0,0.04)]">
-              <LocaleSwitcher />
-              <div className="h-5 w-px bg-gray-300 dark:bg-gray-600" />
-              <ThemeSwitcher />
-            </div>
+            <ThemeSwitcher />
           </div>
         </div>
       </header>
@@ -2140,7 +2151,8 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
                                 {result.name || result.username || result.id}
                               </p>
                               <p className="text-xs text-gray-500">
-                                @{normalizeArcstudioUsername(
+                                @
+                                {normalizeArcstudioUsername(
                                   result.username || "",
                                 ) || "user"}
                               </p>
@@ -2280,7 +2292,9 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
 
             <div
               className={`flex flex-col gap-3 pt-1 sm:flex-row ${
-                canEdit ? "sm:items-center sm:justify-between" : "sm:justify-end"
+                canEdit
+                  ? "sm:items-center sm:justify-between"
+                  : "sm:justify-end"
               }`}
             >
               {canEdit && (
@@ -2300,9 +2314,7 @@ export function UserSession({ user }: { user: typeof auth.$Infer.Session["user"]
                     color="danger"
                     size="lg"
                     onPress={async () => {
-                      const shouldSignOut = window.confirm(
-                        t("signOutConfirm"),
-                      );
+                      const shouldSignOut = window.confirm(t("signOutConfirm"));
                       if (!shouldSignOut) return;
                       await auth.signOut();
                       router.replace("/");

@@ -8,6 +8,7 @@ packages:
 
 catalog:
   "@arcstudio/config": "^1"
+  "@arcstudio/i18n": "^1"
   typescript: "^5"
   tsx: "^4"
   electron: "^40"

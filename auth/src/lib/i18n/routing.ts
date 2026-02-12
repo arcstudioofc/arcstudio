@@ -1,17 +1,10 @@
+import { getRemoteRoutingConfig } from "@arcstudio/i18n";
 import { defineRouting } from "next-intl/routing";
 
-export const defaultLocale = "en-us";
+const remoteRouting = await getRemoteRoutingConfig();
+export const defaultLocale = remoteRouting.defaultLocale;
 
 export const routing = defineRouting({
-  locales: [defaultLocale, "pt-br", "es-es"],
-
-  // rotas customizadas (opcional)
-  // pathnames: {
-  //   "/team": {
-  //     "en-us": "/team",
-  //     "pt-br": "/equipe"
-  //   }
-  // },
-
+  locales: remoteRouting.locales,
   defaultLocale: defaultLocale,
 });

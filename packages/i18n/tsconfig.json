@@ -1,0 +1,6 @@
+{
+  "extends": "@arcstudio/config/base.json",
+  "compilerOptions": {
+    "baseUrl": "."
+  }
+}

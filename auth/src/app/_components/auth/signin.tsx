@@ -1,24 +1,21 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { FaGithub } from "react-icons/fa";
 import {
-  Input,
+  addToast,
   Button,
-  Checkbox,
   Card,
   CardBody,
   CardHeader,
-  addToast,
+  Checkbox,
+  Input,
 } from "@heroui/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { FaGithub } from "react-icons/fa";
 
 import { auth } from "@/lib/auth";
-import Icon from "@/widgets/Icon";
-import LocaleSwitcher from "@/widgets/switcher/locale";
-import ThemeSwitcher from "@/widgets/switcher/theme";
 
 type FieldErrors = {
   email?: string;
@@ -150,7 +147,9 @@ export function SigninSection({ callback }: { callback?: string }) {
           {t("title")}
         </h1>
 
-        <p className="text-sm text-gray-600 dark:text-gray-400">{t("subtitle")}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {t("subtitle")}
+        </p>
       </CardHeader>
 
       <CardBody className="px-8 pb-8">
@@ -235,14 +234,6 @@ export function SigninSection({ callback }: { callback?: string }) {
             {t("createAccount")}
           </Link>
         </div>
-
-        <div className="flex items-center justify-center gap-4 pt-6">
-          <Icon />
-          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
-          <LocaleSwitcher />
-          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
-          <ThemeSwitcher />
-        </div>
       </CardBody>
     </Card>
   );
@@ -259,7 +250,9 @@ export function SigninSection({ callback }: { callback?: string }) {
           {t("title")}
         </h1>
 
-        <p className="text-sm text-gray-600 dark:text-gray-400">{t("subtitle")}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {t("subtitle")}
+        </p>
       </CardHeader>
 
       <CardBody className="px-6 pb-6">
@@ -343,14 +336,6 @@ export function SigninSection({ callback }: { callback?: string }) {
           >
             {t("createAccount")}
           </Link>
-        </div>
-
-        <div className="flex items-center justify-center gap-4 pt-6">
-          <Icon />
-          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
-          <LocaleSwitcher />
-          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
-          <ThemeSwitcher />
         </div>
       </CardBody>
     </Card>
