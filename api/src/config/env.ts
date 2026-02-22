@@ -10,6 +10,7 @@ const envSchema = z.object({
   GITHUB_CLIENT_ID: z.string(),
   GITHUB_CLIENT_SECRECT: z.string(),
 
+  SPAWNERX_URL: z.url(),
   ARCSTUDIO_AUTH_URL: z.url(),
   ARCSTUDIO_DEV_URL: z.url(),
   ARCSTUDIO_URL: z.url(),

@@ -107,7 +107,7 @@ const isDiscordUsername = (value: string) => {
 
 export const auth = betterAuth({
 	basePath: "/auth",
-	trustedOrigins: [env.ARCSTUDIO_AUTH_URL, env.ARCSTUDIO_URL, env.ARCSTUDIO_DEV_URL],
+	trustedOrigins: [env.SPAWNERX_URL, env.ARCSTUDIO_AUTH_URL, env.ARCSTUDIO_URL, env.ARCSTUDIO_DEV_URL],
 
 	database: mongodbAdapter(db, {
 		client,

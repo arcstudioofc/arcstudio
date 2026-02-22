@@ -21,7 +21,7 @@ const app = new Elysia({
 })
   .use(
     cors({
-      origin: [env.ARCSTUDIO_AUTH_URL, env.ARCSTUDIO_URL, env.ARCSTUDIO_DEV_URL],
+      origin: [env.SPAWNERX_URL, env.ARCSTUDIO_AUTH_URL, env.ARCSTUDIO_URL, env.ARCSTUDIO_DEV_URL],
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization"],
